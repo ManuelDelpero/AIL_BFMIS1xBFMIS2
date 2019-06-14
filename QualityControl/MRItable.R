@@ -14,9 +14,6 @@ MRIdata[,"TimeDateDura"] <- unlist(lapply(dates, function(x){                   
 	paste(gsub(",","",x[3]), monthNumber, x[4],sep="/")
 }))
 
-
-
-
 for(x in 1:nrow(MRIdata)){
     bDay <- as.character(description[as.character(MRIdata[x,"Label"]),"W-dat"]) 														# Date of birth
 	mDay <- as.character(MRIdata[x, "TimeDateDura"]) 																					# Date of measurement
@@ -32,7 +29,6 @@ animals <- unique(as.character(MRIdata[,"Label"]))
 timepoints <- unique(as.character(MRIdata[,"Age"]))
 timepoints <- timepoints[-c(2)]
 
-
 fat <- matrix(NA, length(animals), length(timepoints), dimnames=list(animals, timepoints))
 lean <- matrix(NA, length(animals), length(timepoints), dimnames=list(animals, timepoints))
 
@@ -45,4 +41,3 @@ lean <- matrix(NA, length(animals), length(timepoints), dimnames=list(animals, t
      }
    }
  }
-
