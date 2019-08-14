@@ -68,7 +68,3 @@ colnames(resultsL) <- c("meanLS1","meanLS2","Ttest")
 length(which(resultsL[,"Ttest"] < (0.05 / nrow(resultsL))))
 
 
-
-/home/florian/Downloads/scalpel-0.5.4/scalpel-discovery --single --bam /halde/BFMI_Alignment_Mar19/merged_sorted_861-S1.bam --bed 8:88285635-96687117 --ref /home/danny/References/Mouse/GRCm38_95/Mus_musculus.GRCm38.dna.toplevel.fa  --numprocs 50 --window 2000 --mapscore 10 --dir /home/manuel
-
-
