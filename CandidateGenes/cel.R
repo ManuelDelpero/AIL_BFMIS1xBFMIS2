@@ -10,6 +10,7 @@ eset <- mas5(dat)
 
 library("affyPLM")
 
+# QC 
 expressions <- log2(assayData(eset)$exprs)
 expressions <- normalize.quantiles(expressions)
 rownames(expressions) <- rownames(assayData(eset)$exprs)
@@ -27,6 +28,7 @@ colnames(expressions) <- arraymapping[ids, 1]
 corM <- cor(expressions)
 heatmap(corM, scale = "none")
 
+# Diff. gene expression analysis
 getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 0.05){
   S1P <- which(grepl("S1", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
   S2P <- which(grepl("S2", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
