@@ -88,7 +88,7 @@ plot(liver[, "logFC"], -log10(liver[, "p.value"]))
 plot(skeletalmuscle[, "logFC"], -log10(skeletalmuscle[, "p.value"]))
 plot(pankreas[, "logFC"], -log10(pankreas[, "p.value"]))
 
-subset_gonadalfat <- gonadalfat[which(abs(gonadalfat[, "logFC"]) > 0.4),]
+subset_gonadalfat <- gonadalfat[which(abs(gonadalfat[, "logFC"]) > 0.25),]
 subset_liver <- liver[which(abs(liver[, "logFC"]) > 0.25),]
 subset_skeletalmuscle <- skeletalmuscle[which(abs(skeletalmuscle[, "logFC"]) > 0.25),]
 subset_pankreas <- gonadalfat[which(abs(pankreas[, "logFC"]) > 0.25),]
