@@ -28,6 +28,28 @@ colnames(expressions) <- arraymapping[ids, 1]
 corM <- cor(expressions)
 heatmap(corM, scale = "none")
 
+liverexpr <- expressions[, which(grepl("L", colnames(expressions)))]
+LiverS1expr <- liverexpr[, which(grepl("S1", colnames(liverexpr)))]
+LiverS1expr <- data.frame(apply(LiverS1expr, 1 , mean))
+rownames(LiverS1expr) <- gsub("_at", "", rownames(LiverS1expr))
+Gonexpr <- expressions[, which(grepl("G", colnames(expressions)))]
+GonS1expr <- Gonexpr[, which(grepl("S1", colnames(Gonexpr)))]
+GonS1expr <- data.frame(apply(GonS1expr, 1 , mean))
+rownames(GonS1expr) <- gsub("_at", "", rownames(GonS1expr))
+LiverS1expr_ann <- annotate(LiverS1expr)
+GonS1expr_ann <- annotate(GonS1expr)
+
+liverexpr <- expressions[, which(grepl("L", colnames(expressions)))]
+LiverS2expr <- liverexpr[, which(grepl("S2", colnames(liverexpr)))]
+LiverS2expr <- data.frame(apply(LiverS2expr, 1 , mean))
+rownames(LiverS2expr) <- gsub("_at", "", rownames(LiverS2expr))
+Gonexpr <- expressions[, which(grepl("G", colnames(expressions)))]
+GonS2expr <- Gonexpr[, which(grepl("S2", colnames(Gonexpr)))]
+GonS2expr <- data.frame(apply(GonS2expr, 1 , mean))
+rownames(GonS2expr) <- gsub("_at", "", rownames(GonS2expr))
+LiverS2expr_ann <- annotate(LiverS2expr)
+GonS2expr_ann <- annotate(GonS2expr)
+
 # Diff. gene expression analysis
 getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 0.05){
   S1P <- which(grepl("S1", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
@@ -45,21 +67,6 @@ getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 0.0
   return(significant)
 }
 
-liver <- getSignificant(expressions, "L", p.val = 1.1)
-gonadalfat <- getSignificant(expressions, "G", p.val = 1.1)
-skeletalmuscle <- getSignificant(expressions, "S", p.val = 1.1)
-pankreas <- getSignificant(expressions, "P", p.val = 1.1)
-
-write.table(liver, "liver_all.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(gonadalfat, "gonadalfat_all.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(skeletalmuscle, "skeletalmuscle_all.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(pankreas, "pankreas_all.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-
-liver <- getSignificant(expressions, "L", p.val = 0.01)
-gonadalfat <- getSignificant(expressions, "G", p.val = 0.01)
-skeletalmuscle <- getSignificant(expressions, "S", p.val = 0.01)
-pankreas <- getSignificant(expressions, "P", p.val = 0.01)
-
 annotate <- function(significant){
   library(biomaRt)
   bio.mart <- useMart("ensembl", dataset="mmusculus_gene_ensembl")
@@ -71,6 +78,21 @@ annotate <- function(significant){
   annotated <- cbind(res.biomart[rownames(significant), ], significant)
   return(annotated)
 }
+
+liver <- annotate(getSignificant(expressions, "L", p.val = 1.1))
+gonadalfat <- annotate(getSignificant(expressions, "G", p.val = 1.1))
+skeletalmuscle <- annotate(getSignificant(expressions, "S", p.val = 1.1))
+pankreas <- annotate(getSignificant(expressions, "P", p.val = 1.1)
+
+write.table(liver, "liver_all_ann.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(gonadalfat, "gonadalfat_all_ann.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(skeletalmuscle, "skeletalmuscle_all.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(pankreas, "pankreas_all.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+liver <- getSignificant(expressions, "L", p.val = 0.01)
+gonadalfat <- getSignificant(expressions, "G", p.val = 0.01)
+skeletalmuscle <- getSignificant(expressions, "S", p.val = 0.01)
+pankreas <- getSignificant(expressions, "P", p.val = 0.01)
 
 liver <- annotate(liver)
 gonadalfat <- annotate(gonadalfat)
