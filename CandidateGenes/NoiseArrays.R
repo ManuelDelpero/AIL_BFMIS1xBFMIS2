@@ -2,10 +2,10 @@
 # Figuring out Noise versus Signal
 #
 
-setwd("D:/Ddrive/Collegues/Manuel/Microarray Data/DN-2019_8745-Data")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/Microarray Data/DN-2019_8745-Data")
 arraymapping <- read.table("mapping.txt", sep = '\t', header=TRUE, colClasses = "character", row.names=1)
 
-setwd("D:/Ddrive/Collegues/Manuel/Microarray Data/DN-2019_8745-Data/Rohdaten")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/Microarray Data/DN-2019_8745-Data/Rohdaten")
 
 library(affy)
 
@@ -23,7 +23,7 @@ hist(sampleexpr, breaks = 10000, add = TRUE)
 getNoiseLvl <- function(sampleexpr){
   require(mixtools)
   # Do a histogram
-  histdata <- hist(sampleexpr, breaks = 15000, plot = FALSE)
+  histdata <- hist(sampleexpr, breaks = 15000#, plot = FALSE)
   out <- normalmixEM(sampleexpr, c(.5,.5))
   # Get the maximum value of the histogram -> This is the mean of the normal for the noise level
   estmean <- histdata$breaks[which.max(histdata$counts)]
