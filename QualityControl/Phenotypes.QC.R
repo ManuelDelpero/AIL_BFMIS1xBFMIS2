@@ -38,20 +38,6 @@ out <- which(!(rownames(testData) %in% rownames(allPhenotypes)))
 allPhenotypes <- allPhenotypes[-out,]
 allPhenotypes <- cbind(allPhenotypes, testData)
 
-# MRI analysis
-timepoints <- as.numeric(colnames(mriLEAN))
-plot(c(min(timepoints), max(timepoints)), c(0, max(mriLEAN,na.rm=TRUE)), main= "Lean mass curve", t = 'n', xlab="Time (days)", ylab="Lean mass (gramms)")
-for(row in 1:nrow(mriLEAN)){
-  color <- "lightgreen"
-  points(timepoints, mriLEAN[row,], t = 'l', col=color)
-}
-
-plot(c(min(timepoints), max(timepoints)), c(0, max(mriFAT,na.rm=TRUE)), main= "Fat mass curve", t = 'n', xlab="Time (days)", ylab="Fat mass (gramms)")
-for(row in 1:nrow(mriFAT)){
-  color <- "lightgreen"
-  points(timepoints, mriFAT[row,], t = 'l', col=color)
-}
-
 # extremes for MRI
 lowfat <- c()
 highfat <- c()
@@ -71,11 +57,13 @@ weight <- data.frame(weight)
 weight <- cbind(rownames(allPhenotypes), weight)
 weightordered <- weight[order(as.numeric(weight[,2]) ,decreasing = TRUE),]
 highweight <- weightordered[1:100,]
+highweight <- as.character(highweight[,1])
 lowweight <- weightordered[(nrow(weightordered) - 100):nrow(weightordered),]
 
 # extremes for triglycerides
 Triglyceridesordered <- Triglycerides[order(Triglycerides[,2] ,decreasing = TRUE),]
 HighTrig <- Triglyceridesordered[1:100,]
+HighTrig <- as.character(HighTrig[,1])
 LowTrig <- 
 
 # extremes for gluc172
@@ -84,6 +72,7 @@ Gluc <- data.frame(gluc)
 Gluc <- cbind(rownames(allPhenotypes), Gluc)
 Glucordered <- Gluc[order(Gluc[,2] ,decreasing = TRUE),]
 highgluc <- Glucordered[1:100,]
+highgluc <- rownames(highgluc)
 lowwgluc <- Glucordered[(nrow(Glucordered) - 100):nrow(Glucordered),]
 
 # extremes for insulitTT
@@ -98,22 +87,33 @@ highextreme3 <- c()
 highextremes2 <- c()
 highextreme2 <- c()
 lowextremes <- c()
-for (x in 1:nrow(allPhenotypes)) 
- if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight[,1]) && (rownames(allPhenotypes[x,]) %in% HighTrig[,1]) && (rownames(allPhenotypes[x,]) %in% highgluc[,1])) 
+for (x in 1:nrow(allPhenotypes)){
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% HighTrig) && (rownames(allPhenotypes[x,]) %in% highgluc)) 
   highextreme4 <- rownames(allPhenotypes[x,])
-  highextremes4 <- c(highextreme4, highextremes4)
- if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight[,1]) && (rownames(allPhenotypes[x,]) %in% HighTrig[,1]))
+  highextremes4 <- unique(c(highextreme4, highextremes4))
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% HighTrig) || (rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% highgluc) || (rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highgluc) && (rownames(allPhenotypes[x,]) %in% HighTrig) || (rownames(allPhenotypes[x,]) %in% highgluc) && (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% HighTrig)) 
   highextreme3 <- rownames(allPhenotypes[x,])
-  highextremes3 <- c(highextreme3, highextremes3)
- if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight[,1]))
+  highextremes3 <- unique(c(highextreme3, highextremes3))
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight) || (rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% HighTrig) || (rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highgluc) || (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% HighTrig) || (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% highgluc) || (rownames(allPhenotypes[x,]) %in% HighTrig) && (rownames(allPhenotypes[x,]) %in% highgluc))
   highextreme2 <- rownames(allPhenotypes[x,])
-  highextremes2 <- c(highextreme2, highextremes2)
- 
- 
+  highextremes2 <- unique(c(highextreme2, highextremes2))
+}
  
 
+# MRI analysis
+timepoints <- as.numeric(colnames(mriLEAN))
+plot(c(min(timepoints), max(timepoints)), c(0, max(mriLEAN,na.rm=TRUE)), main= "Lean mass curve", t = 'n', xlab="Time (days)", ylab="Lean mass (gramms)")
+for(row in 1:nrow(mriLEAN)){
+  color <- "lightgreen"
+  points(timepoints, mriLEAN[row,], t = 'l', col=color)
+}
 
-
+plot(c(min(timepoints), max(timepoints)), c(0, max(mriFAT,na.rm=TRUE)), main= "Fat mass curve", t = 'n', xlab="Time (days)", ylab="Fat mass (gramms)")
+for(row in 1:nrow(mriFAT)){
+  color <- "lightgreen"
+  points(timepoints, mriFAT[row,], t = 'l', col=color)
+}
+ 
 ## QC by bodyweight
 # Bodyweight plot
 plot(c(min(days), max(days)), c(0, max(allPhenotypes[,1:31],na.rm=TRUE)), main= "Growth curve", t = 'n', xlab="Time (days)", ylab="Weight (gramms)")
