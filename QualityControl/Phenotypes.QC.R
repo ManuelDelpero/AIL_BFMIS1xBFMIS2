@@ -10,6 +10,7 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 # Reading the files that contain the phenotypes
 allPhenotypes <- read.csv("growthWeight",sep = "\t", header=TRUE, check.names=FALSE)
 PlasmaGluc <- read.csv("Gluc147.txt",sep = "\t", header= FALSE, check.names=FALSE)
+Triglycerides <- read.csv("Triglycerides.txt",sep = "\t", header= TRUE, check.names=FALSE)
 mriLEAN <- read.csv("MRIlean.txt", sep = "\t", header=TRUE, check.names=FALSE)
 mriFAT <- read.csv("MRIfat.txt", sep = "\t", header=TRUE, check.names=FALSE)
 oralGTTDATA <- read.csv("oralGTT.txt", header=TRUE, check.names=FALSE, sep="\t")
@@ -73,12 +74,44 @@ highweight <- weightordered[1:100,]
 lowweight <- weightordered[(nrow(weightordered) - 100):nrow(weightordered),]
 
 # extremes for triglycerides
+Triglyceridesordered <- Triglycerides[order(Triglycerides[,2] ,decreasing = TRUE),]
+HighTrig <- Triglyceridesordered[1:100,]
+LowTrig <- 
 
 # extremes for gluc172
+Gluc <- allPhenotypes[,"Gluc172"]
+Gluc <- data.frame(gluc)
+Gluc <- cbind(rownames(allPhenotypes), Gluc)
+Glucordered <- Gluc[order(Gluc[,2] ,decreasing = TRUE),]
+highgluc <- Glucordered[1:100,]
+lowwgluc <- Glucordered[(nrow(Glucordered) - 100):nrow(Glucordered),]
 
-#extremes for insulitTT
+# extremes for insulitTT
 
-#extremes for oralGTT
+# extremes for oralGTT
+
+# extremes to select
+highextremes4 <- c()
+highextreme4 <- c()
+highextremes3 <- c() 
+highextreme3 <- c()
+highextremes2 <- c()
+highextreme2 <- c()
+lowextremes <- c()
+for (x in 1:nrow(allPhenotypes)) 
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight[,1]) && (rownames(allPhenotypes[x,]) %in% HighTrig[,1]) && (rownames(allPhenotypes[x,]) %in% highgluc[,1])) 
+  highextreme4 <- rownames(allPhenotypes[x,])
+  highextremes4 <- c(highextreme4, highextremes4)
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight[,1]) && (rownames(allPhenotypes[x,]) %in% HighTrig[,1]))
+  highextreme3 <- rownames(allPhenotypes[x,])
+  highextremes3 <- c(highextreme3, highextremes3)
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight[,1]))
+  highextreme2 <- rownames(allPhenotypes[x,])
+  highextremes2 <- c(highextreme2, highextremes2)
+ 
+ 
+ 
+
 
 
 ## QC by bodyweight
