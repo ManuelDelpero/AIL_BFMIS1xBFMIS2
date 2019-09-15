@@ -1,4 +1,4 @@
-# AIL_S1xS2 Analysis on Phenotypes
+# AIL_S1xS2 Analysis on Phenotypes and selection of animals to genotye with the MegaMUGA array
 #
 # copyright (c) - Manuel Delpero
 # first written April, 2019
@@ -42,13 +42,13 @@ allPhenotypes <- cbind(allPhenotypes, testData)
 lowfat <- c()
 highfat <- c()
 for (x in 1:nrow(mriFAT)){
- if (!is.na(mriFAT[x,"174"])){
-  if (mriFAT[x,"174"] > 18){
-   highfat <- c(highfat, rownames(mriFAT[x,]))
-   }else if (mriFAT[x,"174"] < 12){
-  lowfat <- c(lowfat, rownames(mriFAT[x,]))
+  if (!is.na(mriFAT[x,"174"])){
+   if (mriFAT[x,"174"] > 18){
+    highfat <- c(highfat, rownames(mriFAT[x,]))
+    }else if (mriFAT[x,"174"] < 12){
+   lowfat <- c(lowfat, rownames(mriFAT[x,]))
+   }
   }
- }
 }
 
 # extremes for bodyweight
@@ -79,7 +79,8 @@ lowwgluc <- Glucordered[(nrow(Glucordered) - 100):nrow(Glucordered),]
 
 # extremes for oralGTT
 
-# extremes to select
+# extremes to select, the most important phenotypes are the weight of the gonadal fat and the liver triglycerides, we will select
+# mainly focusing on this two phenotypes
 highextremes4 <- c()
 highextreme4 <- c()
 highextremes3 <- c() 
