@@ -1,6 +1,6 @@
 # Analysis in diff. express genes
 #
-# copyright (c) 2015-2020 - Brockmann group - HU Berlin, Manuel DelPero
+# copyright (c) 2015-2020 - Brockmann group - HU Berlin, Manuel Delpero
 # last modified May, 2019
 # first written May, 2019
 
