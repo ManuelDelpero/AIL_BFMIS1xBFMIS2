@@ -1,4 +1,4 @@
-# AIL_S1xS2 Analysis on Phenotypes
+# AIL_S1xS2 Analysis on Phenotypes and selection of animals to genotye with the MegaMUGA array
 #
 # copyright (c) - Manuel Delpero
 # first written April, 2019
@@ -40,12 +40,78 @@ rownames(testData) <- testDatarows
 out <- which(!(rownames(testData) %in% rownames(allPhenotypes)))
 allPhenotypes <- allPhenotypes[-out,]
 allPhenotypes <- cbind(allPhenotypes, testData)
+<<<<<<< HEAD
 allTissues <- allTissues[which(rownames(allTissues) %in% rownames(allPhenotypes)), ]
 allPhenotypes <- allPhenotypes[which(rownames(allPhenotypes) %in% rownames(allTissues)), ]
 allPhenotypes <- cbind(allPhenotypes, allTissues)
 colallPhenotypes <- c("D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 min"    ,   "15 min",  "30 min"     , "60 min", "120 min"   ,  "0 min"   ,    "15 min", "30 min"    ,  "60 min",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge")      
 colnames(allPhenotypes) <- colallPhenotypes
 write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.names = TRUE)
+=======
+
+# extremes for MRI
+lowfat <- c()
+highfat <- c()
+for (x in 1:nrow(mriFAT)){
+  if (!is.na(mriFAT[x,"174"])){
+   if (mriFAT[x,"174"] > 18){
+    highfat <- c(highfat, rownames(mriFAT[x,]))
+    }else if (mriFAT[x,"174"] < 12){
+   lowfat <- c(lowfat, rownames(mriFAT[x,]))
+   }
+  }
+}
+
+# extremes for bodyweight
+weight <- allPhenotypes[, "174.00"]
+weight <- data.frame(weight)
+weight <- cbind(rownames(allPhenotypes), weight)
+weightordered <- weight[order(as.numeric(weight[,2]) ,decreasing = TRUE),]
+highweight <- weightordered[1:100,]
+highweight <- as.character(highweight[,1])
+lowweight <- weightordered[(nrow(weightordered) - 100):nrow(weightordered),]
+
+# extremes for triglycerides
+Triglyceridesordered <- Triglycerides[order(Triglycerides[,2] ,decreasing = TRUE),]
+HighTrig <- Triglyceridesordered[1:100,]
+HighTrig <- as.character(HighTrig[,1])
+LowTrig <- 
+
+# extremes for gluc172
+Gluc <- allPhenotypes[,"Gluc172"]
+Gluc <- data.frame(gluc)
+Gluc <- cbind(rownames(allPhenotypes), Gluc)
+Glucordered <- Gluc[order(Gluc[,2] ,decreasing = TRUE),]
+highgluc <- Glucordered[1:100,]
+highgluc <- rownames(highgluc)
+lowwgluc <- Glucordered[(nrow(Glucordered) - 100):nrow(Glucordered),]
+
+# extremes for insulitTT
+
+# extremes for oralGTT
+
+# extremes to select, the most important phenotypes are the weight of the gonadal fat and the liver triglycerides, we will select
+# mainly focusing on this two phenotypes
+highextremes4 <- c()
+highextreme4 <- c()
+highextremes3 <- c() 
+highextreme3 <- c()
+highextremes2 <- c()
+highextreme2 <- c()
+lowextremes <- c()
+for (x in 1:nrow(allPhenotypes)){
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% HighTrig) && (rownames(allPhenotypes[x,]) %in% highgluc)) 
+  highextreme4 <- rownames(allPhenotypes[x,])
+  highextremes4 <- unique(c(highextreme4, highextremes4))
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% HighTrig) || (rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% highgluc) || (rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highgluc) && (rownames(allPhenotypes[x,]) %in% HighTrig) || (rownames(allPhenotypes[x,]) %in% highgluc) && (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% HighTrig)) 
+  highextreme3 <- rownames(allPhenotypes[x,])
+  highextremes3 <- unique(c(highextreme3, highextremes3))
+ if ((rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highweight) || (rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% HighTrig) || (rownames(allPhenotypes[x,]) %in% highfat) && (rownames(allPhenotypes[x,]) %in% highgluc) || (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% HighTrig) || (rownames(allPhenotypes[x,]) %in% highweight) && (rownames(allPhenotypes[x,]) %in% highgluc) || (rownames(allPhenotypes[x,]) %in% HighTrig) && (rownames(allPhenotypes[x,]) %in% highgluc))
+  highextreme2 <- rownames(allPhenotypes[x,])
+  highextremes2 <- unique(c(highextreme2, highextremes2))
+}
+ 
+>>>>>>> f9602e29a14d2d6207de02f6f0dd5018d04f8cd0
 
 # MRI analysis
 timepoints <- as.numeric(colnames(mriLEAN))
