@@ -43,9 +43,13 @@ allPhenotypes <- cbind(allPhenotypes, testData)
 allTissues <- allTissues[which(rownames(allTissues) %in% rownames(allPhenotypes)), ]
 allPhenotypes <- allPhenotypes[which(rownames(allPhenotypes) %in% rownames(allTissues)), ]
 allPhenotypes <- cbind(allPhenotypes, allTissues)
-colallPhenotypes <- c("D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 min"    ,   "15 min",  "30 min"     , "60 min", "120 min"   ,  "0 min"   ,    "15 min", "30 min"    ,  "60 min",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge")      
+Triglycerides <- Triglycerides[which(Triglycerides[,1] %in% rownames(allPhenotypes)),]
+allPhenotypes <- allPhenotypes[which(rownames(allPhenotypes) %in% Triglycerides[,1]),]
+allPhenotypes <- cbind(allPhenotypes, Triglycerides[,2])
+colallPhenotypes <- c("D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 min"    ,   "15 min",  "30 min"     , "60 min", "120 min"   ,  "0 min"   ,    "15 min", "30 min"    ,  "60 min",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge", "Triglycerides")      
 colnames(allPhenotypes) <- colallPhenotypes
 write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.names = TRUE)
+
 
 # MRI analysis
 timepoints <- as.numeric(colnames(mriLEAN))

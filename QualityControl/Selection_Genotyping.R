@@ -33,6 +33,9 @@ highweight <- as.character(highweight[,1])
 lowweight <- weightordered[(nrow(weightordered) - 100):nrow(weightordered),]
 
 # extremes for triglycerides
+Triglycerides <- allPhenotypes[, "Triglycerides"]
+Triglycerides <- data.frame(Triglycerides)
+Triglycerides <- cbind(rownames(allPhenotypes), Triglycerides)
 Triglyceridesordered <- Triglycerides[order(Triglycerides[,2] ,decreasing = TRUE),]
 HighTrig <- Triglyceridesordered[1:150,]
 HighTrig <- as.character(HighTrig[,1])
@@ -83,8 +86,11 @@ colnames(Group1) <- c("ID", "GonFatWeight")
 colnames(Group2) <- c("ID", "GonFatWeight")
 Group1 <- Group1[order(as.numeric(Group1[,1]) ,decreasing = FALSE),]
 Group2 <- Group2[order(as.numeric(Group2[,1]) ,decreasing = FALSE),]
+Groups <- rbind(Group1, Group2)
+Groups <- Groups[order(as.numeric(Groups[,1]) ,decreasing = FALSE),]
 write.table(Group1, file = "Group1.txt", sep ="\t", row.names = FALSE)
 write.table(Group2, file = "Group2.txt", sep ="\t", row.names = FALSE)
+write.table(Groups, file = "Groups.txt", sep ="\t", row.names = FALSE)
 
 if (i == 0){
 highextremes4 <- c()
