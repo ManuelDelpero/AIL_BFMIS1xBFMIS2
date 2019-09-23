@@ -10,6 +10,9 @@ mriLEAN <- read.csv("MRIlean.txt", sep = "\t", header=TRUE, check.names=FALSE)
 mriFAT <- read.csv("MRIfat.txt", sep = "\t", header=TRUE, check.names=FALSE)
 allPhenotypes <- read.csv("allPhenotypes.txt",sep = "\t", header=TRUE, check.names=FALSE)
 
+# Use just the males!!
+allPhenotypes <- allPhenotypes[which(allPhenotypes[,"Sex"] == "m"),]
+
 # extremes for MRI
 lowfat <- c()
 highfat <- c()
@@ -31,6 +34,7 @@ weightordered <- weight[order(as.numeric(weight[,2]) ,decreasing = TRUE),]
 highweight <- weightordered[1:100,]
 highweight <- as.character(highweight[,1])
 lowweight <- weightordered[(nrow(weightordered) - 100):nrow(weightordered),]
+lowweight <- as.character(lowweight[,1])
 
 # extremes for triglycerides
 Triglycerides <- allPhenotypes[, "Triglycerides"]
