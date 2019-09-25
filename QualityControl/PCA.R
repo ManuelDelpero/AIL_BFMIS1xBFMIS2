@@ -27,7 +27,19 @@ selected <- rownames(GonTrigEx)
 
 pdf ("PCA-plot_allPhenotypes.pdf")
 mcol <- as.numeric(rownames(pcares$x) %in% selected) + 1
-plot(pcares$x[,1], pcares$x[,2], col = c("black", "orange")[mcol], type='p', pch=20)
+plot(main = "PCA-Plot all phenotypes", pcares$x[,1], pcares$x[,2], xlab = "PC1 (0.5285%)", ylab = "PC2 (0.2992%)", col = c("blue", "orange")[mcol], type='p', pch=20)
+  legend("topright",
+  legend = c("Non selected", "Selected"),
+  col = c("blue", "orange"),
+  pch = c(20,20,20),
+  bty = "n",
+  pt.cex = 2,
+  cex = 1,
+  text.col = "black",
+  #horiz = F ,
+  #inset = c(0.1, 0.1, 0.1)
+)
+
 dev.off()
 
 # PCA with the extremes for all the samples
@@ -60,13 +72,5 @@ p.variance.explained = p$sdev^2 / sum(p$sdev^2)
  
 # plot percentage of variance explained for each principal component    
 barplot(100*p.variance.explained, las=2, xlab='', ylab='% Variance Explained')
-
-# Plot with bodyweight with all samples highlighting the selected animals
-
-
-
-
-
- 
  
 
