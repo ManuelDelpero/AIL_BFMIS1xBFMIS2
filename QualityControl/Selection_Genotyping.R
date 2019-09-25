@@ -77,7 +77,7 @@ highgGonWeight <- as.character(highgGonWeight)
 lowGonWeight <- gonWeightordered[(nrow(gonWeightordered) - 150):nrow(gonWeightordered),]
 lowGonWeight <- lowGonWeight[,1]
 lowGonWeight <- as.character(lowGonWeight)
-boxplot(main = "extremes Gonadal Fat weight", gonWeightordered[1:100,2], gonWeightordered[(nrow(gonWeightordered) - 150):nrow(gonWeightordered),2], notch = TRUE)
+boxplot(main = "extremes Gonadal Fat weight", gonWeightordered[1:150,2], gonWeightordered[(nrow(gonWeightordered) - 150):nrow(gonWeightordered),2], notch = TRUE)
 
 # extremes to select (we mainly want to focus on th Gon fat and Liver due to the evident phenotypes)
 Group1 <- highgGonWeight[which(highgGonWeight %in% as.character(LowTrig))]
@@ -95,6 +95,18 @@ Groups <- Groups[order(as.numeric(Groups[,1]) ,decreasing = FALSE),]
 write.table(Group1, file = "Group1.txt", sep ="\t", row.names = FALSE)
 write.table(Group2, file = "Group2.txt", sep ="\t", row.names = FALSE)
 write.table(Groups, file = "Groups.txt", sep ="\t", row.names = FALSE)
+
+# selection of other extra extremes just considering the Gonadal fat weight
+highgGonWeight <- highgGonWeight[1:50]
+lowGonWeight <- lowGonWeight[(length(lowGonWeight) - 50):length(lowGonWeight)]
+outHigh <- which(highgGonWeight %in% Groups[,1])
+outLow <- which(lowGonWeight %in% Groups[,1])
+highgGonWeight <- highgGonWeight[-outHigh]
+lowGonWeight <- lowGonWeight[-outLow]
+extraAnimals <- c(highgGonWeight, lowGonWeight)
+extraAnimals <- extraAnimals[order(extraAnimals, decreasing = FALSE)]
+write.table(extraAnimals, file = "ExtraAnimals.txt", sep ="\t", row.names = FALSE)
+
 
 if (i == 0){
 highextremes4 <- c()
