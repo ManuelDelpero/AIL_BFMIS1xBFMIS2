@@ -1,3 +1,8 @@
+# AIL_S1xS2 Analysis on Phenotypes
+#
+# Script to format MRI data
+
+
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/Data")
 
 MRIdata <- read.csv("mri.txt", header = TRUE, sep= "\t", check.names = FALSE)
