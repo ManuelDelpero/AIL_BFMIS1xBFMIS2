@@ -17,7 +17,7 @@ subsetPCA <- allPhenotypes[which(apply(apply(allPhenotypes,1,is.na),2,sum) == 0)
 subsetPCAnum <- apply(subsetPCA, 1, function(x){as.numeric(as.character(x))})
 pcares <- prcomp(t(subsetPCAnum))
 rownames(pcares$x) <- colnames(subsetPCAnum)
-selected <- rownames(GonTrigEx)
+selected <- as.character(extremes[,1])
 
 pdf ("PCA-plot_allPhenotypes.pdf")
 mcol <- as.numeric(rownames(pcares$x) %in% selected) + 1
