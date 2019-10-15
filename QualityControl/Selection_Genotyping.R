@@ -49,11 +49,12 @@ Trigs <- c()
 for (x in 1:nrow(Triglyceridesordered)){
   if (!is.na(Triglyceridesordered[x, 2])){
     trig <- Triglyceridesordered[x, c(1,2)]
-	Trigs <- rbind(trig,Trigs)
+    Trigs <- rbind(trig,Trigs)
   }
 }
 
 LowTrig <- Trigs[1:150,1]
+
 
 # extremes for gluc172
 Gluc <- allPhenotypes[,"Gluc172"]
@@ -107,7 +108,24 @@ extraAnimals <- c(highgGonWeight, lowGonWeight)
 extraAnimals <- extraAnimals[order(extraAnimals, decreasing = FALSE)]
 write.table(extraAnimals, file = "ExtraAnimals.txt", sep ="\t", row.names = FALSE)
 
+# Selection for mouse diversity array
+extraAnimals <- as.character(extraAnimals)
+extraAnimals <- data.frame(extraAnimals)
+out1 <- which(gonWeightordered[,1] %in% extraAnimals[,1])
+out2 <- which(gonWeightordered[,1] %in% Groups[,1])
+gonWeightordered <- gonWeightordered[-c(out1,out2),]
+high <- gonWeightordered[1:10,]
+low <- gonWeightordered[(nrow(gonWeightordered) - 10): nrow(gonWeightordered),]
 
+# plots
+pdf("GonWeight.pdf")
+boxplot(main="Gonadal fat weight", gonWeightordered[,2], ylab = "weight (Grams)",  col="darkolivegreen3", las = 2)
+dev.off()
+pdf("Liver triglycerides.pdf")
+boxplot(main="Liver triglycerides", Triglyceridesordered[,2], ylab = "Triglycerides/Proteins",  col="darkolivegreen1", las = 2)
+dev.off()
+
+# not complete
 if (i == 0){
 highextremes4 <- c()
 highextreme4 <- c()
