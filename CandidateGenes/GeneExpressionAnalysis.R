@@ -4,6 +4,7 @@ arraymapping <- read.table("mapping.txt", sep = '\t', header=TRUE, colClasses = 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/Microarray Data/DN-2019_8745-Data/Rohdaten")
 
 library(affy)
+library("gplots")
 
 dat <- ReadAffy(cdfname ='clariomsmousemmensgcdf') # Use the clariomsmouse CDF from http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/23.0.0/enst.asp
 eset <- mas5(dat)
@@ -26,7 +27,11 @@ pankreas <- which(grepl("P", ids))
 colnames(expressions) <- arraymapping[ids, 1]
 
 corM <- cor(expressions)
-heatmap(corM, scale = "none")
+
+pdf("heatmapGeneExpression.pdf")
+heatmap.2(corM, scale = "none", col = bluered(100), 
+          trace = "none", density.info = "none")
+dev.off()
 
 liverexpr <- expressions[, which(grepl("L", colnames(expressions)))]
 LiverS1expr <- liverexpr[, which(grepl("S1", colnames(liverexpr)))]
@@ -82,7 +87,7 @@ annotate <- function(significant){
 liver <- annotate(getSignificant(expressions, "L", p.val = 1.1))
 gonadalfat <- annotate(getSignificant(expressions, "G", p.val = 1.1))
 skeletalmuscle <- annotate(getSignificant(expressions, "S", p.val = 1.1))
-pankreas <- annotate(getSignificant(expressions, "P", p.val = 1.1)
+pankreas <- annotate(getSignificant(expressions, "P", p.val = 1.1))
 
 write.table(liver, "liver_all_ann.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(gonadalfat, "gonadalfat_all_ann.txt", sep = "\t", quote = FALSE, row.names = FALSE)
