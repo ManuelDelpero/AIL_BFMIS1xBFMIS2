@@ -113,9 +113,13 @@ extraAnimals <- as.character(extraAnimals)
 extraAnimals <- data.frame(extraAnimals)
 out1 <- which(gonWeightordered[,1] %in% extraAnimals[,1])
 out2 <- which(gonWeightordered[,1] %in% Groups[,1])
-gonWeightordered <- gonWeightordered[-c(out1,out2),]
-high <- gonWeightordered[1:10,]
-low <- gonWeightordered[(nrow(gonWeightordered) - 10): nrow(gonWeightordered),]
+gonWeightorderedd <- gonWeightordered[-c(out1,out2),]
+high <- gonWeightorderedd[1:10,]
+low <- gonWeightorderedd[(nrow(gonWeightorderedd) - 10): nrow(gonWeightorderedd),]
+colnames(high) <- c("ID", "Gon weight")
+colnames(low) <- c("ID", "Gon weight")
+write.table(high, file = "highexMouseDiversity.txt", sep = "\t", row.names = FALSE)
+write.table(low, file = "lowexMouseDiversity.txt", sep = "\t", row.names = FALSE)
 
 # plots
 pdf("GonWeight.pdf")

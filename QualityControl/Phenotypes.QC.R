@@ -54,20 +54,24 @@ allPhenotypes <- cbind(allPhenotypes, Triglycerides[,2])
 colallPhenotypes <- c("Sex", "ID" , "D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 min"    ,   "15 min",  "30 min"     , "60 min", "120 min"   ,  "0 min"   ,    "15 min", "30 min"    ,  "60 min",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge", "Triglycerides")      
 colnames(allPhenotypes) <- colallPhenotypes
 write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.names = TRUE)
+allPhenotypes <- read.csv("allPhenotypes.txt",sep = "\t", header=TRUE, check.names=FALSE)
 
 # MRI analysis
+pdf("MRICurve.pdf")
+par(mfrow = c(2,1))
 timepoints <- as.numeric(colnames(mriLEAN))
-plot(c(min(timepoints), max(timepoints)), c(0, max(mriLEAN,na.rm=TRUE)), main= "Lean mass curve", t = 'n', xlab="Time (days)", ylab="Lean mass (gramms)")
+plot(c(min(timepoints), max(timepoints)), c(0, max(mriLEAN,na.rm=TRUE)), main= "Lean mass curve", t = 'n', xlab="Time (days)", ylab="Lean mass (grams)")
 for(row in 1:nrow(mriLEAN)){
   color <- "lightgreen"
   points(timepoints, mriLEAN[row,], t = 'l', col=color)
 }
 
-plot(c(min(timepoints), max(timepoints)), c(0, max(mriFAT,na.rm=TRUE)), main= "Fat mass curve", t = 'n', xlab="Time (days)", ylab="Fat mass (gramms)")
+plot(c(min(timepoints), max(timepoints)), c(0, max(mriLEAN,na.rm=TRUE)), main= "Fat mass curve", t = 'n', xlab="Time (days)", ylab="Fat mass (grams)")
 for(row in 1:nrow(mriFAT)){
-  color <- "lightgreen"
+  color <- "lightblue"
   points(timepoints, mriFAT[row,], t = 'l', col=color)
 }
+dev.off()
  
 ## QC by bodyweight
 # Bodyweight plot
@@ -116,27 +120,35 @@ shapiro.test(diffhighFAThighCARB)
 wilcox.test(diffhighFATnoCARB, diffhighFAThighCARB, paired = TRUE)
 
 # Oral Glucose Tolerance test
-glucDATA <- read.csv("oralGTTDATA.txt", header=TRUE, check.names=FALSE, sep="\t")
+glucDATA <- allPhenotypes[,36:40]
+colnames(glucDATA) <- c("0","15","30","60","120")
 time <- colnames(glucDATA)
-x <- as.numeric(time)
-glucDATAmax <- which(glucDATA[,"30"] > 400)
-
+x <- c(0,15,30,60,120)
 plot(main="Oral Glucose Tolerance Test", c(min(x), max(x)), c(0, max(glucDATA[,time], na.rm=TRUE)), t = 'n', xlab="Time (min)", ylab="Blood Glucose (mg/dl)")
 for(n in 1:nrow(glucDATA)){
-  color1 <- rgb(0.5, 0.5, 0.8, 0.5)
-  color2 <- rgb(1, 0.5, 1, 1)
-  if (n %in% glucDATAmax) col = "red"
-  points(x, glucDATA[n,], t = 'l', col=color1)
+  color <- rgb(0.5, 0.5, 0.8, 0.5)
+  points(x, glucDATA[n,], t = 'l', col=color)
 }
+pdf("oralGTT.pdf")
 bpt <- boxplot(glucDATA, main="Oral Glucose Tolerance Test", ylab="Blood Glucose (mg/dl)", xlab="Time(min)", col=c("yellow"), notch=TRUE)
 lines(1:5, bpt$stats[ 3, ], col="blue", lwd=2)
+dev.off()
 
 # Insulin Tolerance Test
-insulinDATA <- read.csv("insulinTT.txt", header=TRUE, check.names=FALSE, sep="\t")
+insulinDATA <- allPhenotypes[,41:44]
+colnames(insulinDATA) <- c("0","15","30","60")
 time <- colnames(insulinDATA)
-x <- as.numeric(time)
-bptt <- boxplot(insulinDATA, main="Insulin Tolerance Test", ylab="Blood Glucose (mg/dl)", xlab="Time(min)", col=c("green"), notch=TRUE)
-lines(1:4, bptt$stats[ 3, ], col="blue", lwd=2)
+x <- c(0,15,30,60)
+plot(main="Insulin Tolerance Test", c(min(x), max(x)), c(0, max(insulinDATA[,time], na.rm=TRUE)), t = 'n', xlab="Time (min)", ylab="Blood Glucose (mg/dl)")
+for(n in 1:nrow(insulinDATA)){
+  color <- rgb(0.5, 0.5, 0.8, 0.5)
+  points(x, insulinDATA[n,], t = 'l', col=color)
+}
+pdf("insulinTest.pdf")
+bptt <- boxplot(insulinDATA[,1], as.numeric(as.character(insulinDATA[,2])), as.numeric(as.character(insulinDATA[,3])), as.numeric(as.character(insulinDATA[,4])), main="Insulin Tolerance Test", ylab="Blood Glucose (mg/dl)", xlab="Time(min)", col=c("green"), notch=TRUE)
+axis(1, at = 1:4 , c("0", "15", "30", "60"))
+lines(1:4, bptt$stats[3, ], col="blue", lwd=2)
+dev.off()
 
 # Difference in weight between gonadal adipose tissue and liver
 allTissues <- allTissues[-which(apply(apply(allTissues,1,is.na),2,sum) > 0),]
