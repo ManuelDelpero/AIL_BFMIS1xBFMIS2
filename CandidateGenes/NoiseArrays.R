@@ -77,4 +77,5 @@ annotate <- function(significant){
   return(annotated)
 }
 
-annotate(expressions[cesCluster,])
+expressions <- annotate(expressions)
+write.table(expressions, file = "expression_Noise.txt", sep = "\t", row.names = FALSE)
