@@ -75,11 +75,18 @@ dev.off()
  
 ## QC by bodyweight
 # Bodyweight plot
-plot(c(min(days), max(days)), c(0, max(allPhenotypes[,1:31],na.rm=TRUE)), main= "Growth curve", t = 'n', xlab="Time (days)", ylab="Weight (gramms)")
-for(row in 1:nrow(allPhenotypes)){
+pdf("growth curve.pdf")
+weight <- allPhenotypes[-351,c(3:34)]
+days <- as.numeric(gsub("D", "", colnames(weight)))
+plot(x = c(min(days), max(days)), y = c(0, max(weight)), main= "Growth curve", t = 'n', xlab="Time (days)", ylab="Weight (grams)")
+for(row in 1:nrow(weight)){
+  if ( max(weight[row,]) > 60 ){
+    print(row)
+  }
   color <- "lightgreen"
-  points(days, allPhenotypes[row,], t = 'l', col=color)
+  points(days, weight[row,], t = 'l', col=color)
 }
+dev.off()
 
 # Divide the 2 diet after week 20
 highFATnoCARB <- allPhenotypes[,names(allPhenotypes) %in% c("140", "142", "144", "147", "150","154")]
@@ -151,18 +158,20 @@ lines(1:4, bptt$stats[3, ], col="blue", lwd=2)
 dev.off()
 
 # Difference in weight between gonadal adipose tissue and liver
+allTissues <- allPhenotypes[,c(45:56)]
 allTissues <- allTissues[-which(apply(apply(allTissues,1,is.na),2,sum) > 0),]
-allTissues[33,"Leber"] <- 10 * allTissues[33,"Leber"]
-rownames(allTissues) <- 1:nrow(allTissues)
+
 
 # Order columns by gon weight
 ordering <- sort(allTissues[,"Gon"], index.return=TRUE)$ix
 sortWeight <- allTissues[ordering,]
 
 # Adjust tissues weight by total weight
-sortWeight <- sweep(sortWeight,sortWeight[,"Gewicht"],MARGIN=1,"/")
+sortWeight[,7] <- as.numeric(as.character(sortWeight[,7]))
+sortWeight <- sweep(sortWeight, sortWeight[,"Gewicht"] ,MARGIN=1,"/")
 
-plot(main="Weight relationship", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="Weight (adjust)")
+pdf("GonLiv.pdf")
+plot(main="Relationship between tissues weight", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="Weight (adjust)")
 lines(sortWeight[,"Gon"], col = "blue" , lwd=2 , pch=19 , type="l")
 lines(sortWeight[,"Leber"], col = "orange" , lwd=2 , pch=19 , type="l")
 lines(sortWeight[,"SCF"], col = "green" , lwd=2 , pch=19 , type="l")
@@ -177,6 +186,7 @@ lines(sortWeight[,"SCF"], col = "green" , lwd=2 , pch=19 , type="l")
   #horiz = F ,
   #inset = c(0.1, 0.1, 0.1)
 )
+dev.off()
 
 mmodel <- lm(allTissues[,"Gon"] ~ allTissues[,"Leber"])
 abline(a = mmodel$coefficients["(Intercept)"], b = mmodel$coefficients["allTissues[, \"Leber\"]"])
