@@ -104,6 +104,30 @@ gonadalfat <- annotate(gonadalfat)
 skeletalmuscle <- annotate(skeletalmuscle)
 pankreas <- annotate(pankreas)
 
+# Figure out which genes are up or down regulated to use in KEGG
+upRegS1 <- c()
+downRegS1 <- c()
+upRegS2 <- c()
+downRegS2 <- c()
+upS1 <- c()
+upS2 <- c()
+downS1 <- c()
+downS2 <- c()
+
+for (x in 1:nrow(gonadalfat)){
+  if (gonadalfat[x, "mean(s1)"] > gonadalfat[x, "mean(s2)"]){
+    upS1 <- gonadalfat[x, c("ensembl_gene_id")]
+    downS2 <- gonadalfat[x, c("ensembl_gene_id")]
+  }else{
+    upS2 <- gonadalfat[x, c("ensembl_gene_id")]
+	downS1 <- gonadalfat[x, c("ensembl_gene_id")]
+    }
+  upRegS1 <- c(upRegS1, upS1)
+  downRegS1 <- c(downRegS1, downS1)
+  upRegS2 <- c(upRegS2, upS2)
+  downRegS2 <- c(downRegS2, downS2)
+}	
+  
 write.table(liver, "liver_significant_ann.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(gonadalfat, "gonadalfat_significant_ann.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(skeletalmuscle, "skeletalmuscle_significant_ann.txt", sep = "\t", quote = FALSE, row.names = FALSE)
