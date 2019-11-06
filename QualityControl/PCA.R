@@ -4,7 +4,7 @@
 # first written April, 2019
 #
 # Script for the analysis on the selected animals to genotype with gigaMUGA array
-# Have a look using PCA if the sample selected cover the variability of the popultaion
+# Have a look using PCA if the sample selected cover the variability of the population
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 mriLEAN <- read.csv("MRIlean.txt", sep = "\t", header=TRUE, check.names=FALSE)
