@@ -10,11 +10,12 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 mriLEAN <- read.csv("MRIlean.txt", sep = "\t", header=TRUE, check.names=FALSE)
 mriFAT <- read.csv("MRIfat.txt", sep = "\t", header=TRUE, check.names=FALSE)
 allPhenotypes <- read.csv("allPhenotypes.txt",sep = "\t", header=TRUE, check.names=FALSE, na.strings=c("NA", "", "-", "    ", "x"), colClasses="character")
-extremes <- read.csv("groups.txt" ,sep = "\t", header=TRUE, check.names=FALSE)
+extremes <- read.csv("allGroupsGenotyping.txt" ,sep = "\t", header=TRUE, check.names=FALSE)
 
 # PCA with all the phenotypes
 subsetPCA <- allPhenotypes[which(apply(apply(allPhenotypes,1,is.na),2,sum) == 0), -c(1,2)]
 subsetPCAnum <- apply(subsetPCA, 1, function(x){as.numeric(as.character(x))})
+subsetPCAnum <- subsetPCAnum[which(apply(apply(subsetPCAnum,1,is.na),2,sum) == 0),]
 pcares <- prcomp(t(subsetPCAnum))
 rownames(pcares$x) <- colnames(subsetPCAnum)
 selected <- as.character(extremes[,1])
