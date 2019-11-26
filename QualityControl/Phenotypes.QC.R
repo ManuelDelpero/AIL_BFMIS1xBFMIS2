@@ -57,7 +57,7 @@ write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.n
 allPhenotypes <- read.csv("allPhenotypes.txt",sep = "\t", header=TRUE, check.names=FALSE)
 
 # MRI analysis
-pdf("MRICurve.pdf")
+#pdf("MRICurve.pdf")
 par(mfrow = c(2,1))
 timepoints <- as.numeric(colnames(mriLEAN))
 plot(c(min(timepoints), max(timepoints)), c(0, max(mriLEAN,na.rm=TRUE)), main= "Lean mass curve", t = 'n', xlab="Time (days)", ylab="Lean mass (grams)")
@@ -71,22 +71,24 @@ for(row in 1:nrow(mriFAT)){
   color <- "lightblue"
   points(timepoints, mriFAT[row,], t = 'l', col=color)
 }
-dev.off()
+#dev.off()
  
 ## QC by bodyweight
 # Bodyweight plot
-pdf("growth curve.pdf")
+#pdf("growth curve.pdf")
+
 weight <- allPhenotypes[-351,c(3:34)]
 days <- as.numeric(gsub("D", "", colnames(weight)))
-plot(x = c(min(days), max(days)), y = c(0, max(weight)), main= "Growth curve", t = 'n', xlab="Time (days)", ylab="Weight (grams)")
+plot(x = c(min(days), max(days)), y = c(0, max(weight)), main= "Growth curve", t = 'n', xlab="Time (Weeks)", ylab="Weight (grams)", las = 2, xaxt = "n")
+axis(1, at = c(seq(21,174,14), 174), c("3", "5", "7", "9", "11", "13", "15", "17", "19", "21", "23", "25"))
 for(row in 1:nrow(weight)){
-  if ( max(weight[row,]) > 60 ){
+  if (max(weight[row,]) > 60){
     print(row)
   }
   color <- "lightgreen"
   points(days, weight[row,], t = 'l', col=color)
 }
-dev.off()
+#dev.off()
 
 # Divide the 2 diet after week 20
 highFATnoCARB <- allPhenotypes[,names(allPhenotypes) %in% c("140", "142", "144", "147", "150","154")]
