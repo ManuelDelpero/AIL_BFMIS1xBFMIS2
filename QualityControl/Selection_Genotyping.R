@@ -67,7 +67,7 @@ highgluc <- highgluc[,1]
 highgluc <- as.character(highgluc)
 lowwgluc <- Glucordered[(nrow(Glucordered) - 100):nrow(Glucordered),]
 
-# extremes for Gon weight
+# extremes for Gonadal fat weight
 gonWeight <- allPhenotypes[,"Gon"]
 gonWeight <- data.frame(gonWeight)
 gonWeight <- cbind(rownames(allPhenotypes), gonWeight)
@@ -106,7 +106,11 @@ highgGonWeight <- highgGonWeight[-outHigh]
 lowGonWeight <- lowGonWeight[-outLow]
 extraAnimals <- c(highgGonWeight, lowGonWeight)
 extraAnimals <- extraAnimals[order(extraAnimals, decreasing = FALSE)]
+extraAnimals <- cbind(extraAnimals,data.frame(allPhenotypes[extraAnimals, "Gon"]))
+colnames(extraAnimals) <- c("ID", "GonFatWeight")
+allGroups <- rbind(Groups, extraAnimals)
 write.table(extraAnimals, file = "ExtraAnimals.txt", sep ="\t", row.names = FALSE)
+write.table(allGroups, file = "allGroupsGenotyping.txt", sep ="\t", row.names = FALSE)
 
 # Selection for mouse diversity array
 extraAnimals <- as.character(extraAnimals)
