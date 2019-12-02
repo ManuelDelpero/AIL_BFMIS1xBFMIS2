@@ -57,7 +57,8 @@ write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.n
 allPhenotypes <- read.csv("allPhenotypes.txt",sep = "\t", header=TRUE, check.names=FALSE)
 
 # MRI analysis
-#pdf("MRICurve.pdf")
+pdf("MRICurve.pdf")
+par(cex.lab=1.2, cex.main = 1.6, cex.axis = 1.2)
 par(mfrow = c(2,1))
 timepoints <- as.numeric(colnames(mriLEAN))
 plot(c(min(timepoints), max(timepoints)), c(0, max(mriLEAN,na.rm=TRUE)), main= "Lean mass curve", t = 'n', xlab="Time (days)", ylab="Lean mass (grams)")
@@ -71,12 +72,12 @@ for(row in 1:nrow(mriFAT)){
   color <- "lightblue"
   points(timepoints, mriFAT[row,], t = 'l', col=color)
 }
-#dev.off()
+dev.off()
  
 ## QC by bodyweight
 # Bodyweight plot
-#pdf("growth curve.pdf")
-
+pdf("growth curves.pdf")
+par(cex.lab=1.2, cex.main = 1.6, cex.axis = 1.2)
 weight <- allPhenotypes[-351,c(3:34)]
 days <- as.numeric(gsub("D", "", colnames(weight)))
 plot(x = c(min(days), max(days)), y = c(0, max(weight)), main= "Growth curve", t = 'n', xlab="Time (Weeks)", ylab="Weight (grams)", las = 2, xaxt = "n")
@@ -88,7 +89,7 @@ for(row in 1:nrow(weight)){
   color <- "lightgreen"
   points(days, weight[row,], t = 'l', col=color)
 }
-#dev.off()
+dev.off()
 
 # Divide the 2 diet after week 20
 highFATnoCARB <- allPhenotypes[,names(allPhenotypes) %in% c("140", "142", "144", "147", "150","154")]
@@ -133,14 +134,24 @@ glucDATA <- allPhenotypes[,36:40]
 colnames(glucDATA) <- c("0","15","30","60","120")
 time <- colnames(glucDATA)
 x <- c(0,15,30,60,120)
-plot(main="Oral Glucose Tolerance Test", c(min(x), max(x)), c(0, max(glucDATA[,time], na.rm=TRUE)), t = 'n', xlab="Time (min)", ylab="Blood Glucose (mg/dl)")
+plot(main="Oral Glucose Tolerance Test", c(min(x), max(x)), c(0, max(glucDATA[,time], na.rm=TRUE)), t = 'n', xlab="Time (min)", ylab="Blood Glucose (mg/dl)", las = 2, xaxt = "n")
 for(n in 1:nrow(glucDATA)){
   color <- rgb(0.5, 0.5, 0.8, 0.5)
   points(x, glucDATA[n,], t = 'l', col=color)
 }
+
 pdf("oralGTT.pdf")
-bpt <- boxplot(glucDATA, main="Oral Glucose Tolerance Test", ylab="Blood Glucose (mg/dl)", xlab="Time(min)", col=c("yellow"), notch=TRUE)
-lines(1:5, bpt$stats[ 3, ], col="blue", lwd=2)
+par(cex.lab=1.2, cex.main = 1.6, cex.axis = 1.2)
+timepoints <- as.numeric(colnames(glucDATA))
+means <- c()
+plot(main="Oral Glucose Tolerance Test", c(-10,140), c(0,700), ylab="Blood glucose (mg/dl)", xlab="Time(min)", yaxs = "i", las = 2, t = "n", xaxt="n")
+  axis(1, at = c(0, 15, 30, 60, 120), c("0", "15", "30", "60", "120"), lwd = 1, cex.axis=1.2)
+  for (x in timepoints){
+    bpt <- boxplot(at = x, glucDATA[,as.character(x)], col = "lightgreen", axes = FALSE, add=TRUE, notch= TRUE, width = 20, boxwex = 5)
+	meanBPT <- bpt$stats[3,]
+	means <- c(means, meanBPT) 
+  }
+  lines(c(0, 15, 30, 60, 120), means, col="blue", lwd=1) 
 dev.off()
 
 # Insulin Tolerance Test
@@ -153,10 +164,20 @@ for(n in 1:nrow(insulinDATA)){
   color <- rgb(0.5, 0.5, 0.8, 0.5)
   points(x, insulinDATA[n,], t = 'l', col=color)
 }
+
 pdf("insulinTest.pdf")
-bptt <- boxplot(insulinDATA[,1], as.numeric(as.character(insulinDATA[,2])), as.numeric(as.character(insulinDATA[,3])), as.numeric(as.character(insulinDATA[,4])), main="Insulin Tolerance Test", ylab="Blood Glucose (mg/dl)", xlab="Time(min)", col=c("green"), notch=TRUE)
-axis(1, at = 1:4 , c("0", "15", "30", "60"))
-lines(1:4, bptt$stats[3, ], col="blue", lwd=2)
+par(cex.lab=1.2, cex.main = 1.6, cex.axis = 1.2)
+colnames(insulinDATA) <- c("0", "15", "30", "60")
+timepoints <- as.numeric(colnames(insulinDATA))
+means <- c()
+plot(main="Insulin Tolerance Test", c(-10,70), c(0,350), ylab="Blood glucose (mg/dl)", xlab="Time(min)", yaxs = "i", las = 2, t = "n", xaxt="n")
+  axis(1, at = c(0, 15, 30, 60), c("0", "15", "30", "60"), lwd = 1, cex.axis=1.2)
+  for (x in timepoints){
+    bpt <- boxplot(at = x, as.integer(as.character(insulinDATA[,as.character(x)])), col = "lightgreen", axes = FALSE, add=TRUE, notch= TRUE, width = 20, boxwex = 5)
+	meanB <- bpt$stats[3,]
+	means <- c(means, meanB) 
+  }
+  lines(c(0, 15, 30, 60), means, col="blue", lwd=1) 
 dev.off()
 
 # Difference in weight between gonadal adipose tissue and liver
