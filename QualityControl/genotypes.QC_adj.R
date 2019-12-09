@@ -51,24 +51,14 @@ good <- which(unlist(lapply(apply(genotypes,1,table), function(x){
 genotypes <- genotypes[good, ]
 dim(genotypes)
 
-# Prevent small groups, set the groups with < 10 individuals to NA
-mtab <- apply(genotypes,1,table)
-for(x in 1:nrow(genotypes)){
-  if(any(mtab[[x]] < 6)){
-    gt <- names(mtab[[x]])[which(mtab[[x]] < 6)]
-    genotypes[x, genotypes[x, ] == gt] <- NA
-  }
-}
-dim(genotypes)
-
 # No duplicated markers, keep the first one we see
 genotypes <- genotypes[-which(duplicated(genotypes)),]
 dim(genotypes)
-write.table(gts, "genotypes.raw.txt", sep="\t", quote=FALSE)
+write.table(genotypes, "genotypes.clean.txt", sep="\t", quote=FALSE)
 
 # load in the map file from Karl Broman
 map <- read.table("snp_map.karl.txt", sep = ",", header = TRUE, row.names=1)
-map <- map[rownames(gts),]
+map <- map[rownames(genotypes),]
 
 chrs <- 1:21 
 names(chrs) <- c(1:19, "X", "Y")
@@ -76,3 +66,4 @@ names(chrs) <- c(1:19, "X", "Y")
 plot(c(1,21), c(0,200000000), t = 'n', xaxt = "n", las= 2, ylab = "Pos", xlab = "Chr")
 aa <- apply(map, 1, function(r) { points(x = chrs[r[1]], y = r[2], pch = "-"); })
 axis(1, at = chrs, names(chrs))
+
