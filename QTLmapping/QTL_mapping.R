@@ -1,6 +1,6 @@
 # QTL mapping
 #
-# copyright (c) 2018-2021 - Brockmann group - HU Berlin, Manuel Delpero & Danny Arends
+# copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero & Danny Arends
 # 
 # first written december, 2019
 
@@ -17,8 +17,7 @@ for(chr in chromosomes){
   annotation <- rbind(annotation, markerannot[markerannot[,"chr"] == chr,])
 }
 
-# Make sure that the ordering between phenotypes and genotypes matches !!!!!
-# Also sort the markers by their natural chromosome ordering
+# Make sure that the ordering between phenotypes and genotypes matches 
 phenotypes <- phenotypes[-192,]
 genotypes <- genotypes[,-192]
 colnames(genotypes) <- gsub("AIL", "", colnames(genotypes))
@@ -29,9 +28,7 @@ write.table(genotypes, "OrderedGenotypes.txt", sep = "\t", quote=FALSE)
 # Covariates we could/need to include in the model, we test them on their pvalue
 wg <- as.factor(phenotypes[, "WG"])
 mother <- phenotypes[, "Mutter"]
-phenonames <- colnames(phenotypes)[c(51, 57)]
-phenotypes[,"Leber"] <- as.numeric(as.character(phenotypes[,"Leber"]))
-phenotypes[,"Triglycerides"] <- as.numeric(as.character(phenotypes[,"Triglycerides"]))
+phenonames <- colnames(phenotypes)[-c(1,2, 58,59)]
 
 pmatrix <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
 for (pname in phenonames){
@@ -56,7 +53,7 @@ write.table(lodmatrix, "lodmatrix.txt", sep = "\t", quote=FALSE)
 
 
 # Manhattan plots
-for (pname in  phenonames[1]){   #phenonames) {
+for (pname in  phenonames){   #phenonames) {
   plot(lodmatrix[,pname], main = pname, col = as.numeric(as.factor(annotation[,"chr"])))
   abline(h = -log10(0.05 / nrow(lodmatrix)), col="orange")
   abline(h = -log10(0.01 / nrow(lodmatrix)), col="green")
