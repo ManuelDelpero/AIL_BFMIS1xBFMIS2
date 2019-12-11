@@ -1,4 +1,4 @@
-# QTL mapping
+# QTL mapping for AIL BFMI S1xS2
 #
 # copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero & Danny Arends
 # 
@@ -6,61 +6,73 @@
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
-genotypes <- read.csv("genotypes.clean.txt", header = TRUE, sep = "\t", check.names = FALSE, colClasses = "character")
-phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, sep = "\t", check.names = FALSE, row.names = 1)
-markerannot <- read.csv("snp_map.karl.txt", header = TRUE, sep = ",", check.names = FALSE, row.names = 1)
+library(parallel)
+genotypes <- read.table("genotypes.cleaned.txt", sep="\t", colClasses = "character")
+map <- read.table("map.cleaned.txt", sep="\t")
+phenotypes <- read.table("allPhenotypes.txt", sep="\t")
 
 chromosomes <- c(1:19, "X", "Y")
 
 annotation <- c()
 for(chr in chromosomes){
-  annotation <- rbind(annotation, markerannot[markerannot[,"chr"] == chr,])
+  annotation <- rbind(annotation, map[map[,"chr"] == chr,])
+}
+
+phenames <- colnames(phenotypes)[-c(1,2, 58,59)]
+
+# Getting rid of the outliers
+outliers <- apply(phenotypes[, phenames],2, function(x){
+  up <- mean(x, na.rm = TRUE) + 3 * sd(x, na.rm = TRUE)
+  low <- mean(x, na.rm=TRUE) - 3 * sd(x, na.rm=TRUE)
+  x < low | x > up
+ })
+ 
+for(x in phenames){
+  idx <- which(outliers[,x])
+  if(length(idx) > 0) phenotypes[idx,x] <- NA
+}
+
+# Adjust the tissue weight for the total bodyweight
+tissues <- colnames(phenotypes[, c(46:55)])
+for (x in tissues){
+  phenotypes[, x] <- phenotypes[, x] / phenotypes[, "Gewicht"]
 }
 
 # Make sure that the ordering between phenotypes and genotypes matches 
-phenotypes <- phenotypes[-192,]
-genotypes <- genotypes[,-192]
 colnames(genotypes) <- gsub("AIL", "", colnames(genotypes))
 phenotypes <- phenotypes[colnames(genotypes),]
 genotypes <- genotypes[, rownames(phenotypes)]
 write.table(genotypes, "OrderedGenotypes.txt", sep = "\t", quote=FALSE)
 
-# Covariates we could/need to include in the model, we test them on their pvalue
-wg <- as.factor(phenotypes[, "WG"])
-mother <- phenotypes[, "Mutter"]
-phenonames <- colnames(phenotypes)[-c(1,2, 58,59)]
-
-pmatrix <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
-for (pname in phenonames){
-  pheno <- phenotypes[, pname]
-  p.mother <- anova(lm(pheno ~ mother))["Pr(>F)"]["mother",]
-  p.wg <- anova(lm(pheno ~ wg))["Pr(>F)"]["wg",]
-  myfactors <- c()
-  if(p.mother < 0.05) myfactors <- c(myfactors, "mother")
-  if(p.wg < 0.05) myfactors <- c(myfactors, "wg")
-  myformula <- paste0("pheno ~ ", paste(c(myfactors, "geno"), collapse = " + "))
-  cat(pname, " ", myformula, "\n")
-  
-  pvalues <- apply(genotypes, 1, function(geno, pheno, wg, mother, myformula) {
-    mmodel <- lm(formula(myformula))
-    return(anova(mmodel)["Pr(>F)"]["geno",])
-  }, pheno = phenotypes[,pname], wg = wg, mother = mother, myformula = myformula)
-  pmatrix[names(pvalues), pname] <- pvalues
+# QTL mapping
+cl <- makeCluster(4)
+pvals <- c()
+for(x in phenames){
+  pvals <- rbind(pvals, 
+    parApply(cl, genotypes, 1, function(gts, pheno){
+      marker <- as.numeric(factor(as.character(gts), levels = c("A", "H", "B")))
+      mylm <- lm(pheno ~ marker)                                                    # We don´t include mother or litter size as cofactors
+      myanova <- anova(mylm)
+      return(myanova[[5]][1])
+    }, pheno = phenotypes[,x])
+  )
+  cat("Done", x, "\n")
 }
-lodmatrix <- -log10(pmatrix)
+stopCluster(cl)
+rownames(pvals) <- phenames
+lods <- -log10(pvals)
+apply(lods,1,max)
 
-write.table(lodmatrix, "lodmatrix.txt", sep = "\t", quote=FALSE)
-
-
-# Manhattan plots
-for (pname in  phenonames){   #phenonames) {
-  plot(lodmatrix[,pname], main = pname, col = as.numeric(as.factor(annotation[,"chr"])))
-  abline(h = -log10(0.05 / nrow(lodmatrix)), col="orange")
-  abline(h = -log10(0.01 / nrow(lodmatrix)), col="green")
-}
-
-signmatrix <- lodmatrix[which(apply(lodmatrix, 1, function(x){ any(x > -log10(0.05 / nrow(lodmatrix))) })),]
+lodmatrix <- t(lods) 
+signmatrix <- lodmatrix[which(apply(lodmatrix, 1, function(x){ any(x > -log10(0.05)) })),]
 signannotmatrix <- cbind(annotation[rownames(signmatrix), ], signmatrix)
 write.table(signannotmatrix, "signannotmatrixxx.txt", sep = "\t", quote=FALSE)
 
+# Manhattan plots
+for (pname in  "Gehirn"){   #phenonames) {
+  plot(lodmatrix[,pname], main = pname, col = as.numeric(as.factor(annotation[,"chr"])), las = 2)
+  #axis(1, at = c(0, 15, 30, 60), c(1:19, "X", "Y"), lwd = 1, cex.axis=1.2)
+  abline(h = -log10(0.05 / nrow(lodmatrix)), col="orange")
+  abline(h = -log10(0.01 / nrow(lodmatrix)), col="green")
+}
 
