@@ -4,8 +4,9 @@
 # 
 # first written december, 2019
 
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
-library(biomaRt)
+#setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
+setwd("/home/manuel/AIL_S1xS2/DATA")
+library(seqinr)
 
 map <- read.table("map.cleaned.txt", sep="\t")
 lods <- read.table("lods.txt", sep = "\t",  header = TRUE)
@@ -40,40 +41,55 @@ write.table(res, file = "UniqueKASP_regions.txt", sep = "\t", quote = FALSE, row
 # Get the regions for each QTL
 regions <- c()
 for (x in 1:nrow(QTLs)){
-  startpos <- QTLs[, "Pos"] -120
-  endpos <- QTLs[, "Pos"] + 120
+  startpos <- QTLs[, "Pos"] -60
+  endpos <- QTLs[, "Pos"] + 60
   chr <- QTLs[, "Chr"]
   regions <- cbind(startpos, endpos, chr)
 }
+regions <- cbind(regions, as.character(QTLs[,"Marker"]))
 
-colnames(regions) <- c("StartPos", "StopPos", "Chr")
+colnames(regions) <- c("StartPos", "StopPos", "Chr", "Marker")
 rownames(regions) <- QTLs[,"Trait"]
+KaspRegions <- regions[c(1,2,7,11,16,23,25,27,28,29,30),]
 
-bio.mart <- useMart("ensembl", dataset="mmusculus_gene_ensembl")
-
-getregion <- function(bio.mart, chr, startpos, endpos) {
-  region <- paste0(chr, ":",startpos, ":", endpos)
-  cat("function: ", " has region: ", region, "\n")
-  res.biomart <- getSequence(attributes = c("start_position", "end_position",  
-                                      ), 
-                       filters = c(),                                       
-                       values = list(region, ,                                           
-                       mart = bio.mart)
-
-  cat("function: ", " has ", nrow(res.biomart), "\n")
-  return (res.biomart) 
+# Get sequence in the regions
+mfasta <- read.fasta("Mus_musculus.GRCm38.dna.toplevel.fa.gz")
+for (x in 1:nrow(regions)){
+  seq <- mfasta[[regions[x,"Chr"]]][(regions[x,"StartPos"]):(regions[x,"StopPos"])]
+  write.table(seq, file = as.character(QTLs[x,"Trait"]), sep="\t", quote = FALSE)
 }
-
-# Get seq in regions
-QTLregions <- vector("list", nrow(regions))
-for(x in 1:nrow(regions)){																				
-  if(!is.na(regions[x, "Chr"])){
-    genes[[x]] <- getregion(bio.mart, regions[x, "Chr"], regions[x, "StartPos"], regions[x, "StopPos"])
-    fname <- paste0("genes_in_", regions[x, "Chr"],"-", regions[x, "StartPos"], ":", regions[x, "StopPos"], ".txt")
-    write.table(genes[[x]], file = fname, sep="\t", quote = FALSE)
-  }else{
- 	cat(x, " has NA region\n")
+  
+# SNP calling in the regions
+execute <- function(x, intern = FALSE, execute = TRUE){
+  cat("----", x, "\n")
+  if (execute) {
+    res <- system(x, intern = intern)
+    cat(">>>>", res[1], "\n")
+    if(res[1] >= 1) q("no")
   }
 }
 
-  
+callSNPs <- function(bamfiles, chr = 1, startpos = 1, endpos = 2, outname = "mySNPs") {
+  bamstr = paste0(bamfiles, collapse = " ") # Collapse all the bam files in a single string
+  bcftools = "/home/danny/Github/bcftools/bcftools" # Location of BCFtools executable
+  reference = "/home/danny/References/Mouse/GRCm38_95/Mus_musculus.GRCm38.dna.toplevel.fa" #Reference genome
+  region = paste0(chr, ":", format(startpos, scientific = FALSE), "-", format(endpos, scientific = FALSE)) # Region requested
+
+  cmd1 <- paste0(bcftools, " mpileup -q 30 -Ou -r ", region, " -f ", reference, " ", bamstr)
+  cmd2 <- paste0(bcftools, " call -mv -Ov ")
+  cmd3 <- paste0(bcftools, " view -v snps -i '%QUAL>=30 && DP>10' - -o ", outname, ".snps-filtered.vcf")
+  execute(paste0(cmd1, " | ", cmd2, " | ", cmd3))
+  invisible("")
+}
+
+bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S12  (high coverage)
+             "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S1.bam",    # 861-S1 (medium coverage)
+             "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S2.bam")    # 861-S2 (medium coverage)
+			 
+# Snps in regions
+for(x in 1:nrow(regions)){ 
+  startpos <- regions[x,"StartPos"]
+  endpos <- regions[x,"StopPos"]
+  callSNPs(bamfiles, regions[x,"Chr"], startpos, endpos, as.character(QTLs[x, "Trait"])) 
+}
+
