@@ -1,10 +1,4 @@
-# Quality control on genotypes
-#
-# copyright (c) 2018-2021 - Brockmann group - HU Berlin, Manuel Delpero & Danny Arends
-# last modified September, 2019
-# first written August, 2019
-
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
+setwd("D:/Edrive/Mouse/S1_S2")
 
 locusxdnaheader <- unlist(strsplit(readLines("Humboldt_Univ_Zu_Berlin_MURGIGV01_20191205_LocusXDNA.csv", n=16)[16],","))
 locusxdnasnps <- unlist(strsplit(readLines("Humboldt_Univ_Zu_Berlin_MURGIGV01_20191205_LocusXDNA.csv", n=18)[18],","))
@@ -14,9 +8,9 @@ splitted <- strsplit(locusxdna, ",")
 
 calls <- matrix(NA, length(locusxdna) / 2, length(splitted[[1]]))
 scores <- matrix(NA, length(locusxdna) / 2, length(splitted[[1]]))
-for(x in 1:length(splitted)){
-  if(x %% 2 == 1) calls[x/2,] <- splitted[[x]]
-  if(x %% 2 == 0) scores[x/2,] <- splitted[[x]]
+for(x in 1:length(splitted)) {
+  if(x %% 2 == 1) calls[ceiling(x/2),] <- splitted[[x]]
+  if(x %% 2 == 0) scores[ceiling(x/2),] <- splitted[[x]]
 }
 
 markers <- locusxdnaheader[4:length(locusxdnaheader)]
@@ -29,41 +23,50 @@ rownames(gts) <- gsub("V 888-", "AIL", calls[, "Label"])
 qual <- apply(scores[,markers],2,as.numeric)
 rownames(qual) <- gsub("V 888-", "AIL", calls[, "Label"])
 
-# Filter by quality score
 gts[qual < 0.7] <- NA
 gts[gts == "U"] <- NA
 
-# missing markers
+# Write out the raw genotypes
 gts <- t(gts)
+write.table(gts, "genotypes.raw.txt", sep="\t", quote=FALSE)
+
+gts <- read.table("genotypes.raw.txt", sep="\t")
+
+# Groups with less than 10 individuals are set to missing
+tbls <- apply(gts, 1, table)
+for(x in 1:length(tbls)){
+  for(gt in names(tbls[[x]])){
+    if(tbls[[x]][gt] < 10){
+      gts[x, which(gts[x,] == gt)] <- NA
+    }
+  }
+}
+
+# All missing
 idx <- which(apply(gts,1, function(x){sum(is.na(x)) == length(x)}))
 gts <- gts[-idx,]
 
-# non segregating markers
+# Not segregating
 idx <- which(apply(gts,1,function(x){length(table(x)) == 1}))
 gts <- gts[-idx,]
 
-genotypes <- gts 
+# More than 10 % missing data
+ismissing <- apply(apply(gts, 1, is.na),2,sum)
+tooMuchMissing <- names(which((ismissing / ncol(gts)) > 0.1))
+gts <- gts[-which(rownames(gts) %in% tooMuchMissing),]
 
-# At least 2 groups with 10 observations
-good <- which(unlist(lapply(apply(genotypes,1,table), function(x){
-  length(which(x > 10)) >= 2
-})))
-genotypes <- genotypes[good, ]
-dim(genotypes)
+tbls <- apply(gts, 1, table)
 
-# No duplicated markers, keep the first one we see
-genotypes <- genotypes[-which(duplicated(genotypes)),]
-dim(genotypes)
-write.table(genotypes, "genotypes.clean.txt", sep="\t", quote=FALSE)
-
-# load in the map file from Karl Broman
 map <- read.table("snp_map.karl.txt", sep = ",", header = TRUE, row.names=1)
-map <- map[rownames(genotypes),]
+map <- map[rownames(gts),]
 
 chrs <- 1:21 
 names(chrs) <- c(1:19, "X", "Y")
 
-plot(c(1,21), c(0,200000000), t = 'n', xaxt = "n", las= 2, ylab = "Pos", xlab = "Chr")
+plot(c(1,21), c(0,200000000), t = 'n', xaxt = "n", las= 2, ylab = "Position (mb)", xlab = "Chr", yaxt = 'n')
 aa <- apply(map, 1, function(r) { points(x = chrs[r[1]], y = r[2], pch = "-"); })
 axis(1, at = chrs, names(chrs))
+axis(2, at = seq(0,200000000, 25000000), seq(0,200000000, 25000000)/1000000)
 
+write.table(gts, "genotypes.cleaned.txt", sep="\t", quote=FALSE)
+write.table(map, "map.cleaned.txt", sep="\t", quote=FALSE)
