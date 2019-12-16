@@ -1,4 +1,4 @@
-# KASP for AIL BFMI S1xS2
+# Define regions to genotype with KASP assay for AIL BFMI S1xS2
 #
 # copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero 
 # 
