@@ -86,10 +86,11 @@ bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S1
              "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S1.bam",    # 861-S1 (medium coverage)
              "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S2.bam")    # 861-S2 (medium coverage)
 			 
-# Snps in regions
-for(x in 1:nrow(regions)){ 
-  startpos <- regions[x,"StartPos"]
-  endpos <- regions[x,"StopPos"]
-  callSNPs(bamfiles, regions[x,"Chr"], startpos, endpos, as.character(QTLs[x, "Trait"])) 
+			 
+name <- c("D21" ,"D35", "D84" , "D150" ,"Gluc172" ,"Gon1"  ,"Gon2"  ,"Longissimus" ,"Length" ,"Triglycerides1" ,"Triglycerides2")
+for(x in 1:nrow(KaspRegions)){ 
+  startpos <- KaspRegions[x,"StartPos"]
+  endpos <- KaspRegions[x,"StopPos"]
+  callSNPs(bamfiles, KaspRegions[x,"Chr"], startpos, endpos, name[x]) 
 }
 
