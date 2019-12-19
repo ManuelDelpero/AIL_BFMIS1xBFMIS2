@@ -11,6 +11,7 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 allPhenotypes <- read.csv("growthWeight",sep = "\t", header=TRUE, check.names=FALSE)
 WGmutter <- read.csv("MutterWg.txt",sep = "\t", header=TRUE, check.names=FALSE)
 IDmutter <- read.csv("IDmutter.txt",sep = "\t", header=TRUE, check.names=FALSE, row.names = 1)
+IDgrandma <- read.csv("grandma.txt",sep = "\t", header=TRUE, check.names=FALSE, row.names = 1)
 PlasmaGluc <- read.csv("Gluc147.txt",sep = "\t", header= FALSE, check.names=FALSE)
 Triglycerides <- read.csv("Triglycerides.txt",sep = "\t", header= TRUE, check.names=FALSE)
 Sex <- read.csv("sex.txt",sep = "\t", header= TRUE, check.names=FALSE)
@@ -55,22 +56,37 @@ allPhenotypes <- allPhenotypes[which(rownames(allPhenotypes) %in% Triglycerides[
 allPhenotypes <- cbind(allPhenotypes, Triglycerides[,2])
 colallPhenotypes <- c("Sex", "ID" , "D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 min"    ,   "15 min",  "30 min"     , "60 min", "120 min"   ,  "0 min"   ,    "15 min", "30 min"    ,  "60 min",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge", "Triglycerides")      
 colnames(allPhenotypes) <- colallPhenotypes
-write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.names = TRUE)
-allPhenotypes <- read.csv("allPhenotypes.txt",sep = "\t", header=TRUE, check.names=FALSE)
+#write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.names = TRUE)
+#allPhenotypes <- read.csv("allPhenotypes.txt",sep = "\t", header=TRUE, check.names=FALSE)
 WGmutter <- WGmutter[!duplicated(WGmutter[,1]),]
 rownames(WGmutter) <- WGmutter[,1]
 IDmutter <- cbind(IDmutter, rownames(IDmutter))
 IDmutter <- IDmutter[which(as.character(IDmutter[,2]) %in% allPhenotypes[,"ID"]),]
 
+#WGs
 WGs <- c()
 for (x in 1:nrow(IDmutter)){
   if (as.character(IDmutter[x, "Mutter"]) %in% rownames(WGmutter))
-    wg <- as.character(WGmutter[as.character(IDmutter[x, "Mutter"]), "WG"])
+    wg <- as.numeric(as.character(WGmutter[as.character(IDmutter[x, "Mutter"]), "WG"]))
+	if (wg > 8){
+	  wg <- 8
+	}
     WGs <- c(WGs, wg)
 }
 
-allPhenotypes <- cbind(allPhenotypes, WGs, IDmutter[,1])
-colallPhenotypes <- c("Sex", "ID" , "D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 minOG"    ,   "15 minOG",  "30 minOG"     , "60 minOG", "120 min"   ,  "0 minIT"   ,    "15 minIT", "30 minIT"    ,  "60 minIT",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge", "Triglycerides", "WG", "Mutter")      
+rownames(IDgrandma) <- gsub(" ", "-", rownames(IDgrandma))
+
+#Grandmother
+grandMs <- c()
+for (x in 1:nrow(IDmutter)){
+  if (as.character(IDmutter[x, "Mutter"]) %in% rownames(IDgrandma)){
+    grandM <-  as.character(IDgrandma[as.character(IDmutter[x, "Mutter"]),"Grandma"])
+  }else{ grandM <- NA }
+  grandMs <- c(grandMs, grandM) 
+}
+
+allPhenotypes <- cbind(allPhenotypes, WGs, IDmutter[,1], grandMs)
+colallPhenotypes <- c("Sex", "ID" , "D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 minOG"    ,   "15 minOG",  "30 minOG"     , "60 minOG", "120 min"   ,  "0 minIT"   ,    "15 minIT", "30 minIT"    ,  "60 minIT",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge", "Triglycerides", "WG", "Mutter", "Grandma")      
 colnames(allPhenotypes) <- colallPhenotypes
 allPhenotypes[,"Leber"] <- as.numeric(as.character(allPhenotypes[,"Leber"]))
 allPhenotypes[,42] <- as.numeric(as.character(allPhenotypes[,42]))
