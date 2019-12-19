@@ -63,7 +63,7 @@ rownames(WGmutter) <- WGmutter[,1]
 IDmutter <- cbind(IDmutter, rownames(IDmutter))
 IDmutter <- IDmutter[which(as.character(IDmutter[,2]) %in% allPhenotypes[,"ID"]),]
 
-#WGs
+# Figure out the litter size
 WGs <- c()
 for (x in 1:nrow(IDmutter)){
   if (as.character(IDmutter[x, "Mutter"]) %in% rownames(WGmutter))
@@ -76,7 +76,7 @@ for (x in 1:nrow(IDmutter)){
 
 rownames(IDgrandma) <- gsub(" ", "-", rownames(IDgrandma))
 
-#Grandmother
+# Figure out the Grandmothers
 grandMs <- c()
 for (x in 1:nrow(IDmutter)){
   if (as.character(IDmutter[x, "Mutter"]) %in% rownames(IDgrandma)){
@@ -94,7 +94,6 @@ allPhenotypes[,43] <- as.numeric(as.character(allPhenotypes[,43]))
 allPhenotypes[,44] <- as.numeric(as.character(allPhenotypes[,44]))
 
 write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.names = TRUE)
-
 
 # MRI analysis
 pdf("MRICurve.pdf")
