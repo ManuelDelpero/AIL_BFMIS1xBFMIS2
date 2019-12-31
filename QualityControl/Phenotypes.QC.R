@@ -68,10 +68,10 @@ WGs <- c()
 for (x in 1:nrow(IDmutter)){
   if (as.character(IDmutter[x, "Mutter"]) %in% rownames(WGmutter))
     wg <- as.numeric(as.character(WGmutter[as.character(IDmutter[x, "Mutter"]), "WG"]))
-	if (wg > 8){
-	  wg <- 8
-	}
-    WGs <- c(WGs, wg)
+    if (wg > 8){
+      wg <- 8
+    }
+  WGs <- c(WGs, wg)
 }
 
 rownames(IDgrandma) <- gsub(" ", "-", rownames(IDgrandma))
