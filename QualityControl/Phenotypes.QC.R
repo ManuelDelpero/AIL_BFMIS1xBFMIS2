@@ -68,10 +68,10 @@ WGs <- c()
 for (x in 1:nrow(IDmutter)){
   if (as.character(IDmutter[x, "Mutter"]) %in% rownames(WGmutter))
     wg <- as.numeric(as.character(WGmutter[as.character(IDmutter[x, "Mutter"]), "WG"]))
-	if (wg > 8){
-	  wg <- 8
-	}
-    WGs <- c(WGs, wg)
+    if (wg > 8){
+      wg <- 8
+    }
+  WGs <- c(WGs, wg)
 }
 
 rownames(IDgrandma) <- gsub(" ", "-", rownames(IDgrandma))
@@ -84,6 +84,8 @@ for (x in 1:nrow(IDmutter)){
   }else{ grandM <- NA }
   grandMs <- c(grandMs, grandM) 
 }
+
+# Calculte AUC for insulin and glucose test
 
 allPhenotypes <- cbind(allPhenotypes, WGs, IDmutter[,1], grandMs)
 colallPhenotypes <- c("Sex", "ID" , "D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 minOG"    ,   "15 minOG",  "30 minOG"     , "60 minOG", "120 min"   ,  "0 minIT"   ,    "15 minIT", "30 minIT"    ,  "60 minIT",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge", "Triglycerides", "WG", "Mutter", "Grandma")      
