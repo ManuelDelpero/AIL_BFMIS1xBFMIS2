@@ -44,11 +44,11 @@ for (pname in phenonames){
   myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgeno"), collapse = " + "))
   cat(pname, " ", "\n")
   
-  pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, gmother, myformula) {
+  pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, grandmother, myformula) {
     numgeno <- as.numeric(unlist(numgeno))
     mmodel <- lm(formula(myformula))
     return(anova(mmodel)["Pr(>F)"]["numgeno",])
-  }, pheno = phenotypes[,pname], wg = phenotypes[,"WG"], gmother = phenotypes[,"Grandma"], myformula = myformula)
+  }, pheno = phenotypes[,pname], wg = as.factor(phenotypes[,"WG"]), grandmother = as.factor(phenotypes[,"Grandma"]), myformula = myformula)
   pmatrix[names(pvalues), pname] <- pvalues
 }
 lodmatrixAD <- -log10(pmatrix)
@@ -65,11 +65,11 @@ for (pname in phenonames){
   myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgeno"), collapse = " + "))
   cat(pname, " ", "\n")
   
-  pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, gmother, myformula) {
+  pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, grandmother, myformula) {
     numgeno <- as.numeric(as.numeric(unlist(numgeno)) != 0)
     mmodel <- lm(formula(myformula))
     return(anova(mmodel)["Pr(>F)"]["numgeno",])
-  }, pheno = phenotypes[,pname], wg = phenotypes[,"WG"], gmother = phenotypes[,"Grandma"], myformula = myformula)
+  }, pheno = phenotypes[,pname], wg = as.factor(phenotypes[,"WG"]), grandmother = as.factor(phenotypes[,"Grandma"]), myformula = myformula)
   pmatrix[names(pvalues), pname] <- pvalues
 }
 lodmatrixDOM <- -log10(pmatrix)
@@ -87,21 +87,16 @@ for (pname in phenonames){
   myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgeno"), collapse = " + "))
   cat(pname, " ", "\n")
   
-  pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, gmother, myformula) {
+  pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, grandmother, myformula) {
     numgenoDom <- as.numeric(as.numeric(unlist(numgeno)) != 0)
 	numgenoAdd <- as.numeric(unlist(numgeno))
 	myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgenoDom", "numgenoAdd"), collapse = " + "))
     mmodel <- lm(formula(myformula))
     return(anova(mmodel)["Pr(>F)"][c("numgenoDom", "numgenoAdd"),])
-  }, pheno = phenotypes[,pname], wg = phenotypes[,"WG"], gmother = phenotypes[,"Grandma"], myformula = myformula)
+  }, pheno = phenotypes[,pname], wg = as.factor(phenotypes[,"WG"]), grandmother = as.factor(phenotypes[,"Grandma"]), myformula = myformula)
   pmatrixDOM[names(pvalues[1,]), pname] <- pvalues[1,]
   pmatrixADD[names(pvalues[2,]), pname] <- pvalues[2,]
 }
 lodmatrixDOM <- -log10(pmatrixDOM)
 lodmatrixADD <- -log10(pmatrixADD)
 lodmatrixADDDOM <- lodmatrixDOM + lodmatrixADD
-
-
-
-
-
