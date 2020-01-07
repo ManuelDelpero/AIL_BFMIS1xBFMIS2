@@ -100,8 +100,3 @@ for (pname in phenonames){
 lodmatrixDOM <- -log10(pmatrixDOM)
 lodmatrixADD <- -log10(pmatrixADD)
 lodmatrixADDDOM <- lodmatrixDOM + lodmatrixADD
-
-
-
-
-
