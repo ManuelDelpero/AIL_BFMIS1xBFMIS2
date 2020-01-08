@@ -8,9 +8,9 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 genotypes <- read.csv("genomatrix.clean.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 phenotypes <- read.csv("allPhenotypes_final.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
-markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
-markerannot <- markerannot[, c(1,2,3,6)]
-colnames(markerannot) <- c("Chromosome", "Position", "GenTrain Score", "SNP")
+annotation <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
+annotation <- annotation[, c(1,2,3,6)]
+colnames(annotation) <- c("Chromosome", "Position", "GenTrain Score", "SNP")
 colnames(genotypes) <- gsub("V 888-", "" , colnames(genotypes)) 
 phenotypes <- phenotypes[colnames(genotypes),]
 
@@ -74,7 +74,7 @@ for (pname in phenonames){
 }
 lodmatrixDOM <- -log10(pmatrix)
 
-# Dom + Add model
+# Dom + Add model with sum of LODS
 pmatrixADD <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
 pmatrixDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
 for (pname in phenonames){
@@ -100,3 +100,35 @@ for (pname in phenonames){
 lodmatrixDOM <- -log10(pmatrixDOM)
 lodmatrixADD <- -log10(pmatrixADD)
 lodmatrixADDDOM <- lodmatrixDOM + lodmatrixADD
+write.table(lodmatrixDOM, file = "lodmatrixDOM.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM.txt", quote = FALSE, sep = "\t")
+
+# Dom + Add model without using the sum of LODS
+pmatrixADDDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
+for (pname in phenonames){
+  pheno <- phenotypes[, pname]
+  p.gmother <- anova(lm(pheno ~ phenotypes[, "Grandma"]))["Pr(>F)"][1,]
+  p.wg <- anova(lm(pheno ~ phenotypes[, "WG"]))["Pr(>F)"][1,]
+  myfactors <- c()
+  if(p.gmother < 0.05) myfactors <- c(myfactors, "grandmother")
+  if(p.wg < 0.05) myfactors <- c(myfactors, "wg")
+  cat(pname, " ", "\n")
+  
+  pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, grandmother, myformula) {
+    numgenoDom <- as.numeric(as.numeric(unlist(numgeno)) != 0)
+	numgenoAdd <- as.numeric(unlist(numgeno))
+	myformula0 <- paste0("pheno ~ ", paste(myfactors, collapse = " + "))
+	myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgenoDom", "numgenoAdd"), collapse = " + "))
+	lm0 <- lm(formula(myformula0))
+    mmodel <- lm(formula(myformula))
+    return(anova(lm0, mmodel)["Pr(>F)"])
+  }, pheno = phenotypes[,pname], wg = as.factor(phenotypes[,"WG"]), grandmother = as.factor(phenotypes[,"Grandma"]), myformula = myformula)
+  pmatrixADDDOM[names(pvalues[1,]), pname] <- pvalues
+}
+
+
+# Some plots
+lines(lodmatrixDOM[,"D140"], main = "D140", col = as.numeric(as.factor(annotation[,"Chromosome"])), las = 2)
+lines(lodmatrixADD[,"D140"], main = "D140", col = as.numeric(as.factor(annotation[,"Chromosome"])), las = 2)
+lines(lodmatrixADDDOM[,"D140"], main = "D140", col = as.numeric(as.factor(annotation[,"Chromosome"])), las = 2)
