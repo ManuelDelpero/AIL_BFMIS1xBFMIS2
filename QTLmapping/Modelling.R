@@ -89,8 +89,8 @@ for (pname in phenonames){
   
   pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, grandmother, myformula) {
     numgenoDom <- as.numeric(as.numeric(unlist(numgeno)) != 0)
-	numgenoAdd <- as.numeric(unlist(numgeno))
-	myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgenoDom", "numgenoAdd"), collapse = " + "))
+    numgenoAdd <- as.numeric(unlist(numgeno))
+    myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgenoDom", "numgenoAdd"), collapse = " + "))
     mmodel <- lm(formula(myformula))
     return(anova(mmodel)["Pr(>F)"][c("numgenoDom", "numgenoAdd"),])
   }, pheno = phenotypes[,pname], wg = as.factor(phenotypes[,"WG"]), grandmother = as.factor(phenotypes[,"Grandma"]), myformula = myformula)
@@ -118,13 +118,13 @@ for (pname in phenonames){
   
   pvalues <- apply(numgeno, 1, function(numgeno) {
     numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
-	numgenoAddd <- as.numeric(unlist(numgeno))
+    numgenoAddd <- as.numeric(unlist(numgeno))
     mdata <- data.frame(cbind(pheno = phenotypes[, pname], wg = phenotypes[, "WG"], grandmother = phenotypes[, "Grandma"], A = numgenoAddd, D = numgenoDomm))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	myformula0 <- paste0("pheno ~ ", paste(myfactors, collapse = " + "))
-	myformula <- paste0("pheno ~ ", paste(c(myfactors, "D", "A"), collapse = " + "))
-	lm0 <- lm(formula = (myformula0), data = mdata)
+    myformula0 <- paste0("pheno ~ ", paste(myfactors, collapse = " + "))
+    myformula <- paste0("pheno ~ ", paste(c(myfactors, "D", "A"), collapse = " + "))
+    lm0 <- lm(formula = (myformula0), data = mdata)
     mmodel <- lm(formula(myformula), data = mdata)
     return(anova(lm0, mmodel)[["Pr(>F)"]][2])	
   })
