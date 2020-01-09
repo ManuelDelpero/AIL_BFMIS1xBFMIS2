@@ -113,6 +113,7 @@ for (pname in phenonames){
   myfactors <- c()
   if(p.gmother < 0.05) myfactors <- c(myfactors, "grandmother")
   if(p.wg < 0.05) myfactors <- c(myfactors, "wg")
+  if((p.wg > 0.05) && (p.gmother > 0.05)) myfactors <- "1"
   cat(pname, " ", "\n")
   
   pvalues <- apply(numgeno, 1, function(numgeno) {
