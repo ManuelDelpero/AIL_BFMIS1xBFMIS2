@@ -6,12 +6,12 @@
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
-genotypes <- read.csv("genomatrix.clean.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
+genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 phenotypes <- read.csv("allPhenotypes_final.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
 annotation <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 annotation <- annotation[, c(1,2,3,6)]
 colnames(annotation) <- c("Chromosome", "Position", "GenTrain Score", "SNP")
-colnames(genotypes) <- gsub("V 888-", "" , colnames(genotypes)) 
+colnames(genotypes) <- gsub("AIL", "" , colnames(genotypes)) 
 phenotypes <- phenotypes[colnames(genotypes),]
 
 # Covariates we could/need to include in the model, we test them on their pvalue
@@ -21,12 +21,11 @@ grandmother <- phenotypes[, "Grandma"]
 # Convert genotypes to numerical values to map using an additive model and dom model or both
 numgeno <- matrix(NA, nrow(genotypes), ncol(genotypes), dimnames=list(rownames(genotypes), colnames(genotypes)))
 for(x in 1:nrow(genotypes)){
-  alleles <- na.omit(unique(unlist(strsplit(as.character(genotypes[x,]), ""))))
-  h1 <- paste0(alleles[1], alleles[1])
-  het <- c(paste0(alleles[1], alleles[2]), paste0(alleles[2], alleles[1]))
-  h2 <- paste0(alleles[2], alleles[2])
+  h1 <- "A"
+  het <- "H"
+  h2 <- "B"
   numgeno[x, which(genotypes[x, ] == h1)] <- -1
-  numgeno[x, which(genotypes[x, ] %in% het)] <- 0
+  numgeno[x, which(genotypes[x, ] == het)] <- 0
   numgeno[x, which(genotypes[x, ] == h2)] <- 1
 }
 phenonames <- colnames(phenotypes[,c(3:57)])
