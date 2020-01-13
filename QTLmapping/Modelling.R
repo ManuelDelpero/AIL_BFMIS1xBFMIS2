@@ -88,8 +88,8 @@ for (pname in phenonames){
   
   pvalues <- apply(numgeno, 1, function(numgeno, pheno, wg, grandmother, myformula) {
     numgenoDom <- as.numeric(as.numeric(unlist(numgeno)) != 0)
-	numgenoAdd <- as.numeric(unlist(numgeno))
-	myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgenoDom", "numgenoAdd"), collapse = " + "))
+    numgenoAdd <- as.numeric(unlist(numgeno))
+    myformula <- paste0("pheno ~ ", paste(c(myfactors, "numgenoDom", "numgenoAdd"), collapse = " + "))
     mmodel <- lm(formula(myformula))
     return(anova(mmodel)["Pr(>F)"][c("numgenoDom", "numgenoAdd"),])
   }, pheno = phenotypes[,pname], wg = as.factor(phenotypes[,"WG"]), grandmother = as.factor(phenotypes[,"Grandma"]), myformula = myformula)
@@ -101,8 +101,6 @@ lodmatrixADD <- -log10(pmatrixADD)
 lodmatrixADDDOM <- lodmatrixDOM + lodmatrixADD
 write.table(lodmatrixDOM, file = "lodmatrixDOM.txt", quote = FALSE, sep = "\t")
 write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
-write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM.txt", quote = FALSE, sep = "\t")
-
 # Dom + Add model without using the sum of LODS
 pmatrixADDDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
 for (pname in phenonames){
@@ -117,13 +115,13 @@ for (pname in phenonames){
   
   pvalues <- apply(numgeno, 1, function(numgeno) {
     numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
-	numgenoAddd <- as.numeric(unlist(numgeno))
+    numgenoAddd <- as.numeric(unlist(numgeno))
     mdata <- data.frame(cbind(pheno = phenotypes[, pname], wg = phenotypes[, "WG"], grandmother = phenotypes[, "Grandma"], A = numgenoAddd, D = numgenoDomm))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	myformula0 <- paste0("pheno ~ ", paste(myfactors, collapse = " + "))
-	myformula <- paste0("pheno ~ ", paste(c(myfactors, "D", "A"), collapse = " + "))
-	lm0 <- lm(formula = (myformula0), data = mdata)
+    myformula0 <- paste0("pheno ~ ", paste(myfactors, collapse = " + "))
+    myformula <- paste0("pheno ~ ", paste(c(myfactors, "D", "A"), collapse = " + "))
+    lm0 <- lm(formula = (myformula0), data = mdata)
     mmodel <- lm(formula(myformula), data = mdata)
     return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
@@ -133,6 +131,4 @@ lodmatrixADDDOM <- -log10(pmatrixADDDOM)
 write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM_nosum.txt", quote = FALSE, sep = "\t")
 
 # Some plots
-lines(lodmatrixDOM[,"D140"], main = "D140", col = as.numeric(as.factor(annotation[,"Chromosome"])), las = 2)
-lines(lodmatrixADD[,"D140"], main = "D140", col = as.numeric(as.factor(annotation[,"Chromosome"])), las = 2)
 plot(lodmatrixADDDOM[,"D140"], main = "D140", col = as.numeric(as.factor(annotation[,"chr"])), las = 2)
