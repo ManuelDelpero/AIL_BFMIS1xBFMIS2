@@ -85,16 +85,52 @@ for (x in 1:nrow(IDmutter)){
   grandMs <- c(grandMs, grandM) 
 }
 
-# Calculte AUC for insulin and glucose test
-
 allPhenotypes <- cbind(allPhenotypes, WGs, IDmutter[,1], grandMs)
-colallPhenotypes <- c("Sex", "ID" , "D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 minOG"    ,   "15 minOG",  "30 minOG"     , "60 minOG", "120 min"   ,  "0 minIT"   ,    "15 minIT", "30 minIT"    ,  "60 minIT",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge", "Triglycerides", "WG", "Mutter", "Grandma")      
+colallPhenotypes <- c("Sex", "ID" , "D21", "D28", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D125", "D126", "D133", "D139", "D140", "D142", "D144", "D147", "D150", "D154", "D157", "D160", "D163", "D166", "D169", "D172", "D174", "Gluc172"  ,   "0 minOG"    ,   "15 minOG",  "30 minOG"     , "60 minOG", "120 minOG"   ,  "0 minIT"   ,    "15 minIT", "30 minIT"    ,  "60 minIT",     "Gewicht"   ,  "Hypotalamus" ,"Pankreas",  "Gehirn"     , "Gon"      ,   "SCF"     ,    "Leber"      , "Quadrizeps" ,"Longissimus" ,"BAT"       ,  "Herz" ,"LÃ¤nge", "Triglycerides", "WG", "Mutter", "Grandma")      
 colnames(allPhenotypes) <- colallPhenotypes
 allPhenotypes[,"Leber"] <- as.numeric(as.character(allPhenotypes[,"Leber"]))
 allPhenotypes[,42] <- as.numeric(as.character(allPhenotypes[,42]))
 allPhenotypes[,43] <- as.numeric(as.character(allPhenotypes[,43]))
 allPhenotypes[,44] <- as.numeric(as.character(allPhenotypes[,44]))
 
+# Calculate the area under the curve(auc) for each animal(oralGTT and insulinTT)
+library(DescTools)
+oralGTT <- allPhenotypes[, c("0 minOG",	"15 minOG",	"30 minOG",	"60 minOG",	"120 minOG")]
+insulinTT <- allPhenotypes[, c("0 minIT",	"15 minIT",	"30 minIT",	"60 minIT")]
+
+# InuslinTT
+aucs <- c()
+for(x in 1:nrow(insulinTT)){
+  aucs <- c(aucs, AUC(x = c(0, 15, 30, 60), as.numeric(insulinTT[x, 1:4])))
+}
+
+# Calculate adjusted auc
+# auc - base line auc (area from data at point 0 )
+
+ITTaucs.adj <- cbind(apply(insulinTT[, 1:4],2, as.numeric) - mean(as.numeric(insulinTT[, 1])))
+
+aucs.adjITT <- c()
+for(x in 1:nrow(ITTaucs.adj)){
+  aucs.adjITT <- c(aucs.adjITT, AUC(x = c(0, 15, 30, 60), as.numeric(ITTaucs.adj[x, 1:4])))
+}
+
+# OralGTT
+aucs <- c()
+for(x in 1:nrow(oralGTT)){
+  aucs <- c(aucs, AUC(x = c(0, 15, 30, 60, 120), as.numeric(oralGTT[x, 1:5])))
+}
+
+#calculate adjusted auc
+# auc - base line auc (area from data at point 0 )
+oralGTTaucs.adj <- cbind(apply(oralGTT[, 1:5],2, as.numeric) - mean(as.numeric(oralGTT[, 1])))
+
+aucs.adjGTT <- c()
+for(x in 1:nrow(oralGTTaucs.adj)){
+  aucs.adjGTT <- c(aucs.adjGTT, AUC(x = c(0, 15, 30, 60, 120), as.numeric(oralGTTaucs.adj[x, 1:5])))
+}
+
+#adding new values to the pheno matrix
+allPhenotypes <- cbind(allPhenotypes, "GTTauc" = aucs.adjGTT, "ITTauc" = aucs.adjITT)
 write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.names = TRUE)
 
 # MRI analysis
