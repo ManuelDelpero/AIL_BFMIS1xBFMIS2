@@ -7,7 +7,7 @@
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
-phenotypes <- read.csv("allPhenotypes_final.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
+phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
 annotation <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 annotation <- annotation[, c(1,2,3,6)]
 colnames(annotation) <- c("Chromosome", "Position", "GenTrain Score", "SNP")
