@@ -5,13 +5,15 @@
 # first written december, 2019
 
 #setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
-setwd("/home/manuel/AIL_S1xS2/DATA")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 library(seqinr)
 
-map <- read.table("map.cleaned.txt", sep="\t")
-lods <- read.table("lods.txt", sep = "\t",  header = TRUE)
+map <- read.table("map.cleaned.txt", sep="\t", check.names = FALSE)
+lods <- read.table("lodmatrixADDDOM_nosum.txt", sep = "\t",  header = TRUE)
+lods <- t(lods)
 chromosomes <- c(1:19, "X", "Y")
 map <- map[,c(1,2)]
+phenotypes <- rownames(lods)
 
 # Get the main QTLs for each phenotype
 res <- c()
@@ -19,10 +21,11 @@ for (x in phenotypes){
   Lodscores <- lods[x,]
   ord <- sort(Lodscores, decreasing = TRUE)
   nqtl <- 0
-  while ((any(ord > 4)) && (nqtl < 3)){
-    info <- cbind(map[names(ord[1]),], rownames(ord[1]), ord[1][[1]])   # get rid of the markers as rownames!!
+  while ((any(ord > 4)) && (nqtl < 8)){
+    info <- cbind(map[names(ord[1]),], names(ord[1]), x, ord[1][[1]])   # get rid of the markers as rownames!!
     markers <- rownames(map[which(map[, "chr"] == info[, "chr"]),])    
     ord <- ord[-which(names(ord) %in% markers)]
+	ord <- sort(ord, decreasing = TRUE)
     nqtl <- nqtl + 1
     res <- rbind(res, info)
   }
@@ -32,7 +35,8 @@ colnames(res) <- c("Chr", "Pos", "Trait", "Lod")
 res <- res[-which(is.na(res[, "Chr"] )),]
 
 write.table(res, file = "KASP_regions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-QTLs <- read.table("KASP_regions.txt", sep = "\t",  header = TRUE)
+#QTLs <- read.table("KASP_regions.txt", sep = "\t",  header = TRUE)
+QTLs <- read.table("QTLs13120.txt", sep = "\t",  header = TRUE)
 
 # Keep just the unique markers
 QTLs <- QTLs[-which(duplicated(QTLs[,5])),]
