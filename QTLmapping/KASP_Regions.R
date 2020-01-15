@@ -25,7 +25,7 @@ for (x in phenotypes){
     info <- cbind(map[names(ord[1]),], names(ord[1]), x, ord[1][[1]])   # get rid of the markers as rownames!!
     markers <- rownames(map[which(map[, "chr"] == info[, "chr"]),])    
     ord <- ord[-which(names(ord) %in% markers)]
-	ord <- sort(ord, decreasing = TRUE)
+    ord <- sort(ord, decreasing = TRUE)
     nqtl <- nqtl + 1
     res <- rbind(res, info)
   }
