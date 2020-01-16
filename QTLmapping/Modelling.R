@@ -28,7 +28,7 @@ for(x in 1:nrow(genotypes)){
   numgeno[x, which(genotypes[x, ] == het)] <- 0
   numgeno[x, which(genotypes[x, ] == h2)] <- 1
 }
-phenonames <- colnames(phenotypes[,c(3:57)])
+phenonames <- colnames(phenotypes[,c(3:57, 61, 62)])
  
 # AD model
 # QTL mapping testing if we need to include the covariates
