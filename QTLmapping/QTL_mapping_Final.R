@@ -4,8 +4,8 @@
 # 
 # first written december, 2019
 
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
-
+#setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
+setwd("/home/manuel/AIL_S1xS2/DATA")
 genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
 annotation <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
