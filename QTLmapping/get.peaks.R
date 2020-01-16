@@ -32,4 +32,4 @@ for(x in 1:ncol(mprofiles)){
 colnames(results) <- c("Phenotype", "Chr", "StartPos", "TopPos", "StopPos", "LOD", "flankLeft", "TopMarker", "FlankRight")
 results <- data.frame(results)
 
-write.table(results, "QTL_regions11320.txt", row.names=FALSE, quote=FALSE, sep='\t')
+write.table(results, "QTL_regions11420.txt", row.names=FALSE, quote=FALSE, sep='\t')         
