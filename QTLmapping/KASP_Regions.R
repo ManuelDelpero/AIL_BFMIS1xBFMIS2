@@ -22,7 +22,7 @@ for (x in phenotypes){
   ord <- sort(Lodscores, decreasing = TRUE)
   nqtl <- 0
   while ((any(ord > 4)) && (nqtl < 8)){
-    info <- cbind(map[names(ord[1]),], names(ord[1]), x, ord[1][[1]])   # get rid of the markers as rownames!!
+    info <- cbind(map[names(ord[1]),], x, ord[1][[1]])   
     markers <- rownames(map[which(map[, "chr"] == info[, "chr"]),])    
     ord <- ord[-which(names(ord) %in% markers)]
     ord <- sort(ord, decreasing = TRUE)
@@ -31,7 +31,6 @@ for (x in phenotypes){
   }
 }
 colnames(res) <- c("Chr", "Pos", "Trait", "Lod")
-
 res <- res[-which(is.na(res[, "Chr"] )),]
 
 write.table(res, file = "KASP_regions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
