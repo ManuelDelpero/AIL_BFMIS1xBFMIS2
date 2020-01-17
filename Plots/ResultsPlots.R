@@ -84,7 +84,6 @@ axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
 
-
 # Triglycerides
 phenotype <- "Triglycerides"
 plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
@@ -99,6 +98,54 @@ abline(h=4.2, col="orange",lty=3)
 
 # D140
 phenotype <- "D140"
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
+  i <- i + 1
+}
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+
+# Gluc172
+phenotype <- "Gluc172"
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
+  i <- i + 1
+}
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+
+# Gluc172
+phenotype <- "Gluc172"
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
+  i <- i + 1
+}
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+
+# ITTauc
+phenotype <- "ITTauc"
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
+  i <- i + 1
+}
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+
+# length
+phenotype <- "LÃ.nge"
 plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
