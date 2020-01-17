@@ -36,7 +36,7 @@ chr17ord <- chr17[order(chr17[,2], decreasing = FALSE),]
 plot(main = "QTL Gon weight [Chr 17]", c(min(as.numeric(chr17ord[, "bp_mm10"])), max(as.numeric(chr17ord[, "bp_mm10"]))), c(0,9), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
 points(x = as.numeric(chr17ord[,"bp_mm10"]), y = chr17ord[,"Gon"] , type = "l", col="dodgerblue", lwd = 1)
 
-## Manhattan plots
+## Manhattan plots (Plot the effect with the highest  lod score and use three different colors for each one) its dom deviation not dominant
 chrs <- c(1:19,"X")
 gap <- 40000000
 map.sorted <- NULL
