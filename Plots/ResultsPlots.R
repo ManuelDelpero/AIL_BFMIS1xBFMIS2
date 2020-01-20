@@ -8,7 +8,7 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 lodmatrixDOM <- read.table("lodmatrixDOM.txt", header = TRUE, sep = "\t", check.names = FALSE)
 lodmatrixADD <- read.table("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
-lodmatrixADDDOM <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
+mprofiles <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
 markerannot$Index <- seq.int(nrow(markerannot))
@@ -62,11 +62,30 @@ for (x in chrs){
 
 # Gonadal adipose tissue weight
 phenotype <- "Gon"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
-  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
-  i <- i + 1
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+	}
+	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 24, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 24, col= "black"))
+	}
+	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+	  if (chr %in% seq(1,20,2))
+	    points(x=pos[p], y = currentADD[p], t ='p', pch = 25, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 25, col= "black"))
+	}
+  }
 }
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
