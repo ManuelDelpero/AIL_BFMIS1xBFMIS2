@@ -68,6 +68,8 @@ for(chr in chrs){
   currentADDDOM <- mprofiles[onChr, phenotype]
   currentDOM <- lodmatrixDOM[onChr, phenotype]
   currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
   for (p in 1:length(currentADDDOM)){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
@@ -77,100 +79,257 @@ for(chr in chrs){
 	}
 	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
 	  if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 24, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 24, col= "black"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
 	}
 	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
 	  if (chr %in% seq(1,20,2))
-	    points(x=pos[p], y = currentADD[p], t ='p', pch = 25, col= "cornflowerblue")
-	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 25, col= "black"))
+	    points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
 	}
   }
 }
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+legend("topright", bg="gray",
+  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  pch = c(16, 18, 17))
+  
 
 # liver weight
 phenotype <- "Leber"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
-  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
-  i <- i+1
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+	}
+	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+	}
+	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+	  if (chr %in% seq(1,20,2))
+	    points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+	}
+  }
 }
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+legend("topright", bg="gray",
+  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  pch = c(16, 18, 17))
 
 # Triglycerides
 phenotype <- "Triglycerides"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
-  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16,  col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
-  i <- i + 1
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+	}
+	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+	}
+	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+	  if (chr %in% seq(1,20,2))
+	    points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+	}
+  }
 }
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+legend("topright", bg="gray",
+  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  pch = c(16, 18, 17))
 
 # D140
 phenotype <- "D140"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
-  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
-  i <- i + 1
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+	}
+	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+	}
+	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+	  if (chr %in% seq(1,20,2))
+	    points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+	}
+  }
 }
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+legend("topright", bg="gray",
+  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  pch = c(16, 18, 17))
 
 # Gluc172
 phenotype <- "Gluc172"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
-  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
-  i <- i + 1
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+	}
+	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+	}
+	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+	  if (chr %in% seq(1,20,2))
+	    points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+	}
+  }
 }
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
-
-# Gluc172
-phenotype <- "Gluc172"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
-for(chr in chrs){
-  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
-  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
-  i <- i + 1
-}
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
-
+legend("topright", bg="gray",
+  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  pch = c(16, 18, 17))
+	
 # ITTauc
 phenotype <- "ITTauc"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
-  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
-  i <- i + 1
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+	}
+	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+	}
+	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+	  if (chr %in% seq(1,20,2))
+	    points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+	}
+  }
 }
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+legend("topright", bg="gray",
+  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  pch = c(16, 18, 17))
 
 # length
 phenotype <- "LÃ.nge"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype, ", Dom + Add effect"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
-  points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype],t ='p', pch = 16, col=c("black", "cornflowerblue")[(i %% 2 == 1) + 1])
-  i <- i + 1
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+	}
+	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+	  if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+	}
+	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+	  if (chr %in% seq(1,20,2))
+	    points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+	}
+  }
 }
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
+axis(1, chrs, at = chrmids)
+abline(h= 3.8, col="green",lty=3)
+abline(h=4.2, col="orange",lty=3)
+legend("topright", bg="gray",
+  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  pch = c(16, 18, 17))
