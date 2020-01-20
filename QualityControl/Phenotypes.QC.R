@@ -130,7 +130,8 @@ for(x in 1:nrow(oralGTTaucs.adj)){
 }
 
 #adding new values to the pheno matrix
-allPhenotypes <- cbind(allPhenotypes, "GTTauc" = aucs.adjGTT, "ITTauc" = aucs.adjITT)
+mriFAT <- mriFAT[which(rownames(mriFAT) %in% rownames(allPhenotypes) ),]
+allPhenotypes <- cbind(allPhenotypes, "GTTauc" = aucs.adjGTT, "ITTauc" = aucs.adjITT, "mriFAT" = mriFAT)
 write.table(allPhenotypes, "allPhenotypes.txt", sep = "\t", quote = FALSE, row.names = TRUE)
 
 # MRI analysis
