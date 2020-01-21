@@ -6,6 +6,7 @@
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
+genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 lodmatrixDOM <- read.table("lodmatrixDOM.txt", header = TRUE, sep = "\t", check.names = FALSE)
 lodmatrixADD <- read.table("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
 mprofiles <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
@@ -27,7 +28,7 @@ lodmatrixADD <- lodmatrixADD[rownames(annotation),]
 lodmatrixADDDOM <- lodmatrixADDDOM[rownames(annotation),]
 
 # Preliminary visual check bodyweight 
-bw <- lodmatrixADDDOM[,c(1:32)]
+bw <- mprofiles[,c(1:32)]
 rotate <- function(x) t(apply(x, 2, rev))
 image(rotate(bw))
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
@@ -138,6 +139,10 @@ abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
+
+# marker responsible for the ectopic fat storage in the liver  
+boxplot(phenotypes[, "Gon"] ~ unlist(genotypes["JAX00432128",]))
+boxplot(phenotypes[, "Leber"] ~ unlist(genotypes["JAX00432128",]))
 
 # Triglycerides
 phenotype <- "Triglycerides"
