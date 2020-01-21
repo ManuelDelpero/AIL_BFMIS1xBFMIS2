@@ -1,10 +1,9 @@
-# Define regions to genotype with KASP assay for AIL BFMI S1xS2
+# Peak detect 2.0
 #
 # copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero 
 # 
 # first written december, 2019
 
-#setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 lods <- read.table("lodmatrixADDDOM_nosum.txt", sep = "\t",  header = TRUE)
@@ -36,11 +35,11 @@ for (x in phenotypes){
     res <- rbind(res, info)
   }
 }
-colnames(res) <- c("Marker", "Trait", "Chr", "Pos", "Lod")
+colnames(res) <- c("TopMarker", "Trait", "Chr", "PosTopMarker", "LodTopMarker")
 rownames(res) <- NULL
 res <- res[-which(is.na(res[, "Chr"] )),]
 
-# Sort lodscores by chromosomes
+# Get regions with a lod drop of 1.5 from the top marker
 rights <- c()
 lefts <- c()
 for (top in 1:nrow(res)){
@@ -54,8 +53,4 @@ for (top in 1:nrow(res)){
   lefts <- c(lefts, left)
   rights <- c(rights, right)
   }
-
-leftpos <- annotation[names(lefts), 2]
-rightpos <- annotation[names(rights), 2]
-regions <- cbind(res, "LefPos" = leftpos, "RightPos" = rightpos)
-colnames(regions) <- c("Chr", "Pos", "Trait", "TopLod", "LeftPos", "RightPos")
+regions <- cbind(res, "LeftPos" = lefts, "RightPos" = rights)  
