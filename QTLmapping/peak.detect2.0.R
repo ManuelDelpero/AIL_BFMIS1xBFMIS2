@@ -1,0 +1,61 @@
+# Define regions to genotype with KASP assay for AIL BFMI S1xS2
+#
+# copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero 
+# 
+# first written december, 2019
+
+#setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
+
+lods <- read.table("lodmatrixADDDOM_nosum.txt", sep = "\t",  header = TRUE)
+map <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
+map <- map[, c(1,2)]
+lods <- t(lods)
+phenotypes <- rownames(lods)
+
+chromosomes <- c(1:19, "X", "Y")
+
+annotation <- c()
+for(chr in chromosomes){
+  annotation <- rbind(annotation, map[map[,"chr"] == chr,])
+}
+
+
+# Get the main QTLs for each phenotype
+res <- c()
+for (x in phenotypes){
+  Lodscores <- lods[x,]
+  ord <- sort(Lodscores, decreasing = TRUE)
+  nqtl <- 0
+  while ((any(ord > 4)) && (nqtl < 8)){
+    info <- cbind(rownames(map[names(ord[1]),]) , x, map[names(ord[1]),], ord[1][[1]])   
+    markers <- rownames(map[which(map[, "chr"] == info[, "chr"]),])    
+    ord <- ord[-which(names(ord) %in% markers)]
+    ord <- sort(ord, decreasing = TRUE)
+    nqtl <- nqtl + 1
+    res <- rbind(res, info)
+  }
+}
+colnames(res) <- c("Marker", "Trait", "Chr", "Pos", "Lod")
+rownames(res) <- NULL
+res <- res[-which(is.na(res[, "Chr"] )),]
+
+# Sort lodscores by chromosomes
+rights <- c()
+lefts <- c()
+for (top in 1:nrow(res)){
+  trait <- as.character(res[top, "Trait"])
+  toplod <- as.character(res[top,1])
+  topmark <- map[names(lods[trait,which((lods[trait, ] > lods[trait, toplod] - 1.5) & (lods[trait, ] < toplod))]), ]
+  topmark <- topmark[which(topmark[, 1] == res[top, 3]),] 
+  topmark <- topmark[,2]
+  left <- (topmark[order(topmark, decreasing = FALSE)])[1]
+  right <- tail(topmark, n = 1)
+  lefts <- c(lefts, left)
+  rights <- c(rights, right)
+  }
+
+leftpos <- annotation[names(lefts), 2]
+rightpos <- annotation[names(rights), 2]
+regions <- cbind(res, "LefPos" = leftpos, "RightPos" = rightpos)
+colnames(regions) <- c("Chr", "Pos", "Trait", "TopLod", "LeftPos", "RightPos")
