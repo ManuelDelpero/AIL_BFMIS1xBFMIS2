@@ -53,4 +53,9 @@ for (top in 1:nrow(res)){
   lefts <- c(lefts, left)
   rights <- c(rights, right)
   }
+ 
+ # to do (overlap the regions and reduce the dimensions)
 regions <- cbind(res, "LeftPos" = lefts, "RightPos" = rights)  
+QTLregions <- cbind(as.character(regions[, "Trait"]), as.numeric(as.character(regions[, "Chr"])), regions[, "LeftPos"], regions[, "PosTopMarker"], regions[, "RightPos"], as.numeric(as.character(regions[,"LodTopMarker"])),  as.character(regions[, "TopMarker"]))
+colnames(QTLregions) <- c("Phenotype",	"Chr",	"StartPos",	"TopPos",	"StopPos",	"LOD", "TopMarker")
+write.table(QTLregions, file = "QTLregions2212020.txt", quote = FALSE, sep = "\t", row.names = FALSE)
