@@ -49,7 +49,7 @@ for (top in 1:nrow(res)){
   topmark <- topmark[which(topmark[, 1] == res[top, 3]),] 
   topmark <- topmark[,2]
   left <- (topmark[order(topmark, decreasing = FALSE)])[1]
-  right <- tail(topmark, n = 1)
+  right <- tail((topmark[order(topmark, decreasing = FALSE)]), n = 1)
   lefts <- c(lefts, left)
   rights <- c(rights, right)
   }
