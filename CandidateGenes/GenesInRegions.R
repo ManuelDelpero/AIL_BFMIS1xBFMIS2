@@ -4,35 +4,33 @@
 # 
 # first written december, 2019
 
-setwd("/home/manuel/AIL_S1xS2/DATA")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
-regions <- read.table("QTL_regions11420.txt", sep = "\t", header = TRUE)
+regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
 # Get genes in regions
-genesBW <- vector("list", nrow(regions[1:59,]))
-for(x in 1:nrow(regions[1:59,])){																				#for loop number of rows in the region
-  # check if the region is valid (not NA)
+genes <- vector("list", nrow(regions))
+for(x in 1:nrow(regions)){																			
   if(!is.na(regions[x, "Chr"])){
-    # get the genes in the region
-    genesBW[[x]] <- getregion(bio.mart, regions[x, "Chr"], regions[x, "StartPos"], regions[x, "StopPos"])
-	cat(x, " has ", nrow(genesBW[[x]]), "genes\n")
-    fname <- paste0("genes_in_", regions[x, "Chr"],"-", regions[x, "StartPos"], ":", regions[x, "StopPos"], regions[x, "Phenotype"] , ".txt")
-    write.table(genesBW[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
+    genes[[x]] <- getregion(bio.mart, regions[x, "Chr"], regions[x, "StartPos"], regions[x, "StopPos"])
+	cat(x, " has ", nrow(genes[[x]]), "genes\n")
+    fname <- paste0("genes_in_", regions[x, "Chr"],"-", regions[x, "StartPos"], ":", regions[x, "StopPos"], as.character(regions[x, "Phenotype"]) , ".txt") 
+    write.table(genes[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
   }else{
  	cat(x, " has NA region\n")
   }
 }
 
 # figure out all the unique genes, result: matrix with 4 columns: name, chromosome, start position, end position
-uniquegenesBW <- NULL
-for(x in genesBW){ 
+uniquegenes <- NULL
+for(x in genes){ 
   if(!is.null(x)){
     subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand")]
-	uniquegenesBW <- rbind(uniquegenesBW, subset) 
+	uniquegenes <- rbind(uniquegenes, subset) 
   }
 }
-uniquegenesBW <- uniquegenesBW[!duplicated(uniquegenesBW),] 
-table(uniquegenesBW[ ,"chromosome_name"])
+uniquegenes <- uniquegenes[!duplicated(uniquegenes),] 
+table(uniquegenes[ ,"chromosome_name"])
 
 bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S12  (high coverage)
              "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S1.bam",    # 861-S1 (medium coverage)
@@ -50,7 +48,7 @@ for(x in 1:nrow(uniquegenesBW)){
   callSNPs(bamfiles, uniquegenesBW[x, 2], startpos, endpos, uniquegenesBW[x, 1]) 
 }
 
-setwd("/home/manuel/AIL_B6xBFMI/RAWDATA/SNPsMQM")
+setwd("/home/manuel/AIL_S1xS2/DATA/SNPs_BodyWeight/")
 
 filelist <- list.files(".") #we removed all the .txt files
 
@@ -66,6 +64,4 @@ for(file in filelist){
 header = readLines(filelist[1], n = 169)
 cat(paste0(header, collapse = "\n"), "\n", file = "all_combined.vcf")
 # File containing all SNPs in the genes
-write.table(allSNPs[,-1], file = "all_combined.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
-
-q("no")
+write.table(allSNPs[,-1], file = "all_combinedBW.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
