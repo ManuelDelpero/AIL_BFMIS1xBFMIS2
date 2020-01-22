@@ -74,20 +74,20 @@ for(chr in chrs){
   for (p in 1:length(currentADDDOM)){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
-	  if (chr %in% seq(1,20,2))
+      if (chr %in% seq(1,20,2))
         points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
-	  else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
-	}
-	if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
-	  if (chr %in% seq(1,20,2))
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+    }
+    if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
         points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
       else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
-	}
-	if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
-	  if (chr %in% seq(1,20,2))
-	    points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
-	  else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
-	}
+    }
+      if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+        if (chr %in% seq(1,20,2))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+    }
   }
 }
 axis(1, chrs, at = chrmids)
