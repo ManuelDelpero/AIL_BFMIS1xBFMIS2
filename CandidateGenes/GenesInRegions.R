@@ -8,6 +8,9 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
+# Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
+regions <- regions[c(39, 40, 41, 49, 50, 51, 52 , 55, 56),]
+
 # Get genes in regions
 genes <- vector("list", nrow(regions))
 for(x in 1:nrow(regions)){																			
@@ -15,7 +18,7 @@ for(x in 1:nrow(regions)){
     genes[[x]] <- getregion(bio.mart, regions[x, "Chr"], regions[x, "StartPos"], regions[x, "StopPos"])
 	cat(x, " has ", nrow(genes[[x]]), "genes\n")
     fname <- paste0("genes_in_", regions[x, "Chr"],"-", regions[x, "StartPos"], ":", regions[x, "StopPos"], as.character(regions[x, "Phenotype"]) , ".txt") 
-    write.table(genes[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
+    #write.table(genes[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
   }else{
  	cat(x, " has NA region\n")
   }
@@ -36,19 +39,21 @@ bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S1
              "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S1.bam",    # 861-S1 (medium coverage)
              "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S2.bam")    # 861-S2 (medium coverage)
 
+
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
+
 # Snps in genes
-for(x in 1:nrow(uniquegenesBW)){ 
-  startpos <- uniquegenesBW[x, 3]
-  endpos <- uniquegenesBW[x, 4]
-  if(uniquegenesBW[x, 5] == 1){
+for(x in 1:nrow(uniquegenes)){ 
+  startpos <- uniquegenes[x, 3]
+  endpos <- uniquegenes[x, 4]
+  if(uniquegenes[x, 5] == 1){
     startpos <- startpos-500
   }else{
     endpos <- endpos +500
   }
-  callSNPs(bamfiles, uniquegenesBW[x, 2], startpos, endpos, uniquegenesBW[x, 1]) 
+  callSNPs(bamfiles, uniquegenes[x, 2], startpos, endpos, uniquegenes[x, 1]) 
 }
 
-setwd("/home/manuel/AIL_S1xS2/DATA/SNPs_BodyWeight/")
 
 filelist <- list.files(".") #we removed all the .txt files
 
