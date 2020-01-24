@@ -1,4 +1,4 @@
-# Get SNPs in genes in regions
+# Get a VCF file with SNPs in genes in QTL regions  
 #
 # copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero & Danny Arends
 # 
@@ -70,3 +70,5 @@ header = readLines(filelist[1], n = 169)
 cat(paste0(header, collapse = "\n"), "\n", file = "all_combined.vcf")
 # File containing all SNPs in the genes
 write.table(allSNPs[,-1], file = "all_combinedBW.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
+
+# Combine these results with the gene expression analysis, look first at genes that are differentially expressed in the QTL regions, then look at VEP results
