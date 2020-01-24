@@ -1,4 +1,4 @@
-# Plots for AIL BFMI S1xS2
+# Various plots to represent the results for AIL BFMI S1xS2
 #
 # copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero 
 # 
