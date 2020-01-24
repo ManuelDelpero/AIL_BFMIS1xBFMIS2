@@ -1,5 +1,5 @@
 #
-# Figuring out Noise versus Signal
+# Figuring out Noise versus Signal, get rid of the noise in microarray data
 #
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/Microarray Data/DN-2019_8745-Data")
