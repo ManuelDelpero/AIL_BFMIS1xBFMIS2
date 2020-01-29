@@ -42,6 +42,29 @@ points(x = as.numeric(chr17ord[,"Position"]), y = chr17ord[,"Gon"] , type = "l",
 plot(main = "QTL liver weight [Chr 17]", c(min(as.numeric(chr17ord[, "Position"])), max(as.numeric(chr17ord[, "Position"]))), c(0,9), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
 points(x = as.numeric(chr17ord[,"Position"]), y = chr17ord[,"Leber"] , type = "l", col="dodgerblue", lwd = 1)
 
+# Body weight different time points for chr 15 (main QTL)
+lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
+dataset <- lodannotmatrix[, c("Chromosome", "Position", "D28", "D49", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D126", "D133", "D140", "D160", "D172")]
+chr15 <- dataset[which(dataset[,"Chromosome"] == 15),]
+chr15 <- chr15[order(chr15[,"Position"]),]
+plot(main = "QTL profile bodyweight [Chr 15]", c(min(as.numeric(chr15[, "Position"])), max(as.numeric(chr15[, "Position"]))), c(0,9), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+  points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D70"] , type = "l", col="dodgerblue", lwd = 1)
+  points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D140"] , type = "l", col="blue", lwd = 1)
+  points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D63"] , type = "l", col="deepskyblue", lwd = 1)
+  points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D105"] , type = "l", col="purple", lwd = 1)
+  points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D98"] , type = "l", col="dodgerblue4", lwd = 1)
+  abline(h=4.5, col="green")
+  abline(h=4, col="orange")
+  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
+  legend("topright", bg="gray",
+  legend = c("Week 9", "Week 10", "Week 14", "Week 15","Week 20"),
+    col = c("deepskyblue", "dodgerblue", "dodgerblue4", "purple", "blue"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
+
 ## Manhattan plots (Plot the effect with the highest  lod score and use three different colors for each one) 
 chrs <- c(1:19,"X")
 gap <- 40000000
