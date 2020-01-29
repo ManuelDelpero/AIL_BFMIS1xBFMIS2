@@ -5,6 +5,7 @@
 # first written december, 2019
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
+setwd("/home/manuel/AIL_S1xS2/RAWDATA")
 
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
@@ -38,9 +39,9 @@ table(uniquegenes[ ,"chromosome_name"])
 bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S12  (high coverage)
              "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S1.bam",    # 861-S1 (medium coverage)
              "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S2.bam")    # 861-S2 (medium coverage)
+			 
 
-
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
+setwd("/home/manuel/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
 
 # Snps in genes
 for(x in 1:nrow(uniquegenes)){ 
@@ -66,9 +67,24 @@ for(file in filelist){
   }
 }
 
+# Sort by chromosomes and position otherwise VEP is complaining
+allSNPs <- allSNPs[order(as.numeric(allSNPs[,3])),]
+chromosomes <- c(3, 12, 15, 17)
+
+annotation <- c()
+for(chr in chromosomes){
+  annotation <- rbind(annotation, allSNPs[as.numeric(allSNPs[,"V1"]) == chr,])
+}
+
+allSNPs <- annotation
+
 header = readLines(filelist[1], n = 169)
 cat(paste0(header, collapse = "\n"), "\n", file = "all_combined.vcf")
 # File containing all SNPs in the genes
+<<<<<<< HEAD
 write.table(allSNPs[,-1], file = "all_combinedBW.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
 
 # Combine these results with the gene expression analysis, look first at genes that are differentially expressed in the QTL regions, then look at VEP results
+=======
+write.table(allSNPs[,-1], file = "all_combined.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
+>>>>>>> b3d6bbb5485f4beaf422081e22175f3bd3fa8938
