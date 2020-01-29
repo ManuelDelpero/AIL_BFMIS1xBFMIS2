@@ -68,11 +68,12 @@ for(file in filelist){
 }
 
 # Sort by chromosomes and position otherwise VEP is complaining
+allSNPs <- allSNPs[order(as.numeric(allSNPs[,3])),]
 chromosomes <- c(3, 12, 15, 17)
 
 annotation <- c()
 for(chr in chromosomes){
-  annotation <- rbind(annotation, allSNPs[allSNPs[,"V1"] == chr,])
+  annotation <- rbind(annotation, allSNPs[as.numeric(allSNPs[,"V1"]) == chr,])
 }
 
 allSNPs <- annotation
