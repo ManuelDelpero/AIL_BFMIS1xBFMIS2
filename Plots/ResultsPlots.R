@@ -6,6 +6,7 @@
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
+phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
 genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 lodmatrixDOM <- read.table("lodmatrixDOM.txt", header = TRUE, sep = "\t", check.names = FALSE)
 lodmatrixADD <- read.table("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
@@ -128,6 +129,11 @@ legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
   
+# Effect plot for the top marker on chr17
+colnames(genotypes) <- gsub("AIL", "", colnames(genotypes))
+phenotypes <- phenotypes[colnames(genotypes),]
+boxplot(as.numeric(phenotypes[, "Gon"]) ~ unlist(genotypes["JAX00432128",]), col = c("lightblue", "blue", "darkblue"), main = "Effect plot for marker JAX00432128 (Gonadal weight)", ylab = "Weight [Gr.]", xlab = "Genotypes")
+  
 
 # liver weight
 phenotype <- "Leber"
@@ -167,6 +173,10 @@ abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
+
+# Effect plot for top marker for Gon weight using liver weight as phenotypes, there is a switch!!  
+boxplot(as.numeric(phenotypes[, "Leber"]) ~ unlist(genotypes["JAX00432128",]), col = c("lightblue", "blue", "darkblue"), main = "Effect plot for marker JAX00432128 (liver weight)", ylab = "Weight [Gr.]", xlab = "Genotypes")
+
 
 # marker responsible for the ectopic fat storage in the liver  
 boxplot(phenotypes[, "Gon"] ~ unlist(genotypes["JAX00432128",]))
