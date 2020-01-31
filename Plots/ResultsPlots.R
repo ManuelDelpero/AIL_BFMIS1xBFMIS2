@@ -182,7 +182,7 @@ legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
 
-# Effect plot for top marker for Gon weight using liver weight as phenotypes, there is a switch!!  
+# Effect plot for top marker for Gon weight using liver weight as phenotypes, there is a switch!!  responsile for ectopic fat storage in the liver
 boxplot(as.numeric(phenotypes[, "Leber"]) ~ unlist(genotypes["JAX00432128",]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot for marker JAX00432128 [liver weight]", ylab = "Weight [Gr.]", xlab = "Genotypes")
   legend("topright", bg="gray",
   legend = c( "BFMI-S2", "HET", "BFMI-S1"),
@@ -192,10 +192,6 @@ boxplot(as.numeric(phenotypes[, "Leber"]) ~ unlist(genotypes["JAX00432128",]), c
     pt.bg = "lightsteelblue1",
     cex = 1,
     text.col = "black")
-
-# marker responsible for the ectopic fat storage in the liver  
-boxplot(phenotypes[, "Gon"] ~ unlist(genotypes["JAX00432128",]))
-boxplot(phenotypes[, "Leber"] ~ unlist(genotypes["JAX00432128",]))
 
 # Triglycerides
 phenotype <- "Triglycerides"
@@ -313,7 +309,19 @@ abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
-	
+
+
+# Effect plot for top marker for Gon weight using final glucose as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
+boxplot(as.numeric(phenotypes[, "Gluc172"]) ~ unlist(genotypes["JAX00432128",]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot for marker JAX00432128 [Final glucose]", ylab = "Weight [Gr.]", xlab = "Genotypes")
+  legend("topright", bg="gray",
+  legend = c( "BFMI-S2", "HET", "BFMI-S1"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
+
 # ITTauc
 phenotype <- "ITTauc"
 plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
