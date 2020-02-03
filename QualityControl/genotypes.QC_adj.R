@@ -1,9 +1,9 @@
-setwd("D:/Edrive/Mouse/S1_S2")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
-locusxdnaheader <- unlist(strsplit(readLines("Humboldt_Univ_Zu_Berlin_MURGIGV01_20191205_LocusXDNA.csv", n=16)[16],","))
-locusxdnasnps <- unlist(strsplit(readLines("Humboldt_Univ_Zu_Berlin_MURGIGV01_20191205_LocusXDNA.csv", n=18)[18],","))
+locusxdnaheader <- unlist(strsplit(readLines("Humboldt_Univ_Zu_Berlin_MURGIGV01_20200130_LocusXDNA2.csv", n=16)[16],","))
+locusxdnasnps <- unlist(strsplit(readLines("Humboldt_Univ_Zu_Berlin_MURGIGV01_20200130_LocusXDNA2.csv", n=18)[18],","))
 
-locusxdna <- readLines("Humboldt_Univ_Zu_Berlin_MURGIGV01_20191205_LocusXDNA.csv")[-c(1:22)]
+locusxdna <- readLines("Humboldt_Univ_Zu_Berlin_MURGIGV01_20200130_LocusXDNA2.csv")[-c(1:22)]
 splitted <- strsplit(locusxdna, ",")
 
 calls <- matrix(NA, length(locusxdna) / 2, length(splitted[[1]]))
@@ -28,9 +28,11 @@ gts[gts == "U"] <- NA
 
 # Write out the raw genotypes
 gts <- t(gts)
-write.table(gts, "genotypes.raw.txt", sep="\t", quote=FALSE)
+write.table(gts, "genotypes.raw2.txt", sep="\t", quote=FALSE)
 
-gts <- read.table("genotypes.raw.txt", sep="\t")
+gts1 <- read.table("genotypes.raw.txt", sep="\t")
+gts2 <- read.table("genotypes.raw2.txt", sep="\t")
+gts <- cbind(gts1, gts2)
 
 # Groups with less than 10 individuals are set to missing
 tbls <- apply(gts, 1, table)
