@@ -8,9 +8,9 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
 genotypes <- read.csv("genomatrix.clean.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
-lodmatrixDOM <- read.table("lodmatrixDOM.txt", header = TRUE, sep = "\t", check.names = FALSE)
-lodmatrixADD <- read.table("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
-mprofiles <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixDOM <- read.table("lodmatrixDOM3220.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixADD <- read.table("lodmatrixADD3220.txt", header = TRUE, sep = "\t", check.names = FALSE)
+mprofiles <- read.table("lodmatrixADDDOM3220.txt", header = TRUE, sep = "\t", check.names = FALSE)
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
 markerannot$Index <- seq.int(nrow(markerannot))
@@ -38,10 +38,13 @@ chr17ord <- chr17[order(chr17[,2], decreasing = FALSE),]
 # Gon chr 17
 plot(main = "QTL Gon weight [Chr 17]", c(min(as.numeric(chr17ord[, "Position"])), max(as.numeric(chr17ord[, "Position"]))), c(0,9), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
 points(x = as.numeric(chr17ord[,"Position"]), y = chr17ord[,"Gon"] , type = "l", col="dodgerblue", lwd = 1)
+axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
+
 
 # Liver chr 17
 plot(main = "QTL liver weight [Chr 17]", c(min(as.numeric(chr17ord[, "Position"])), max(as.numeric(chr17ord[, "Position"]))), c(0,9), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
 points(x = as.numeric(chr17ord[,"Position"]), y = chr17ord[,"Leber"] , type = "l", col="dodgerblue", lwd = 1)
+axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
 
 # Body weight different time points for chr 15 (main QTL)
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
@@ -133,6 +136,17 @@ legend("topright", bg="gray",
 colnames(genotypes) <- gsub("V 888-", "", colnames(genotypes))
 phenotypes <- phenotypes[colnames(genotypes),]
 boxplot(as.numeric(phenotypes[, "Gon"]) ~ unlist(genotypes["JAX00432128",]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot for marker JAX00432128 [Gonadal weight]", ylab = "Weight [Gr.]", xlab = "Genotypes")
+  legend("topright", bg="gray",
+  legend = c( "BFMI-S2", "HET", "BFMI-S1"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
+
+# Effect plot for the top marker on chr 3
+boxplot(as.numeric(phenotypes[, "Gon"]) ~ unlist(genotypes["UNC5791802",]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot for marker JAX00432128 [Gon weight]", ylab = "Weight [Gr.]", xlab = "Genotypes")
   legend("topright", bg="gray",
   legend = c( "BFMI-S2", "HET", "BFMI-S1"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
@@ -234,7 +248,7 @@ legend("topright", bg="gray",
 
 # D140
 phenotype <- "D140"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -311,8 +325,19 @@ legend("topright", bg="gray",
   pch = c(16, 18, 17))
 
 
-# Effect plot for top marker for Gon weight using final glucose as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
-boxplot(as.numeric(phenotypes[, "Gluc172"]) ~ unlist(genotypes["JAX00432128",]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot for marker JAX00432128 [Final glucose]", ylab = "Weight [Gr.]", xlab = "Genotypes")
+# Effect plot for top marker for Gon weight (chr 17) using final glucose as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
+boxplot(as.numeric(phenotypes[, "Gluc172"]) ~ unlist(genotypes["JAX00432128",]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot for marker JAX00432128 [Final glucose]", ylab = "Glucose leves [mg/dL]", xlab = "Genotypes")
+  legend("topright", bg="gray",
+  legend = c( "BFMI-S2", "HET", "BFMI-S1"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
+	
+# Effect plot for top marker for Gon weight (chr3) using final glucose as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
+boxplot(as.numeric(phenotypes[, "Gluc172"]) ~ unlist(genotypes["UNC5791802",]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot for marker JAX00432128 [Final glucose]", ylab = "Glucose leves [mg/dL]", xlab = "Genotypes")
   legend("topright", bg="gray",
   legend = c( "BFMI-S2", "HET", "BFMI-S1"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
