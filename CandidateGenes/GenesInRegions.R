@@ -80,11 +80,16 @@ allSNPs <- annotation
 
 header = readLines(filelist[1], n = 169)
 cat(paste0(header, collapse = "\n"), "\n", file = "all_combined.vcf")
+
 # File containing all SNPs in the genes
-<<<<<<< HEAD
 write.table(allSNPs[,-1], file = "all_combinedBW.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
 
 # Combine these results with the gene expression analysis, look first at genes that are differentially expressed in the QTL regions, then look at VEP results
-=======
 write.table(allSNPs[,-1], file = "all_combined.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
->>>>>>> b3d6bbb5485f4beaf422081e22175f3bd3fa8938
+
+# Snps in regions containing the genes (needed to figure out the genotypes of S1 and S2 for the topmarkers)
+for(x in 1:nrow(regions)){ 
+  startpos <- regions[x, 3]
+  endpos <- regions[x, 5]
+  callSNPs(bamfiles, regions[x, 2], startpos, endpos, regions[x, 1]) 
+}
