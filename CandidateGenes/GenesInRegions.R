@@ -88,8 +88,10 @@ write.table(allSNPs[,-1], file = "all_combinedBW.vcf", sep = "\t", quote=FALSE, 
 write.table(allSNPs[,-1], file = "all_combined.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
 
 # Snps in regions containing the genes (needed to figure out the genotypes of S1 and S2 for the topmarkers)
+regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
+regions <- regions[c(39, 40, 41, 48, 49, 50, 51, 52 , 55, 56),]
 for(x in 1:nrow(regions)){ 
-  startpos <- regions[x, 3]
-  endpos <- regions[x, 5]
-  callSNPs(bamfiles, regions[x, 2], startpos, endpos, regions[x, 1]) 
+  startpos <- regions[x, 4] -10
+  endpos <- regions[x, 4] +10
+  callSNPs(bamfiles, regions[x, 2], startpos, endpos, paste0(regions[x, 1], "Chr", regions[x,2])) 
 }
