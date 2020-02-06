@@ -139,7 +139,9 @@ legend("topright", bg="gray",
   
 
  # Effect plot for the top marker on chr 3
-boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker UNC5791802 [Chr 3]", ylab = "Weight [Gr.]", xlab = "Genotypes", las = 2, t = "n", xaxt = "n", ylim = c(0, 5))
+JAX00432128 <- cbind(phenotypes[, "Gon"], t(genotypes["JAX00432128",]))
+UNC5791802 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC5791802",]))
+boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal adipose tissue weight [Chr 3]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNC5791802]", las = 2, t = "n", xaxt = "n", ylim = c(0, 5))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -151,9 +153,7 @@ boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC57
     text.col = "black")
    
 # Effect plot for the top marker on chr 17
-JAX00432128 <- cbind(phenotypes[, "Gon"], t(genotypes["JAX00432128",]))
-UNC5791802 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC5791802",]))
-boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker JAX00432128 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 5))
+boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal adipose tissue weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [JAX00432128]" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 5))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -207,7 +207,7 @@ legend("topright", bg="gray",
 # Effect plot for the top marker on chr 17 for the liver
 JAX00432128 <- cbind(phenotypes[, "Leber"], t(genotypes["JAX00432128",]))
 ICR889 <- cbind(phenotypes[, "Leber"], t(genotypes["ICR889",]))
-boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker JAX00432128 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
+boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [JAX00432128]" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -219,7 +219,7 @@ boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX
     text.col = "black")
   
 # Effect plot for the top marker on chr 17 for the Gonadal weight
-boxplot(as.numeric(ICR889[which(ICR889[,2] == "A"),1]), as.numeric(ICR889[which(ICR889[,2] == "H"),1]), as.numeric(ICR889[which(ICR889[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker ICR889 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes", las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
+boxplot(as.numeric(ICR889[which(ICR889[,2] == "A"),1]), as.numeric(ICR889[which(ICR889[,2] == "H"),1]), as.numeric(ICR889[which(ICR889[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [ICR889]", las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
