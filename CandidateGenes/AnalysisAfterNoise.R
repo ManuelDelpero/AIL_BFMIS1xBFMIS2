@@ -1,6 +1,6 @@
 # Analysis in diff. express genes BFMI S1xS2
 #
-# copyright (c) 2015-2020 - Brockmann group - HU Berlin, Manuel Delpero
+# copyright (c) 2018-2020 - Brockmann group - HU Berlin, Manuel Delpero
 # last written october, 2019
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
@@ -14,7 +14,7 @@ skeletalmuscle <- which(grepl("S", colnames(expressions)))
 pankreas <- which(grepl("P", colnames(expressions)))
 
 # Diff. gene expression analysis
-getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 0.05){
+getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 0.001){
   S1P <- which(grepl("S1", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
   S2P <- which(grepl("S2", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
 
@@ -43,6 +43,15 @@ annotate <- function(significant){
 }
 
 DiffExprGon <- annotate(getSignificant(expressions, "G"))
-DiffExprLiver <- getSignificant(expressions, "L")
+DiffExprLiver <- annotate(getSignificant(expressions, "L"))
 DiffExprPank <- getSignificant(expressions, "P")
 DiffExprMuscle <- getSignificant(expressions, "S")
+
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
+
+myvep <- read.csv("3yLSqjVsXH9HTPX2.txt", sep = "\t", header=TRUE, colClasses="character")
+colnames(myvep) <- c("Uploaded_variation", "Location", "Allele", "Consequence", "IMPACT", "SYMBOL", "Gene", "Feature_type", "Feature", "BIOTYPE", "EXON", "INTRON", "HGVSc", "HGVSp", "cDNA_position", "CDS_position", "Protein_position", "Amino_acids", "Codons", "Existing_variation", "DISTANCE", "STRAND", "FLAGS", "SYMBOL_SOURCE", "HGNC_ID", "TSL", "APPRIS", "REFSEQ_MATCH", "SIFT", "CLIN_SIG", "SOMATIC", "PHENO", "MOTIF_NAME", "MOTIF_POS", "HIGH_INF_POS", "MOTIF_SCORE_CHANGE")
+
+genes <- myvep[, "Gene"]
+genesGon <- DiffExprGon[which(rownames(DiffExprGon) %in% genes) ,]
+
