@@ -204,9 +204,9 @@ legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(0, 18, 17))
 
-# Effect plot for the top marker on chr 17
+# Effect plot for the top marker on chr 17 for the liver
 JAX00432128 <- cbind(phenotypes[, "Leber"], t(genotypes["JAX00432128",]))
-ICR889 <- cbind(phenotypes[, "Gon"], t(genotypes["ICR889",]))
+ICR889 <- cbind(phenotypes[, "Leber"], t(genotypes["ICR889",]))
 boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker JAX00432128 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", bg="gray",
@@ -218,8 +218,8 @@ boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX
     cex = 1,
     text.col = "black")
   
-# Effect plot for the top marker on chr 17 Gon
-boxplot(as.numeric(ICR889[which(ICR889[,2] == "B"),1]), as.numeric(ICR889[which(ICR889[,2] == "H"),1]), as.numeric(ICR889[which(ICR889[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker ICR889 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes", las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
+# Effect plot for the top marker on chr 17 for the Gonadal weight
+boxplot(as.numeric(ICR889[which(ICR889[,2] == "A"),1]), as.numeric(ICR889[which(ICR889[,2] == "H"),1]), as.numeric(ICR889[which(ICR889[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker ICR889 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes", las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -408,6 +408,34 @@ abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
+  
+  
+# Effect plot for top marker for Gon weight (chr 17) using ITT auc as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
+JAX00432128 <- cbind(phenotypes[, "Leber"], t(genotypes["JAX00432128",]))
+ICR889 <- cbind(phenotypes[, "Leber"], t(genotypes["ICR889",]))
+boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker JAX00432128 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
+  axis(1, at = 1:3 , c("TT", "TC", "CC"))
+  legend("topright", bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
+	
+# Effect plot for top marker for Gon weight (chr3) using ITT auc as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
+boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker JAX00432128 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
+  axis(1, at = 1:3 , c("TT", "TC", "CC"))
+  legend("topright", bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
+
 
 # length
 phenotype <- "LÃ.nge"
