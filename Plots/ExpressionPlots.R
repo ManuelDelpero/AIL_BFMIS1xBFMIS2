@@ -75,8 +75,11 @@ out <- which(exprGonadalfat[, "logFC"] < -1)
 exprGonadalfat = exprGonadalfat[-out,]
 myPch <- ifelse(exprGonadalfat[,1] %in% uniquegenes[,1], 16, 1)
 colz <- as.numeric(exprGonadalfat[,"logFC"] > 0.2) + as.numeric(exprGonadalfat[,"logFC"] < -0.2) + as.numeric(exprGonadalfat[,"p.value"] < 0.05/5000) + as.numeric(exprGonadalfat[,"p.value"] < 0.01/5000) +1
-plot(exprGonadalfat[, "logFC"], -log10(exprGonadalfat[, "p.value"]), col=as.numeric(colz == 4) + 2, pch= myPch, ylab="log10(pvalue)", xlab="log2 Fold change")
-
+plot(main = "Volcano Plot - Gonadal adipose tissue", exprGonadalfat[, "logFC"], -log10(exprGonadalfat[, "p.value"]), col=as.numeric(colz == 4) + 2, pch= myPch, ylab="log10(pvalue)", xlab="log2 Fold change", ylim = c(0, 15))
+legend("topright",  bg="gray",
+       legend=c("Significant","Not significant","In QTL","Out of QTL"), 
+       col=c("green","red","black", "black"), pch=c(16,16,16,1),
+       bty="n", border=F, ncol=2)
 
 plot(exprliver[, "logFC"], -log10(exprliver[, "p.value"]))
 plot(skeletalmuscle[, "logFC"], -log10(skeletalmuscle[, "p.value"]))
