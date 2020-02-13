@@ -14,7 +14,7 @@ skeletalmuscle <- which(grepl("S", colnames(expressions)))
 pankreas <- which(grepl("P", colnames(expressions)))
 
 # Diff. gene expression analysis
-getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 0.01){
+getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 1){
   S1P <- which(grepl("S1", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
   S2P <- which(grepl("S2", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
 
@@ -44,8 +44,13 @@ annotate <- function(significant){
 
 DiffExprGon <- annotate(getSignificant(expressions, "G"))
 DiffExprLiver <- annotate(getSignificant(expressions, "L"))
-DiffExprPank <- getSignificant(expressions, "P")
-DiffExprMuscle <- getSignificant(expressions, "S")
+DiffExprPank <- annotate(getSignificant(expressions, "P"))
+DiffExprMuscle <- annotate(getSignificant(expressions, "S"))
+
+write.table(DiffExprLiver, "liverExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DiffExprGon, "GonExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DiffExprMuscle, "SkExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DiffExprPank, "PankreasExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
 
@@ -54,8 +59,12 @@ myvep <- read.csv("VEP.txt", sep = "\t", header=TRUE, colClasses="character")
 colnames(myvep) <- c("Uploaded_variation", "Location", "Allele", "Consequence", "IMPACT", "SYMBOL", "Gene", "Feature_type", "Feature", "BIOTYPE", "EXON", "INTRON", "HGVSc", "HGVSp", "cDNA_position", "CDS_position", "Protein_position", "Amino_acids", "Codons", "Existing_variation", "DISTANCE", "STRAND", "FLAGS", "SYMBOL_SOURCE", "HGNC_ID", "TSL", "APPRIS", "REFSEQ_MATCH", "SIFT", "CLIN_SIG", "SOMATIC", "PHENO", "MOTIF_NAME", "MOTIF_POS", "HIGH_INF_POS", "MOTIF_SCORE_CHANGE")
 
 genes <- myvep[, "Gene"]
-Diffexprgenes <- DiffExprGon[which(rownames(DiffExprGon) %in% genes) ,]
-Diffexprgenes <- Diffexprgenes[, c("chromosome_name", "mgi_symbol")]
-Diffexprgenes <- Diffexprgenes[order(as.numeric(Diffexprgenes[, "chromosome_name"])),]
+Diffexprgenesg <- DiffExprGon[which(rownames(DiffExprGon) %in% genes) ,]
+Diffexprgenesg <- Diffexprgenes[, c("chromosome_name", "mgi_symbol")]
+Diffexprgenesg <- Diffexprgenes[order(as.numeric(Diffexprgenes[, "chromosome_name"])),]
 write.table(Diffexprgenes, file = "GenesDiffExpr.txt", sep = "\t", quote = FALSE)
+
+Diffexprgenesl <- DiffExprLiver[which(rownames(DiffExprLiver) %in% genes) ,]
+Diffexprgenesl <- Diffexprgenes[, c("chromosome_name", "mgi_symbol")]
+Diffexprgenesl <- Diffexprgenes[order(as.numeric(Diffexprgenes[, "chromosome_name"])),]
 
