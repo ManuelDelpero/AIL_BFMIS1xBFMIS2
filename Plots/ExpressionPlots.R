@@ -73,14 +73,15 @@ bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S1
 # Gonadal fat
 out <- which(exprGonadalfat[, "logFC"] < -1)
 exprGonadalfat = exprGonadalfat[-out,]
+#png("VolcanoPlotGonadalFat.png")
 myPch <- ifelse(exprGonadalfat[,1] %in% uniquegenes[,1], 16, 1)
 colz <- as.numeric(exprGonadalfat[,"logFC"] > 0.2) + as.numeric(exprGonadalfat[,"logFC"] < -0.2) + as.numeric(exprGonadalfat[,"p.value"] < 0.05/5000) + as.numeric(exprGonadalfat[,"p.value"] < 0.01/5000) +1
-plot(main = "Volcano Plot - Gonadal adipose tissue", exprGonadalfat[, "logFC"], -log10(exprGonadalfat[, "p.value"]), col=as.numeric(colz == 4) + 2, pch= myPch, ylab="log10(pvalue)", xlab="log2 Fold change", ylim = c(0, 15))
+plot(main = "Volcano Plot - Gonadal adipose tissue", exprGonadalfat[, "logFC"], -log10(exprGonadalfat[, "p.value"]), col=as.numeric(colz == 4) + 2, pch= myPch, cex = 1, ylab="log10(pvalue)", xlab="log2 Fold change", ylim = c(0, 15))
 legend("topright",  bg="gray",
-       legend=c("Significant","Not significant","In QTL","Out of QTL"), 
+       legend=c("Significant","Not significant","In QTLs","Out of QTLs"), 
        col=c("green","red","black", "black"), pch=c(16,16,16,1),
        bty="n", border=F, ncol=2)
-
+#dev.off()
 plot(exprliver[, "logFC"], -log10(exprliver[, "p.value"]))
 plot(skeletalmuscle[, "logFC"], -log10(skeletalmuscle[, "p.value"]))
 plot(pankreas[, "logFC"], -log10(pankreas[, "p.value"]))
