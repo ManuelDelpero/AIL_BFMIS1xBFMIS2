@@ -70,36 +70,29 @@ bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S1
              "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S2.bam")    # 861-S2 (medium coverage)
 
 
-# Gonadal fat
+# Volvano plot function			 
+VolcanoPlot <- function(x,y){
+  sig <- x[which((x[,"logFC"] < -0.2 | x[,"logFC"] > 0.2) & (x[,"p.value"] < 0.05/5000)),]
+  int1 <- x[which((x[,"logFC"] < -0.2 | x[,"logFC"] > 0.2) & (x[,"p.value"] > 0.05/5000)),]
+  int2 <- x[which((x[,"logFC"] > -0.2 | x[,"logFC"] < 0.2) & (x[,"p.value"] < 0.05/5000) & (!(x[,1] %in% sig[,1]))),]
+  not <- x[which((x[,"logFC"] > -0.2 | x[,"logFC"] < 0.2) & (x[,"p.value"] > 0.05/5000) & (!(x[,1] %in% int1[,1]))),]
+  myPchsig <- ifelse(sig[,1] %in% y[,1], 16, 1)
+  myPchint1 <- ifelse(int1[,1] %in% y[,1], 16, 1)
+  myPchint2 <- ifelse(int2[,1] %in% y[,1], 16, 1)
+  plot(main = "Volcano Plot - Gonadal adipose tissue", x = c(-1,1), y = c(0,15), ylab="log10(pvalue)", xlab="log2 Fold change", ylim = c(0, 15), xlim = c(-0.8,0.8), t = "n")
+    points(sig[, "logFC"], -log10(sig[, "p.value"]), col = "green", pch= myPchsig, cex = 1)
+    points(not[, "logFC"], -log10(not[, "p.value"]), col = "red", pch= myPch, cex = 1)
+    points(int1[, "logFC"], -log10(int1[, "p.value"]), col = "orange", pch= myPchint1, cex = 1)
+    points(int2[, "logFC"], -log10(int2[, "p.value"]), col = "orange", pch= myPchint2, cex = 1)
+    text(sig[60, "logFC"], -log10(sig[60, "p.value"]), "Acat2")
+    legend("topright",  bg="gray",
+      legend=c("Significant", "Interesting", "Not significant","In QTLs","Out of QTLs"), 
+      col=c("green","orange", "red","black", "black"), pch=c(16, 16, 16, 16, 1),
+      bty="n", border=F, ncol=2)
+}
+# Gonadal fat volvano plot
 out <- which(exprGonadalfat[, "logFC"] < -1)
 exprGonadalfat = exprGonadalfat[-out,]
-sig <- exprGonadalfat[which(exprGonadalfat[,"logFC"] < -0.2 | exprGonadalfat[,"logFC"] > 0.2 & exprGonadalfat[,"p.value"] < 0.05/5000),]
-not <- exprGonadalfat[which(exprGonadalfat[,"logFC"] < -0.2 | exprGonadalfat[,"logFC"] > 0.2 & exprGonadalfat[,"p.value"] > 0.05/5000),]
-int1 <- exprGonadalfat[which(exprGonadalfat[,"logFC"] < -0.2 | exprGonadalfat[,"logFC"] > 0.2 & exprGonadalfat[,"p.value"] > 0.05/5000),]
-int2 <- exprGonadalfat[which(exprGonadalfat[,"logFC"] > -0.2 | exprGonadalfat[,"logFC"] < 0.2 & exprGonadalfat[,"p.value"] < 0.05/5000),]
-
-#myPch <- ifelse(exprGonadalfat[,1] %in% uniquegenes[,1], 16, 1)
-#colz <- as.numeric(exprGonadalfat[,"logFC"] > 0.2) + as.numeric(exprGonadalfat[,"logFC"] < -0.2) + as.numeric((exprGonadalfat[,"logFC"] < -0.2) & (exprGonadalfat[,"logFC"] > 0.2) & (exprGonadalfat[,"p.value"] > 0.05/5000)) + as.numeric(exprGonadalfat[,"p.value"] < 0.05/5000) + as.numeric(exprGonadalfat[,"p.value"] < 0.01/5000) +1
-#plot(main = "Volcano Plot - Gonadal adipose tissue", exprGonadalfat[, "logFC"], -log10(exprGonadalfat[, "p.value"]), col=as.numeric(colz == 4) + 2, pch= myPch, cex = 1, ylab="log10(pvalue)", xlab="log2 Fold change", ylim = c(0, 15), xlim = c(-1,1))
-#  legend("topright",  bg="gray",
-#       legend=c("Significant","Not significant","In QTLs","Out of QTLs"), 
-#       col=c("green","red","black", "black"), pch=c(16,16,16,1),
-#       bty="n", border=F, ncol=2)
-
-sig <- exprGonadalfat[which((exprGonadalfat[,"logFC"] < -0.2 | exprGonadalfat[,"logFC"] > 0.2) & (exprGonadalfat[,"p.value"] < 0.05/5000)),]
-int1 <- exprGonadalfat[which((exprGonadalfat[,"logFC"] < -0.2 | exprGonadalfat[,"logFC"] > 0.2) & (exprGonadalfat[,"p.value"] > 0.05/5000)),]
-int2 <- exprGonadalfat[which((exprGonadalfat[,"logFC"] > -0.2 | exprGonadalfat[,"logFC"] < 0.2) & (exprGonadalfat[,"p.value"] < 0.05/5000) & (!(exprGonadalfat[,1] %in% sig[,1]))),]
-not <- exprGonadalfat[which((exprGonadalfat[,"logFC"] > -0.2 | exprGonadalfat[,"logFC"] < 0.2) & (exprGonadalfat[,"p.value"] > 0.05/5000) & (!(exprGonadalfat[,1] %in% int1[,1]))),]
-myPchsig <- ifelse(sig[,1] %in% uniquegenes[,1], 16, 1)
-myPchint1 <- ifelse(int1[,1] %in% uniquegenes[,1], 16, 1)
-myPchint2 <- ifelse(int2[,1] %in% uniquegenes[,1], 16, 1)
-plot(main = "Volcano Plot - Gonadal adipose tissue", x = c(-1,1), y = c(0,15), ylab="log10(pvalue)", xlab="log2 Fold change", ylim = c(0, 15), xlim = c(-0.8,0.8), t = "n")
-  points(sig[, "logFC"], -log10(sig[, "p.value"]), col = "green", pch= myPchsig, cex = 1)
-  points(not[, "logFC"], -log10(not[, "p.value"]), col = "red", pch= myPch, cex = 1)
-  points(int1[, "logFC"], -log10(int1[, "p.value"]), col = "orange", pch= myPchint1, cex = 1)
-  points(int2[, "logFC"], -log10(int2[, "p.value"]), col = "orange", pch= myPchint2, cex = 1)
-  text(sig[60, "logFC"], -log10(sig[60, "p.value"]), "Acat2")
-  legend("topright",  bg="gray",
-    legend=c("Significant", "Interesting", "Not significant","In QTLs","Out of QTLs"), 
-    col=c("green","orange", "red","black", "black"), pch=c(16, 16, 16, 16, 1),
-	bty="n", border=F, ncol=2)
+VolcanoPlot(exprGonadalfat)
+# liver volvano plot
+VolcanoPlot(exprliver)
