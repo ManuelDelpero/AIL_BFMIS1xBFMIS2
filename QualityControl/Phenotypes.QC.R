@@ -259,17 +259,13 @@ plot(main="Insulin Tolerance Test", c(-10,70), c(0,350), ylab="Blood glucose (mg
 dev.off()
 
 # Difference in weight between gonadal adipose tissue and liver
-allTissues <- allPhenotypes[,c(45:56)]
+allTissues <- allPhenotypes[,c("Gon","SCF" ,"Leber" )]
 allTissues <- allTissues[-which(apply(apply(allTissues,1,is.na),2,sum) > 0),]
 
 
 # Order columns by gon weight
 ordering <- sort(allTissues[,"Gon"], index.return=TRUE)$ix
 sortWeight <- allTissues[ordering,]
-
-# Adjust tissues weight by total weight
-sortWeight[,7] <- as.numeric(as.character(sortWeight[,7]))
-sortWeight <- sweep(sortWeight, sortWeight[,"Gewicht"] ,MARGIN=1,"/")
 
 pdf("GonLiv.pdf")
 plot(main="Relationship between tissues weight", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="Weight (adjust)")
