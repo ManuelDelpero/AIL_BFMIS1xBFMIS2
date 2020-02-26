@@ -70,6 +70,7 @@ plot(main = "QTL profile bodyweight [Chr 15]", c(min(as.numeric(chr15[, "Positio
     cex = 1,
     text.col = "black")
 
+
 ## Manhattan plots (Plot the effect with the highest  lod score and use three different symbols for each one) 
 par(cex.lab=1.5, cex.main = 1.8, cex.axis = 1.6)
 mat <- matrix(c(1,1,2,3), 2, 2, byrow = TRUE)
