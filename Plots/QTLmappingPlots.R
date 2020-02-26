@@ -128,11 +128,9 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
+abline(h= -log10(0.05/5000), col="orange",lty=3)
+abline(h= -log10(0.01/5000), col="green",lty=3)
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(0, 18, 17))
@@ -195,8 +193,8 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
+abline(h= -log10(0.05/5000), col="orange",lty=3)
+abline(h= -log10(0.01/5000), col="green",lty=3)
 axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
@@ -263,8 +261,8 @@ axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
+abline(h= -log10(0.05/5000), col="orange",lty=3)
+abline(h= -log10(0.01/5000), col="green",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
@@ -299,11 +297,9 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
+abline(h= -log10(0.05/5000), col="orange",lty=3)
+abline(h= -log10(0.01/5000), col="green",lty=3)
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
@@ -471,11 +467,9 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
+abline(h= -log10(0.05/5000), col="orange",lty=3)
+abline(h= -log10(0.01/5000), col="green",lty=3)
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
