@@ -115,8 +115,8 @@ for (x in 1:nrow(genotypes)){
   if (rownames(genotypes[x,]) %in% rownames(KASPgenotypes)){
     new <- cbind(genotypes[x,1:200], data.frame(as.list(KASPgenotypes[rownames(genotypes[x,]),])))
     colnames(new) <- colnames(genotypes)
-	new <- sapply(new, as.character)
-	genotypes[x,] <- new
+    new <- sapply(new, as.character)
+    genotypes[x,] <- new
   }
 }
 genotypes <- genotypes[, order(names(genotypes))]
