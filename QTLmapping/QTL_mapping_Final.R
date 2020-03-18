@@ -100,3 +100,8 @@ for (pname in phenonames){
 lodmatrixADD <- -log10(pmatrixADD)
 write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
 
+# QTL mapping using also the genotypes by KASP assay
+KASPgenotypes <- read.csv("KASPgenotypes.txt", sep = "\t", header = TRUE, check.names = FALSE, colClasses="character")
+KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Homozygous A/A|Homozygous T/T", "A", x))
+KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Homozygous G/G|Homozygous C/C", "B", x))
+KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Heterozygous A/C|Heterozygous A/G|Heterozygous C/T", "H", x))
