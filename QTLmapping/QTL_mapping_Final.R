@@ -13,6 +13,28 @@ annotation <- annotation[, c(1,2,3,6)]
 colnames(annotation) <- c("Chromosome", "Position", "GenTrain Score", "SNP")
 colnames(genotypes) <- gsub("AIL", "" , colnames(genotypes)) 
 
+## QTL mapping using also the genotypes by KASP assay
+# Adjust KASP dataset and combine it with the gigaMUGA genotypes
+KASPgenotypes <- read.csv("KASPgenotypes.txt", sep = "\t", header = TRUE, check.names = FALSE, colClasses="character")
+KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Homozygous A/A|Homozygous T/T", "A", x))
+KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Homozygous G/G|Homozygous C/C", "B", x))
+KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Heterozygous A/C|Heterozygous A/G|Heterozygous C/T", "H", x))
+colnames(KASPgenotypes) <- c("ID", "UNC28010943", "UNC24184030", "UNCHS041907", "JAX00063853", "UNCHS043909", "UNC5812781", "UNC25805470", "UNCHS030444", "UNCHS041714", "UNCHS019508", "UNC27568354")
+KASPgenotypes <- t(KASPgenotypes)
+colnames(KASPgenotypes) <- KASPgenotypes["ID",]
+KASPgenotypes <- KASPgenotypes[-1,]
+genotypes[,colnames(KASPgenotypes)] <- "NA"
+for (x in 1:nrow(genotypes)){
+  if (rownames(genotypes[x,]) %in% rownames(KASPgenotypes)){
+    new <- cbind(genotypes[x,1:200], data.frame(as.list(KASPgenotypes[rownames(genotypes[x,]),])))
+    colnames(new) <- colnames(genotypes)
+    new <- sapply(new, as.character)
+    genotypes[x,] <- new
+  }
+}
+genotypes <- genotypes[, order(names(genotypes))]
+#write.table(genotypes, file = "genotypesComplete.txt", sep = "\t", quote = FALSE)
+
 # Convert genotypes to numerical values to map using an additive model and dom model or both
 numgeno <- matrix(NA, nrow(genotypes), ncol(genotypes), dimnames=list(rownames(genotypes), colnames(genotypes)))
 for(x in 1:nrow(genotypes)){
@@ -46,7 +68,7 @@ phenotypes <- phenotypes[colnames(genotypes),]
 
 # Dom + Add model without using the sum of LODS and no covariates
 pmatrixADDDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
-for (pname in phenonames[58:68]){
+for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
     numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
@@ -61,7 +83,7 @@ for (pname in phenonames[58:68]){
   pmatrixADDDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixADDDOM <- -log10(pmatrixADDDOM)
-write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM_nosum.txt", quote = FALSE, sep = "\t")
+#write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM_nosum.txt", quote = FALSE, sep = "\t")
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
 
 # Dominance variation model
@@ -80,7 +102,7 @@ for (pname in phenonames){
   pmatrixDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixDOM <- -log10(pmatrixDOM)
-write.table(lodmatrixDOM, file = "lodmatrixDOM_nosum.txt", quote = FALSE, sep = "\t")
+#write.table(lodmatrixDOM, file = "lodmatrixDOM_nosum.txt", quote = FALSE, sep = "\t")
 
 # Additive model
 pmatrixADD <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
@@ -98,26 +120,4 @@ for (pname in phenonames){
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
 lodmatrixADD <- -log10(pmatrixADD
-write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
-
-## QTL mapping using also the genotypes by KASP assay
-# Adjust KASP dataset and combine it with the gigaMUGA genotypes
-KASPgenotypes <- read.csv("KASPgenotypes.txt", sep = "\t", header = TRUE, check.names = FALSE, colClasses="character")
-KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Homozygous A/A|Homozygous T/T", "A", x))
-KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Homozygous G/G|Homozygous C/C", "B", x))
-KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Heterozygous A/C|Heterozygous A/G|Heterozygous C/T", "H", x))
-colnames(KASPgenotypes) <- c("ID", "UNC28010943", "UNC24184030", "UNCHS041907", "JAX00063853", "UNCHS043909", "UNC5812781", "UNC25805470", "UNCHS030444", "UNCHS041714", "UNCHS019508", "UNC27568354")
-KASPgenotypes <- t(KASPgenotypes)
-colnames(KASPgenotypes) <- KASPgenotypes["ID",]
-KASPgenotypes <- KASPgenotypes[-1,]
-genotypes[,colnames(KASPgenotypes)] <- "NA"
-for (x in 1:nrow(genotypes)){
-  if (rownames(genotypes[x,]) %in% rownames(KASPgenotypes)){
-    new <- cbind(genotypes[x,1:200], data.frame(as.list(KASPgenotypes[rownames(genotypes[x,]),])))
-    colnames(new) <- colnames(genotypes)
-    new <- sapply(new, as.character)
-    genotypes[x,] <- new
-  }
-}
-genotypes <- genotypes[, order(names(genotypes))]
-write.table(genotypes, file = "genotypesComplete.txt", sep = "\t", quote = FALSE)
+#write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
