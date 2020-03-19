@@ -8,9 +8,9 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
 genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
-lodmatrixDOM <- read.table("lodmatrixDOM3220.txt", header = TRUE, sep = "\t", check.names = FALSE)
-lodmatrixADD <- read.table("lodmatrixADD3220.txt", header = TRUE, sep = "\t", check.names = FALSE)
-mprofiles <- read.table("lodmatrixADDDOM3220.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixDOM <- read.table("lodmatrixDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixADD <- read.table("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
+mprofiles <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
 markerannot$Index <- seq.int(nrow(markerannot))
@@ -163,7 +163,43 @@ boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX
     cex = 1,
     text.col = "black")
   
-
+# Body weight week 18
+phenotype <- "D126"
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - Bodyweight week 18"))
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, col= "black"))
+    }
+    if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+    }
+      if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+        if (chr %in% seq(1,20,2))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+    }
+  }
+}
+axis(1, chrs, at = chrmids)
+abline(h= -log10(0.05/5000), col="orange",lty=3)
+abline(h= -log10(0.01/5000), col="green",lty=3)
+axis(1, chrs, at = chrmids)
+legend("topright", bg="gray",
+  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  pch = c(0, 18, 17))
+  
 # liver weight
 phenotype <- "Leber"
 plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - liver weight"))
