@@ -7,7 +7,7 @@
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
-genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
+genotypes <- read.csv("genotypesComplete.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 lodmatrixDOM <- read.table("lodmatrixDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
 lodmatrixADD <- read.table("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
 mprofiles <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
@@ -48,7 +48,7 @@ points(x = as.numeric(chr17ord[,"Position"]), y = chr17ord[,"Leber"] , type = "l
 axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
 
 # Body weight different time points for chr 15 (main QTL)
-lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
+lodannotmatrix <- cbind(annotation[rownames(lodmatrixADD), ], lodmatrixADD)
 dataset <- lodannotmatrix[, c("Chromosome", "Position", "D28", "D49", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D126", "D133", "D140", "D160", "D172")]
 chr15 <- dataset[which(dataset[,"Chromosome"] == 15),]
 chr15 <- chr15[order(chr15[,"Position"]),]
@@ -56,7 +56,7 @@ plot(main = "QTL profile bodyweight [Chr 15]", c(min(as.numeric(chr15[, "Positio
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D70"] , type = "l", col="dodgerblue", lwd = 1)
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D140"] , type = "l", col="blue", lwd = 1)
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D63"] , type = "l", col="deepskyblue", lwd = 1)
-  points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D105"] , type = "l", col="purple", lwd = 1)
+  points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D126"] , type = "l", col="purple", lwd = 1)
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D98"] , type = "l", col="dodgerblue4", lwd = 1)
   abline(h=4.5, col="green")
   abline(h=4, col="orange")
@@ -475,8 +475,8 @@ boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC57
 
 
 # length
-phenotype <- "LÃ.nge"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
+phenotype <- "LÃ¤nge"
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -504,8 +504,8 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/5000), col="orange",lty=3)
-abline(h= -log10(0.01/5000), col="green",lty=3)
+abline(h= -log10(0.05/2000), col="orange",lty=3)
+abline(h= -log10(0.01/2000), col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
