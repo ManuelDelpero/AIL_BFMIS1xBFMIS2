@@ -33,7 +33,7 @@ for (x in 1:nrow(genotypes)){
   }
 }
 genotypes <- genotypes[, order(names(genotypes))]
-#write.table(genotypes, file = "genotypesComplete.txt", sep = "\t", quote = FALSE)
+write.table(genotypes, file = "genotypesComplete.txt", sep = "\t", quote = FALSE)
 
 # Convert genotypes to numerical values to map using an additive model and dom model or both
 numgeno <- matrix(NA, nrow(genotypes), ncol(genotypes), dimnames=list(rownames(genotypes), colnames(genotypes)))
@@ -66,43 +66,43 @@ for (x in tissues){
 }
 phenotypes <- phenotypes[colnames(genotypes),]
 
-# Dom + Add model without using the sum of LODS and no covariates
+# Dom dev + Add model without using the sum of LODS and no covariates (real dom)
 pmatrixADDDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
     numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
 	numgenoAddd <- as.numeric(unlist(numgeno))
-    mdata <- data.frame(cbind(pheno = phenotypes[, pname], A = numgenoAddd, D = numgenoDomm))
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], A = numgenoAddd, D = numgenoDomm))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	lm0 <- lm(pheno ~ 1, data = mdata)
-    mmodel <- lm(pheno ~ D + A, data = mdata)
+	lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+    mmodel <- lm(pheno ~ D + A + sex, data = mdata)
     return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
   pmatrixADDDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixADDDOM <- -log10(pmatrixADDDOM)
-#write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM_nosum.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM_nosum.txt", quote = FALSE, sep = "\t")
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
 
-# Dominance variation model
+# Dominance dev model
 pmatrixDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
     numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
-    mdata <- data.frame(cbind(pheno = phenotypes[, pname], D = numgenoDomm))
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], D = numgenoDomm))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	lm0 <- lm(pheno ~ 1, data = mdata)
-    mmodel <- lm(pheno ~ D, data = mdata)
+	lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+    mmodel <- lm(pheno ~ D + sex, data = mdata)
     return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
   pmatrixDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixDOM <- -log10(pmatrixDOM)
-#write.table(lodmatrixDOM, file = "lodmatrixDOM_nosum.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixDOM, file = "lodmatrixDOM_nosum.txt", quote = FALSE, sep = "\t")
 
 # Additive model
 pmatrixADD <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
@@ -110,14 +110,14 @@ for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
 	numgenoAddd <- as.numeric(unlist(numgeno))
-    mdata <- data.frame(cbind(pheno = phenotypes[, pname], A = numgenoAddd))
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], A = numgenoAddd))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	lm0 <- lm(pheno ~ 1, data = mdata)
-    mmodel <- lm(pheno ~ A, data = mdata)
+	lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+    mmodel <- lm(pheno ~ A + sex, data = mdata)
     return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
-lodmatrixADD <- -log10(pmatrixADD
-#write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
+lodmatrixADD <- -log10(pmatrixADD)
+write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
