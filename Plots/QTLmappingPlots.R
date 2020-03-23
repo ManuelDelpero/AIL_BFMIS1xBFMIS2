@@ -50,7 +50,7 @@ axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "7
 # Body weight different time points for chr 15 (main QTL)
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADD), ], lodmatrixADD)
 dataset <- lodannotmatrix[, c("Chromosome", "Position", "D28", "D49", "D35", "D42", "D49", "D56", "D63", "D70", "D77", "D84", "D91", "D98", "D105", "D112", "D119", "D126", "D133", "D140", "D160", "D172")]
-chr15 <- dataset[which(dataset[,"Chromosome"] == 15),]
+chr15 <- dataset[which(dataset[,"Chromosome"] == 16),]
 chr15 <- chr15[order(chr15[,"Position"]),]
 plot(main = "QTL profile bodyweight [Chr 15]", c(min(as.numeric(chr15[, "Position"])), max(as.numeric(chr15[, "Position"]))), c(0,9), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D70"] , type = "l", col="dodgerblue", lwd = 1)
@@ -101,7 +101,7 @@ for (x in chrs){
 
 # Gonadal adipose tissue weight
 phenotype <- "Gon"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - Gonadal adipose tissue weight"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - Gonadal adipose tissue weight"))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -129,8 +129,8 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/5000), col="orange",lty=3)
-abline(h= -log10(0.01/5000), col="green",lty=3)
+abline(h= -log10(0.05/2000), col="orange",lty=3)
+abline(h= -log10(0.01/2000), col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
@@ -165,7 +165,7 @@ boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX
   
 # Body weight week 18
 phenotype <- "D126"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - Bodyweight week 18"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,15), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - Bodyweight week 18"))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -200,6 +200,19 @@ legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(0, 18, 17))
   
+# Effect plot for the top marker on chr 16 
+UNCHS041907 <- cbind(phenotypes[, "D126"], t(genotypes["UNCHS041907",]))
+boxplot(as.numeric(UNCHS041907[which(UNCHS041907[,2] == "A"),1]), as.numeric(UNCHS041907[which(UNCHS041907[,2] == "H"),1]), as.numeric(UNCHS041907[which(UNCHS041907[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal adipose tissue weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNCHS041907]" , las = 2, t = "n", xaxt = "n",  ylim = c(20, 45))
+  axis(1, at = 1:3 , c("TT", "TC", "CC"))
+  legend("topright", bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
+  
 # liver weight
 phenotype <- "Leber"
 plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - liver weight"))
@@ -230,11 +243,9 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/5000), col="orange",lty=3)
-abline(h= -log10(0.01/5000), col="green",lty=3)
+abline(h= -log10(0.05/2000), col="orange",lty=3)
+abline(h= -log10(0.01/2000), col="green",lty=3)
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(0, 18, 17))
@@ -371,11 +382,9 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
+abline(h= -log10(0.05/2000), col="orange",lty=3)
+abline(h= -log10(0.01/2000), col="green",lty=3)
 axis(1, chrs, at = chrmids)
-abline(h= 3.8, col="green",lty=3)
-abline(h=4.2, col="orange",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(0, 18, 17))
@@ -476,7 +485,7 @@ boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC57
 
 # length
 phenotype <- "LÃ¤nge"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,12), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -510,3 +519,16 @@ axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
+  
+# Effect plot for top marker for the length (chr16) 
+boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker UNC5791802 [Chr 3]", ylab = "Weight [Gr.]", xlab = "Genotypes" , las = 2, t = "n", xaxt = "n")
+  axis(1, at = 1:3 , c("TT", "TC", "CC"))
+  legend("topright", bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
+  
