@@ -72,13 +72,13 @@ for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
     numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
-	numgenoAddd <- as.numeric(unlist(numgeno))
+    numgenoAddd <- as.numeric(unlist(numgeno))
     mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], A = numgenoAddd, D = numgenoDomm))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	lm0 <- lm(pheno ~ 1 + sex, data = mdata)
-    mmodel <- lm(pheno ~ D + A + sex, data = mdata)
-    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+      lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ D + A + sex, data = mdata)
+      return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
   pmatrixADDDOM[names(pvalues), pname] <- pvalues
 }
@@ -95,9 +95,9 @@ for (pname in phenonames){
     mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], D = numgenoDomm))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	lm0 <- lm(pheno ~ 1 + sex, data = mdata)
-    mmodel <- lm(pheno ~ D + sex, data = mdata)
-    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+      lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ D + sex, data = mdata)
+      return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
   pmatrixDOM[names(pvalues), pname] <- pvalues
 }
@@ -109,13 +109,13 @@ pmatrixADD <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(row
 for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
-	numgenoAddd <- as.numeric(unlist(numgeno))
+    numgenoAddd <- as.numeric(unlist(numgeno))
     mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], A = numgenoAddd))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	lm0 <- lm(pheno ~ 1 + sex, data = mdata)
-    mmodel <- lm(pheno ~ A + sex, data = mdata)
-    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+      lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ A + sex, data = mdata)
+      return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
