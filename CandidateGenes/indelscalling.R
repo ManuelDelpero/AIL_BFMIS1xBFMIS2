@@ -1,5 +1,5 @@
 #
-# Use bcftools to call SNPs from bam files
+# Use Scalpel to call SNPs from bam files
 #
 
 execute <- function(x, intern = FALSE, execute = TRUE){
