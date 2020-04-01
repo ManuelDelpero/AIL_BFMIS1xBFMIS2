@@ -19,7 +19,7 @@ callINDELs <- function(bamfiles, bedfile, outname = "myINDELs") {
   region = bedfile # Region requested in bed file
   outdir = # output directory
   cmd <- paste0("nohup", scalpel, " --bam ~", bamstr, " --bed ~", region, " --ref ~", reference, " --window 3500 --mapscore 10 --step 750", " --dir ~", outdir)
-  execute(cmd1)
+  execute(cmd)
   invisible("")
 }
 
