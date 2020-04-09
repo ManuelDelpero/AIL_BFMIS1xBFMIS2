@@ -17,9 +17,9 @@ callSNPs <- function(bamfiles, chr = 1, startpos = 1, endpos = 2, outname = "myS
   reference = "/home/danny/References/Mouse/GRCm38_95/Mus_musculus.GRCm38.dna.toplevel.fa" #Reference genome
   region = paste0(chr, ":", format(startpos, scientific = FALSE), "-", format(endpos, scientific = FALSE)) # Region requested
 
-  cmd1 <- paste0(bcftools, " mpileup -q 30 -Ou -r ", region, " -f ", reference, " ", bamstr)
-  cmd2 <- paste0(bcftools, " call -mv -Ov ")
-  cmd3 <- paste0(bcftools, " view -v snps -i '%QUAL>=30 && DP>10' - -o ", outname, ".snps-filtered.vcf")
+  cmd1 <- paste0(bcftools, " mpileup -q 30 -Ou --threads 8 -r ", region, " -f ", reference, " ", bamstr)
+  cmd2 <- paste0(bcftools, " call --threads 8 -mv -Ov ")
+  cmd3 <- paste0(bcftools, " view --threads 8 -v snps -i '%QUAL>=30 && DP>10' - -o ", outname, ".snps-filtered.vcf")
   execute(paste0(cmd1, " | ", cmd2, " | ", cmd3))
   invisible("")
 }
