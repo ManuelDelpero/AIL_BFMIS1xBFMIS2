@@ -4,8 +4,8 @@
 # 
 # first written december, 2019
 
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
-setwd("/home/manuel/AIL_S1xS2/RAWDATA")
+setwd("/home/manuel/AIL_S1xS2_old/RAWDATA/")
+
 
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
@@ -36,12 +36,12 @@ for(x in genes){
 uniquegenes <- uniquegenes[!duplicated(uniquegenes),] 
 table(uniquegenes[ ,"chromosome_name"])
 
-bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S12  (high coverage)
-             "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S1.bam",    # 861-S1 (medium coverage)
-             "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S2.bam")    # 861-S2 (medium coverage)
+bamfiles <- c("/home/manuel/AIL_S1xS2/DNA/chr17153_S1.bam",  # 860-S12  (high coverage)
+             "/home/manuel/AIL_S1xS2/DNA/chr17153_S2.bam",    # 861-S1 (medium coverage)
+             "/home/manuel/AIL_S1xS2/DNA/chr17153_S12.bam")    # 861-S2 (medium coverage)
 			 
 
-setwd("/home/manuel/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
+setwd("/home/manuel/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver/SNPsGenesGonLiver/")
 
 # Snps in genes
 for(x in 1:nrow(uniquegenes)){ 
