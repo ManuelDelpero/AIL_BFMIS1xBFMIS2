@@ -65,34 +65,30 @@ for(x in genes){
 uniquegenes <- uniquegenes[!duplicated(uniquegenes),] 
 table(uniquegenes[ ,"chromosome_name"])
 
-bamfiles <- c("/halde/BFMI_Alignment_Mar19/merged_sorted_860-S12.bam",  # 860-S12  (high coverage)
-             "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S1.bam",    # 861-S1 (medium coverage)
-             "/halde/BFMI_Alignment_Mar19/merged_sorted_861-S2.bam")    # 861-S2 (medium coverage)
-
-
-# Volvano plot function			 
-VolcanoPlot <- function(x,y){
+# Volvano plot function	(expression values and annotation of the genes in the QTL region as arguments)	 
+VolcanoPlot <- function(x,y){       
   sig <- x[which((x[,"logFC"] < -0.2 | x[,"logFC"] > 0.2) & (x[,"p.value"] < 0.05/5000)),]
   int1 <- x[which((x[,"logFC"] < -0.2 | x[,"logFC"] > 0.2) & (x[,"p.value"] > 0.05/5000)),]
   int2 <- x[which((x[,"logFC"] > -0.2 | x[,"logFC"] < 0.2) & (x[,"p.value"] < 0.05/5000) & (!(x[,1] %in% sig[,1]))),]
   not <- x[which((x[,"logFC"] > -0.2 | x[,"logFC"] < 0.2) & (x[,"p.value"] > 0.05/5000) & (!(x[,1] %in% int1[,1]))),]
   myPchsig <- ifelse(sig[,1] %in% y[,1], 16, 1)
+  myCexsig <- ifelse(sig[,1] %in% y[,1], 2, 1)
   myPchint1 <- ifelse(int1[,1] %in% y[,1], 16, 1)
   myPchint2 <- ifelse(int2[,1] %in% y[,1], 16, 1)
   plot(main = "Volcano Plot - Gonadal adipose tissue", x = c(-1,1), y = c(0,15), ylab="log10(pvalue)", xlab="log2 Fold change", ylim = c(0, 15), xlim = c(-0.8,0.8), t = "n")
-    points(sig[, "logFC"], -log10(sig[, "p.value"]), col = "green", pch= myPchsig, cex = 1)
-    points(not[, "logFC"], -log10(not[, "p.value"]), col = "red", pch= myPch, cex = 1)
+    points(sig[, "logFC"], -log10(sig[, "p.value"]), col = "green", pch= myPchsig, cex = myCexsig)
+    points(not[, "logFC"], -log10(not[, "p.value"]), col = "red", pch= 1, cex = 1)
     points(int1[, "logFC"], -log10(int1[, "p.value"]), col = "orange", pch= myPchint1, cex = 1)
     points(int2[, "logFC"], -log10(int2[, "p.value"]), col = "orange", pch= myPchint2, cex = 1)
-    text(sig[60, "logFC"], -log10(sig[60, "p.value"]), "Acat2")
+	textToPlot <- sig[which(sig[,1] %in% uniquegenes[,1]),]
+	names <- textToPlot[,3]
+	posx <- textToPlot[, "logFC"]
+	posy <- -log10(textToPlot[, "p.value"])
+    text(posx, posy, names)  
     legend("topright",  bg="gray",
       legend=c("Significant", "Interesting", "Not significant","In QTLs","Out of QTLs"), 
       col=c("green","orange", "red","black", "black"), pch=c(16, 16, 16, 16, 1),
       bty="n", border=F, ncol=2)
 }
-# Gonadal fat volvano plot
-out <- which(exprGonadalfat[, "logFC"] < -1)
-exprGonadalfat = exprGonadalfat[-out,]
-VolcanoPlot(exprGonadalfat)
-# liver volvano plot
-VolcanoPlot(exprliver)
+
+VolcanoPlot(exprGonadalfat, uniquegenes)
