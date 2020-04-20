@@ -108,59 +108,62 @@ for(chr in chrs){
   currentDOM <- lodmatrixDOM[onChr, phenotype]
   currentADD <- lodmatrixADD[onChr, phenotype]
   if (chr == "X")
-    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "black")
   for (p in 1:length(currentADDDOM)){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, col= "black"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "black"))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1,5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "black"))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
-          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
-	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5, col= "cornflowerblue")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5,col= "black"))
     }
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/2000), col="orange",lty=3)
-abline(h= -log10(0.01/2000), col="green",lty=3)
+abline(h= 4, col="orange",lty=3)
+abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
-legend("topright", bg="gray",
-  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+legend("topright", #bg="gray"
+  bty = "n",
+  legend = c("Dominance", "Additive", "Dominance dev."),
   pch = c(0, 18, 17))
   
 
  # Effect plot for the top marker on chr 3
-JAX00432128 <- cbind(phenotypes[, "Gon"], t(genotypes["JAX00432128",]))
+UNCHS043909 <- cbind(phenotypes[, "Gon"], t(genotypes["UNCHS043909",]))
 UNC5791802 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC5791802",]))
-boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal adipose tissue weight [Chr 3]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNC5791802]", las = 2, t = "n", xaxt = "n", ylim = c(0, 5))
+boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal adipose tissue weight [Chr 3]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNC5791802]", las = 2, t = "n", xaxt = "n", ylim = c(0, 7))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
-  legend("topright", bg="gray",
+  legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
-    pt.bg = "lightsteelblue1",
+    #pt.bg = "lightsteelblue1",
     cex = 1,
+	bty = "n",
     text.col = "black")
    
 # Effect plot for the top marker on chr 17
-boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal adipose tissue weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [JAX00432128]" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 5))
+boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "H"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal adipose tissue weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNCHS043909]" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 7))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
-  legend("topright", bg="gray",
+  legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
-    pt.bg = "lightsteelblue1",
+    #pt.bg = "lightsteelblue1",
     cex = 1,
+	bty = "n",
     text.col = "black")
   
 # Body weight week 18
@@ -193,8 +196,8 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/5000), col="orange",lty=3)
-abline(h= -log10(0.01/5000), col="green",lty=3)
+abline(h= 4, col="orange",lty=3)
+abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
@@ -243,8 +246,8 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/2000), col="orange",lty=3)
-abline(h= -log10(0.01/2000), col="green",lty=3)
+abline(h= 4, col="orange",lty=3)
+abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
@@ -309,8 +312,8 @@ axis(1, chrs, at = chrmids)
 abline(h= 3.8, col="green",lty=3)
 abline(h=4.2, col="orange",lty=3)
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/5000), col="orange",lty=3)
-abline(h= -log10(0.01/5000), col="green",lty=3)
+abline(h= 4, col="orange",lty=3)
+abline(h= 4.5, col="green",lty=3)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
   pch = c(16, 18, 17))
@@ -345,8 +348,8 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/5000), col="orange",lty=3)
-abline(h= -log10(0.01/5000), col="green",lty=3)
+abline(h= 4, col="orange",lty=3)
+abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
@@ -354,7 +357,7 @@ legend("topright", bg="gray",
 
 # Gluc172
 phenotype <- "Gluc172"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - Glucose day 172"))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -382,8 +385,8 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/2000), col="orange",lty=3)
-abline(h= -log10(0.01/2000), col="green",lty=3)
+abline(h= 4, col="orange",lty=3)
+abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
@@ -485,7 +488,7 @@ boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC57
 
 # length
 phenotype <- "LÃ¤nge"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,12), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - ", phenotype))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,12), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main="Manhattan plot - Length")
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -497,8 +500,8 @@ for(chr in chrs){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 16, col= "black"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, col= "black"))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
@@ -513,8 +516,8 @@ for(chr in chrs){
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h= -log10(0.05/2000), col="orange",lty=3)
-abline(h= -log10(0.01/2000), col="green",lty=3)
+abline(h= 4, col="orange",lty=3)
+abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
