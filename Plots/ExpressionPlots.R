@@ -20,7 +20,8 @@ DiffexprPankreas <- read.csv("pankreas_significant_ann.txt", sep = "\t", header 
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
 # Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
-regions <- regions[c(39, 40, 41, 49, 50, 51, 52 , 55, 56),]
+regionsGon <- regions[c(39, 40, 41, 49, 50, 51, 52 , 55, 56),] # Gon fat
+regionsLiver <- regions[52,] # Liver
 
 library(biomaRt)
 
@@ -41,13 +42,26 @@ region, "protein_coding"),                                             # The thi
   return (res.biomart) 
 }
 
-# Get genes in regions
-genes <- vector("list", nrow(regions))
-for(x in 1:nrow(regions)){																			
-  if(!is.na(regions[x, "Chr"])){
-    genes[[x]] <- getregion(bio.mart, regions[x, "Chr"], regions[x, "StartPos"], regions[x, "StopPos"])
-	cat(x, " has ", nrow(genes[[x]]), "genes\n")
-    fname <- paste0("genes_in_", regions[x, "Chr"],"-", regions[x, "StartPos"], ":", regions[x, "StopPos"], as.character(regions[x, "Phenotype"]) , ".txt") 
+# Get genes in regions for Gon fat
+genesGon <- vector("list", nrow(regionsGon))
+for(x in 1:nrow(regionsGon)){																			
+  if(!is.na(regionsGon[x, "Chr"])){
+    genesGon[[x]] <- getregion(bio.mart, regionsGon[x, "Chr"], regionsGon[x, "StartPos"], regionsGon[x, "StopPos"])
+	cat(x, " has ", nrow(genesGon[[x]]), "genes\n")
+    fname <- paste0("genes_in_", regionsGon[x, "Chr"],"-", regionsGon[x, "StartPos"], ":", regionsGon[x, "StopPos"], as.character(regionsGon[x, "Phenotype"]) , ".txt") 
+    #write.table(genes[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
+  }else{
+ 	cat(x, " has NA region\n")
+  }
+}
+
+# Get genes in regions for liver
+genesLiver <- vector("list", nrow(regionsLiver))
+for(x in 1:nrow(regionsLiver)){																			
+  if(!is.na(regionsLiver[x, "Chr"])){
+    genesLiver[[x]] <- getregion(bio.mart, regionsLiver[x, "Chr"], regionsLiver[x, "StartPos"], regionsLiver[x, "StopPos"])
+	cat(x, " has ", nrow(genesLiver[[x]]), "genes\n")
+    fname <- paste0("genes_in_", regionsLiver[x, "Chr"],"-", regionsLiver[x, "StartPos"], ":", regionsLiver[x, "StopPos"], as.character(regionsLiver[x, "Phenotype"]) , ".txt") 
     #write.table(genes[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
   }else{
  	cat(x, " has NA region\n")
@@ -55,15 +69,25 @@ for(x in 1:nrow(regions)){
 }
 
 # figure out all the unique genes, result: matrix with 4 columns: name, chromosome, start position, end position
-uniquegenes <- NULL
-for(x in genes){ 
+uniquegenesGon <- NULL
+for(x in genesGon){ 
   if(!is.null(x)){
     subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand")]
-	uniquegenes <- rbind(uniquegenes, subset) 
+	uniquegenesGon <- rbind(uniquegenesGon, subset) 
   }
 }
-uniquegenes <- uniquegenes[!duplicated(uniquegenes),] 
-table(uniquegenes[ ,"chromosome_name"])
+uniquegenesGon <- uniquegenesGon[!duplicated(uniquegenesGon),] 
+table(uniquegenesGon[ ,"chromosome_name"])
+
+uniquegenesLiver <- NULL
+for(x in genesLiver){ 
+  if(!is.null(x)){
+    subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand")]
+	uniquegenesLiver <- rbind(uniquegenesLiver, subset) 
+  }
+}
+uniquegenesLiver <- uniquegenesLiver[!duplicated(uniquegenesLiver),] 
+table(uniquegenesLiver[ ,"chromosome_name"])
 
 # Volvano plot function	(expression values and annotation of the genes in the QTL region as arguments)	 
 VolcanoPlot <- function(x,y){       
@@ -75,12 +99,13 @@ VolcanoPlot <- function(x,y){
   myCexsig <- ifelse(sig[,1] %in% y[,1], 2, 1)
   myPchint1 <- ifelse(int1[,1] %in% y[,1], 16, 1)
   myPchint2 <- ifelse(int2[,1] %in% y[,1], 16, 1)
-  plot(main = "Volcano Plot - Gonadal adipose tissue", x = c(-1,1), y = c(0,15), ylab="log10(pvalue)", xlab="log2 Fold change", ylim = c(0, 15), xlim = c(-0.8,0.8), t = "n")
+  title <- readline(prompt="Enter name of the tissue: ")
+  plot(main = paste0("Volcano Plot - ", title), x = c(-1,1), y = c(0,15), ylab="log10[pvalue]", xlab="log2 Fold change", ylim = c(0, 17), xlim = c(-0.8,0.8), t = "n")
     points(sig[, "logFC"], -log10(sig[, "p.value"]), col = "green", pch= myPchsig, cex = myCexsig)
     points(not[, "logFC"], -log10(not[, "p.value"]), col = "red", pch= 1, cex = 1)
     points(int1[, "logFC"], -log10(int1[, "p.value"]), col = "orange", pch= myPchint1, cex = 1)
     points(int2[, "logFC"], -log10(int2[, "p.value"]), col = "orange", pch= myPchint2, cex = 1)
-	textToPlot <- sig[which(sig[,1] %in% uniquegenes[,1]),]
+	textToPlot <- sig[which(sig[,1] %in% y[,1]),]
 	names <- textToPlot[,3]
 	posx <- textToPlot[, "logFC"]
 	posy <- -log10(textToPlot[, "p.value"])
@@ -91,4 +116,8 @@ VolcanoPlot <- function(x,y){
       bty="n", border=F, ncol=2)
 }
 
-VolcanoPlot(exprGonadalfat, uniquegenes)
+par(cex.lab=1.2, cex.main = 1.8, cex.axis = 1.4)
+par(mfrow = c(1,2))
+
+VolcanoPlot(exprGonadalfat, uniquegenesGon)
+VolcanoPlot(exprliver, uniquegenesGon)
