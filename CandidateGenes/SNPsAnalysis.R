@@ -1,6 +1,6 @@
-setwd("C:/Users/Manuel/Desktop/AIL_B6xBFMI/RAWDATA")
+setwd("C:\\Users\\Manuel\\Desktop\\AIL_S1xS2\\RAWDATA\\SNPsGenesGonLiver")
 
-myvcf <- read.csv("3yLSqjVsXH9HTPX2.vcf", sep = "\t", skip = 169, header=FALSE, colClasses="character")
+myvcf <- read.csv("all_combined.vcf", sep = "\t", skip = 169, header=FALSE, colClasses="character")
 dim(myvcf)
 
 colnames(myvcf) <- c("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", "BFMI860-12", "BFMI861-S1", "BFMI861-S2")
@@ -21,7 +21,7 @@ myvcf <- cbind(location = as.character(paste0(myvcf[,"CHROM"], ":", myvcf[, "POS
 myvcf <- myvcf[which(!duplicated(myvcf[,"location"])),]
 
 # Load the VEP results
-myvep <- read.csv("vep_predictionsMQM.txt", sep = "\t", header=TRUE, colClasses="character")
+myvep <- read.csv("VEP.txt", sep = "\t", header=TRUE, colClasses="character")
 colnames(myvep) <- c("Uploaded_variation", "Location", "Allele", "Consequence", "IMPACT", "SYMBOL", "Gene", "Feature_type", "Feature", "BIOTYPE", "EXON", "INTRON", "HGVSc", "HGVSp", "cDNA_position", "CDS_position", "Protein_position", "Amino_acids", "Codons", "Existing_variation", "DISTANCE", "STRAND", "FLAGS", "SYMBOL_SOURCE", "HGNC_ID", "TSL", "APPRIS", "REFSEQ_MATCH", "SIFT", "CLIN_SIG", "SOMATIC", "PHENO", "MOTIF_NAME", "MOTIF_POS", "HIGH_INF_POS", "MOTIF_SCORE_CHANGE")
 
 allgenes <- unique(myvep[which(myvep[, "Consequence"] == "missense_variant"),"Location"])
@@ -35,9 +35,11 @@ vepgenes <- myvep[which(myvep[, "SYMBOL"] != "-"),]
 allgenes <- unique(vepgenes[, "SYMBOL"])
 
 resM <- matrix(NA, length(allgenes), 4)
+resMS <- matrix(NA, length(allgenes), 4)
 resM[,1] <- allgenes
+resMS[,1] <- allgenes
 colnames(resM) <- c("name", "chr", "missense variant", "consequence")
-
+colnames(resMS) <- c("name", "chr", "Stop gained", "Stop lost")
 # Create a ranking dataset for the candidate genes
 mrow <- 1
 for (gene in allgenes) {
@@ -57,6 +59,26 @@ for (gene in allgenes) {
   mrow <- mrow + 1
   cat(mrow, "/", length(allgenes), "\n")
 }
+
+mrow <- 1
+for (gene in allgenes) {
+  snpingene <- vepgenes[which(vepgenes[,"SYMBOL"] == gene),]
+  chr <- unique(unlist(lapply(strsplit(snpingene[, "Location"], ":"), "[",1)))
+  resMS[mrow, "chr"] <- chr
+  hasStop <- any(unique(snpingene[,"IMPACT"]) == "HIGH")
+  if(hasStop) {
+    if(length(grep("stop_gained", snpingene[,"Consequence"], fixed=TRUE)) > 0) resMS[mrow, "Stop gained"] <- "++"
+    if(length(grep("stop_lost", snpingene[,"Consequence"], fixed=TRUE)) > 0) resMS[mrow, "Stop lost"] <- "++"
+  }else{
+    resMS[mrow, "Stop gained"] <- "-"
+	resMS[mrow, "Stop lost"] <- "-"
+  }
+  mrow <- mrow + 1
+  cat(mrow, "/", length(allgenes), "\n")
+}
+
+stopGained <- resMS[which(resMS[,"Stop gained"] == "++"),]
+stopLost <- resMS[which(resMS[,"Stop lost"] == "++"),]
 missense <- resM[which(resM[,"consequence"] == "++"),]
 
 # Add a column for the expression in S1
