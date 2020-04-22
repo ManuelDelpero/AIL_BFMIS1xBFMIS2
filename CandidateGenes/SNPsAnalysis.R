@@ -22,7 +22,7 @@ myvcf <- myvcf[which(!duplicated(myvcf[,"location"])),]
 
 # Load the VEP results
 myvep <- read.csv("VEP.txt", sep = "\t", header=TRUE, colClasses="character")
-colnames(myvep) <- c("Uploaded_variation", "Location", "Allele", "Consequence", "IMPACT", "SYMBOL", "Gene", "Feature_type", "Feature", "BIOTYPE", "EXON", "INTRON", "HGVSc", "HGVSp", "cDNA_position", "CDS_position", "Protein_position", "Amino_acids", "Codons", "Existing_variation", "DISTANCE", "STRAND", "FLAGS", "SYMBOL_SOURCE", "HGNC_ID", "TSL", "APPRIS", "REFSEQ_MATCH", "SIFT", "CLIN_SIG", "SOMATIC", "PHENO", "MOTIF_NAME", "MOTIF_POS", "HIGH_INF_POS", "MOTIF_SCORE_CHANGE")
+#colnames(myvep) <- c("Uploaded_variation", "Location", "Allele", "Consequence", "IMPACT", "SYMBOL", "Gene", "Feature_type", "Feature", "BIOTYPE", "EXON", "INTRON", "HGVSc", "HGVSp", "cDNA_position", "CDS_position", "Protein_position", "Amino_acids", "Codons", "Existing_variation", "DISTANCE", "STRAND", "FLAGS", "SYMBOL_SOURCE", "HGNC_ID", "TSL", "APPRIS", "REFSEQ_MATCH", "SIFT", "CLIN_SIG", "SOMATIC", "PHENO", "MOTIF_NAME", "MOTIF_POS", "HIGH_INF_POS", "MOTIF_SCORE_CHANGE")
 
 allgenes <- unique(myvep[which(myvep[, "Consequence"] == "missense_variant"),"Location"])
 myvcf[which(myvcf[, "location"] %in% allgenes),]
@@ -67,8 +67,8 @@ for (gene in allgenes) {
   resMS[mrow, "chr"] <- chr
   hasStop <- any(unique(snpingene[,"IMPACT"]) == "HIGH")
   if(hasStop) {
-    if(length(grep("stop_gained", snpingene[,"Consequence"], fixed=TRUE)) > 0) resMS[mrow, "Stop gained"] <- "++"
-    if(length(grep("stop_lost", snpingene[,"Consequence"], fixed=TRUE)) > 0) resMS[mrow, "Stop lost"] <- "++"
+    if(length(grep("stop_gained", snpingene[,"Consequence"])) > 0) resMS[mrow, "Stop gained"] <- "++"
+    if(length(grep("stop_lost", snpingene[,"Consequence"])) > 0) resMS[mrow, "Stop lost"] <- "++"
   }else{
     resMS[mrow, "Stop gained"] <- "-"
 	resMS[mrow, "Stop lost"] <- "-"
