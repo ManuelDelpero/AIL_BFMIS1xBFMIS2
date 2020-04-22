@@ -101,7 +101,7 @@ for (x in chrs){
 
 # Gonadal adipose tissue weight
 phenotype <- "Gon"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - Gonadal adipose tissue weight"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plot - Gonadal adipose tissue weight"))
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -214,6 +214,7 @@ boxplot(as.numeric(UNCHS041907[which(UNCHS041907[,2] == "A"),1]), as.numeric(UNC
     pt.cex = 1.7,
     pt.bg = "lightsteelblue1",
     cex = 1,
+	bty = "n",
     text.col = "black")
   
 # liver weight
@@ -225,23 +226,23 @@ for(chr in chrs){
   currentDOM <- lodmatrixDOM[onChr, phenotype]
   currentADD <- lodmatrixADD[onChr, phenotype]
   if (chr == "X")
-    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, col= "black")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, cex =1.5, col= "black")
   for (p in 1:length(currentADDDOM)){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, col= "black"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "black"))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, col= "black"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "black"))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
-          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "cornflowerblue")
-	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, col= "black"))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5, col= "cornflowerblue")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5, col= "black"))
     }
   }
 }
@@ -251,33 +252,36 @@ abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", bg="gray",
   legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+  bty = "n",
   pch = c(0, 18, 17))
 
 # Effect plot for the top marker on chr 17 for the liver
-JAX00432128 <- cbind(phenotypes[, "Leber"], t(genotypes["JAX00432128",]))
-ICR889 <- cbind(phenotypes[, "Leber"], t(genotypes["ICR889",]))
-boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [JAX00432128]" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
+UNCHS043909 <- cbind(phenotypes[, "Leber"], t(genotypes["UNCHS043909",]))
+UNC27568354 <- cbind(phenotypes[, "Leber"], t(genotypes["UNC27568354",]))
+boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "H"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNCHS043909]" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 8))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
-  legend("topright", bg="gray",
+  legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
     pt.bg = "lightsteelblue1",
     cex = 1,
+	bty = "n",
+    text.col = "black")
+
+boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNC27568354]" , las = 2, t = "n", xaxt = "n",  ylim = c(0, 8))
+  axis(1, at = 1:3 , c("TT", "TC", "CC"))
+  legend("topright", #bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1,
+	bty = "n",
     text.col = "black")
   
-# Effect plot for the top marker on chr 17 for the Gonadal weight
-boxplot(as.numeric(ICR889[which(ICR889[,2] == "A"),1]), as.numeric(ICR889[which(ICR889[,2] == "H"),1]), as.numeric(ICR889[which(ICR889[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [ICR889]", las = 2, t = "n", xaxt = "n",  ylim = c(0, 6))
-  axis(1, at = 1:3 , c("TT", "TC", "CC"))
-  legend("topright", bg="gray",
-  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
-    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
-    pch = 15,
-    pt.cex = 1.7,
-    pt.bg = "lightsteelblue1",
-    cex = 1,
-    text.col = "black")
 
 # Triglycerides
 phenotype <- "Triglycerides"
