@@ -33,7 +33,7 @@ for (x in 1:nrow(genotypes)){
   }
 }
 genotypes <- genotypes[, order(names(genotypes))]
-write.table(genotypes, file = "genotypesComplete.txt", sep = "\t", quote = FALSE)
+#write.table(genotypes, file = "genotypesComplete.txt", sep = "\t", quote = FALSE)
 
 # Convert genotypes to numerical values to map using an additive model and dom model or both
 numgeno <- matrix(NA, nrow(genotypes), ncol(genotypes), dimnames=list(rownames(genotypes), colnames(genotypes)))
@@ -121,3 +121,70 @@ for (pname in phenonames){
 }
 lodmatrixADD <- -log10(pmatrixADD)
 write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
+
+# Figure out the variance explained by each QTL considering the direction of the effect
+genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
+phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
+lodmatrixDOM <- read.csv("lodmatrixDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixADD <- read.csv("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixADDDOM <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
+numgeno <- matrix(NA, nrow(genotypes), ncol(genotypes), dimnames=list(rownames(genotypes), colnames(genotypes)))
+
+for(x in 1:nrow(genotypes)){
+  h1 <- "A"
+  het <- "H"
+  h2 <- "B"
+  numgeno[x, which(genotypes[x, ] == h1)] <- -1
+  numgeno[x, which(genotypes[x, ] == het)] <- 0
+  numgeno[x, which(genotypes[x, ] == h2)] <- 1
+}
+
+# get just the top markers for the phenotypes
+phenos <- c("Gon", "Leber")
+TopMarkersGon <- c("UNC5791802", "UNC20599050", "UNC25806117", "UNC27977378")
+TopMarkersLiver <- "UNCHS043909"
+ 
+varExplained <- matrix(NA, 5, 2) 
+rownames(varExplained) <- c(TopMarkersGon, TopMarkersLiver)
+colnames(varExplained) <- phenos
+for (pname in phenos){
+  for (x in rownames(varExplained)){
+    if ((lodmatrixADD[x, pname] > lodmatrixDOM[x, pname]) && (lodmatrixADD[x, pname] > lodmatrixADDDOM[x, pname])){ 
+	  pheno <- phenotypes[, pname]
+	  numgenoAddd <- as.numeric(unlist(numgeno[x,]))
+      mdata <- data.frame(cbind(pheno, sex = phenotypes[, "Sex"], A = numgenoAddd))
+      isNA <- which(apply(apply(mdata,1,is.na),2,any))
+      if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+      mmodel <- lm(pheno ~ sex + A, data = mdata)
+      sumSQ <- anova(mmodel)["A", "Sum Sq"]
+	  var <- sumSQ / sum((pheno - mean(pheno, na.rm=TRUE))^2, na.rm=TRUE)
+      var <- round(var * 100, digits=1)	  
+    }
+    if ((lodmatrixDOM[x, pname] > lodmatrixADD[x, pname]) && (lodmatrixDOM[x, pname] > lodmatrixADDDOM[x, pname])){
+      pheno <- phenotypes[, pname]
+	  numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
+      mdata <- data.frame(cbind(pheno, sex = phenotypes[, "Sex"], D = numgenoDomm))
+      isNA <- which(apply(apply(mdata,1,is.na),2,any))
+      if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+      mmodel <- lm(pheno ~ sex + D, data = mdata)
+      sumSQ <- anova(mmodel)["D", "Sum Sq"]
+	  var <- sumSQ / sum((pheno - mean(pheno, na.rm=TRUE))^2, na.rm=TRUE)
+	  var <- round(var * 100, digits=1)	  
+    }
+	varExplained[x, pname] <- var
+  }
+} 
+    # need to be implemented as well
+    if ((lodmatrixADDDOM[x, pname] > lodmatrixADD[x, pname]) && (lodmatrixADDDOM[x, pname] > lodmatrixDOM[x, pname])){
+      numgenoAddd <- as.numeric(unlist(numgeno[x,]))
+	  numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
+	  mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], A = numgenoAddd, D = numgenoDomm))
+      isNA <- which(apply(apply(mdata,1,is.na),2,any))
+      if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+      mmodel <- lm(pheno ~ sex + A + D, data = mdata)
+      sumSQ <- anova(mmodel)[c("A","D"), "Sum Sq"]
+	  var <- sumSQ / sum((pheno - mean(pheno, na.rm=TRUE))^2, na.rm=TRUE)
+	  var <- round(var * 100, digits=1)
+	}
+	varExplained[x, pname] <- var
+ 
