@@ -105,10 +105,10 @@ VolcanoPlot <- function(x,y){
     points(not[, "logFC"], -log10(not[, "p.value"]), col = "red", pch= 1, cex = 1)
     points(int1[, "logFC"], -log10(int1[, "p.value"]), col = "orange", pch= myPchint1, cex = 1)
     points(int2[, "logFC"], -log10(int2[, "p.value"]), col = "orange", pch= myPchint2, cex = 1)
-	textToPlot <- sig[which(sig[,1] %in% y[,1]),]
-	names <- textToPlot[,3]
-	posx <- textToPlot[, "logFC"]
-	posy <- -log10(textToPlot[, "p.value"])
+    textToPlot <- sig[which(sig[,1] %in% y[,1]),]
+    names <- textToPlot[,3]
+    posx <- textToPlot[, "logFC"]
+    posy <- -log10(textToPlot[, "p.value"])
     text(posx, posy, names)  
     legend("topright",  bg="gray",
       legend=c("Significant", "Interesting", "Not significant","In QTLs","Out of QTLs"), 
