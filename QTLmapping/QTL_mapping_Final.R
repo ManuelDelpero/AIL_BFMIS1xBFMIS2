@@ -131,7 +131,8 @@ lodmatrixADDDOM <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = 
 phenos <- c("Gon", "Leber")
 TopMarkersGon <- c("UNC5791802", "UNC20599050", "UNC25806117", "UNC27977378")
 TopMarkersLiver <- "UNCHS043909"
- 
+
+# Var explained by the Dominance or additive effect
 varExplained <- matrix(NA, 5, 2) 
 rownames(varExplained) <- c(TopMarkersGon, TopMarkersLiver)
 colnames(varExplained) <- phenos
@@ -157,21 +158,17 @@ for (pname in phenos){
       sumSQ <- anova(mmodel)["D", "Sum Sq"]
 	  var <- sumSQ / sum((pheno - mean(pheno, na.rm=TRUE))^2, na.rm=TRUE)
 	  var <- round(var * 100, digits=1)	  
-    }else var <- NA
-	varExplained[x, pname] <- var
-  }
-} 
-    # need to be implemented as well
-    if ((lodmatrixADDDOM[x, pname] > lodmatrixADD[x, pname]) && (lodmatrixADDDOM[x, pname] > lodmatrixDOM[x, pname])){
-      numgenoAddd <- as.numeric(unlist(numgeno[x,]))
-	  numgenoDomm <- as.numeric(as.numeric(unlist(numgeno[x,])) != 0)
-	  mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], A = numgenoAddd, D = numgenoDomm))
-      isNA <- which(apply(apply(mdata,1,is.na),2,any))
-      if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-      mmodel <- lm(pheno ~ sex + A + D, data = mdata)
-      sumSQ <- anova(mmodel)[c("A","D"), "Sum Sq"]
-	  var <- sumSQ / sum((pheno - mean(pheno, na.rm=TRUE))^2, na.rm=TRUE)
-	  var <- round(var * 100, digits=1)
-	}
-	varExplained[x, pname] <- var
- 
+
+# Function to calculate the variance explained by the additive and dominance deviation effect at the same time giving the marker name and the phenotype as arguments
+DomAddVariance <- function(marker, pname){
+  numgenoAddd <- as.numeric(unlist(numgeno[marker,]))
+  numgenoDomm <- as.numeric(as.numeric(unlist(numgeno[marker,])) != 0)
+  mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], A = numgenoAddd, D = numgenoDomm))
+  isNA <- which(apply(apply(mdata,1,is.na),2,any))
+  if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+  mmodel <- lm(pheno ~ sex + A + D, data = mdata)
+  sumSQ <- anova(mmodel)[c("A","D"), "Sum Sq"]
+  var <- sumSQ / sum((pheno - mean(pheno, na.rm=TRUE))^2, na.rm=TRUE)
+  var <- round(var * 100, digits=1)
+  return(paste(var[1], "Additive", var[2], "Dominance deviation"))
+}
