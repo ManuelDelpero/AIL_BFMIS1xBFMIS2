@@ -199,13 +199,14 @@ axis(1, chrs, at = chrmids)
 abline(h= 4, col="orange",lty=3)
 abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
-legend("topright", bg="gray",
-  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+legend("topright", #bg="gray"
+  bty = "n",
+  legend = c("Dominance", "Additive", "Dominance dev."),
   pch = c(0, 18, 17))
   
 # Effect plot for the top marker on chr 16 
 UNCHS041907 <- cbind(phenotypes[, "D126"], t(genotypes["UNCHS041907",]))
-boxplot(as.numeric(UNCHS041907[which(UNCHS041907[,2] == "A"),1]), as.numeric(UNCHS041907[which(UNCHS041907[,2] == "H"),1]), as.numeric(UNCHS041907[which(UNCHS041907[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal adipose tissue weight [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNCHS041907]" , las = 2, t = "n", xaxt = "n",  ylim = c(20, 45))
+boxplot(as.numeric(UNCHS041907[which(UNCHS041907[,2] == "A"),1]), as.numeric(UNCHS041907[which(UNCHS041907[,2] == "H"),1]), as.numeric(UNCHS041907[which(UNCHS041907[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Body weight week 18 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes [UNCHS041907]" , las = 2, t = "n", xaxt = "n",  ylim = c(20, 45))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -250,9 +251,9 @@ axis(1, chrs, at = chrmids)
 abline(h= 4, col="orange",lty=3)
 abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
-legend("topright", bg="gray",
-  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+legend("topright", #bg="gray"
   bty = "n",
+  legend = c("Dominance", "Additive", "Dominance dev."),
   pch = c(0, 18, 17))
 
 # Effect plot for the top marker on chr 17 for the liver
@@ -392,10 +393,10 @@ axis(1, chrs, at = chrmids)
 abline(h= 4, col="orange",lty=3)
 abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
-legend("topright", bg="gray",
-  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
+legend("topright", #bg="gray"
+  bty = "n",
+  legend = c("Dominance", "Additive", "Dominance dev."),
   pch = c(0, 18, 17))
-
 
 # Effect plot for top marker for Gon weight (chr 17) using glucose as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
 JAX00432128 <- cbind(phenotypes[, "Gluc172"], t(genotypes["JAX00432128",]))
@@ -523,9 +524,10 @@ axis(1, chrs, at = chrmids)
 abline(h= 4, col="orange",lty=3)
 abline(h= 4.5, col="green",lty=3)
 axis(1, chrs, at = chrmids)
-legend("topright", bg="gray",
-  legend = c("ADD + DOM dev.", "ADD", "DOM dev."),
-  pch = c(16, 18, 17))
+legend("topright", #bg="gray"
+  bty = "n",
+  legend = c("Dominance", "Additive", "Dominance dev."),
+  pch = c(0, 18, 17))
   
 # Effect plot for top marker for the length (chr16) 
 boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker UNC5791802 [Chr 3]", ylab = "Weight [Gr.]", xlab = "Genotypes" , las = 2, t = "n", xaxt = "n")
