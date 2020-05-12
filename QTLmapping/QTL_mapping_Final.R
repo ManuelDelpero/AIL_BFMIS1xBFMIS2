@@ -158,6 +158,11 @@ for (pname in phenos){
       sumSQ <- anova(mmodel)["D", "Sum Sq"]
 	  var <- sumSQ / sum((pheno - mean(pheno, na.rm=TRUE))^2, na.rm=TRUE)
 	  var <- round(var * 100, digits=1)	  
+	}else var <- NA
+    varExplained[x,pname] <- var
+  }
+}
+	 
 
 # Function to calculate the variance explained by the additive and dominance deviation effect at the same time giving the marker name and the phenotype as arguments
 DomAddVariance <- function(marker, pname){
@@ -172,3 +177,21 @@ DomAddVariance <- function(marker, pname){
   var <- round(var * 100, digits=1)
   return(paste(var[1], "Additive", var[2], "Dominance deviation"))
 }
+
+# Get variance giving manually the genotypes coded as we want
+getVarianceExplained <- function(genotypes, phenotypes, pheno.col = "d77", marker = "gUNC5036315"){
+  genotype <- as.factor(t(genotypes[marker,]))
+  littersize <- as.factor(phenotypes[, "WG"])
+  subfamily <- as.factor(phenotypes[, "Mutter"])
+  sex <- as.factor(phenotypes[, "Sex"])
+  phenotype <- phenotypes[, pheno.col]
+  model <- lm(phenotype ~ genotype)
+  tryCatch(res  <- anova(model), error = function(e){ res <<- NA })
+  cat(names(model$coefficients),"\n")
+  cat(model$coefficients,"\n")
+  varExplained  <- res[, "Sum Sq"] / sum((phenotype - mean(phenotype, na.rm=TRUE))^2, na.rm=TRUE)
+  names(varExplained) <- c("marker", "others")
+  return(round(varExplained * 100, digits=1))
+}
+
+getVarianceExplained(genotypes, phenotypes, pheno.col = "D98", marker = "UNCHS041907")
