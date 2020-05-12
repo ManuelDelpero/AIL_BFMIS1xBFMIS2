@@ -64,7 +64,12 @@ tissues <- colnames(phenotypes[, c(46:55)])
 for (x in tissues){
   phenotypes[, x] <- phenotypes[, x] / phenotypes[, "Gewicht"]
 }
+
+# Calculate lost of weight during diet switch
+switchLost <- phenotypes[,"D125"] - phenotypes[,"D126"]
+phenotypes <- cbind(phenotypes, switchLost)
 phenotypes <- phenotypes[colnames(genotypes),]
+
 
 # Dom dev + Add model without using the sum of LODS and no covariates (real dom)
 pmatrixADDDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
@@ -171,8 +176,9 @@ DomAddVariance <- function(marker, pname){
   mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], A = numgenoAddd, D = numgenoDomm))
   isNA <- which(apply(apply(mdata,1,is.na),2,any))
   if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-  mmodel <- lm(pheno ~ sex + A + D, data = mdata)
+  mmodel <- lm(pheno ~ A + D, data = mdata)
   sumSQ <- anova(mmodel)[c("A","D"), "Sum Sq"]
+  pheno <- phenotypes[, pname]
   var <- sumSQ / sum((pheno - mean(pheno, na.rm=TRUE))^2, na.rm=TRUE)
   var <- round(var * 100, digits=1)
   return(paste(var[1], "Additive", var[2], "Dominance deviation"))
