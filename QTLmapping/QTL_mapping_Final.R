@@ -88,7 +88,7 @@ for (pname in phenonames){
   pmatrixADDDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixADDDOM <- -log10(pmatrixADDDOM)
-write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM_nosum.txt", quote = FALSE, sep = "\t")
+#write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM_nosum.txt", quote = FALSE, sep = "\t")
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
 
 # Dominance dev model
@@ -107,7 +107,7 @@ for (pname in phenonames){
   pmatrixDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixDOM <- -log10(pmatrixDOM)
-write.table(lodmatrixDOM, file = "lodmatrixDOM_nosum.txt", quote = FALSE, sep = "\t")
+#write.table(lodmatrixDOM, file = "lodmatrixDOM_nosum.txt", quote = FALSE, sep = "\t")
 
 # Additive model
 pmatrixADD <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
@@ -125,7 +125,7 @@ for (pname in phenonames){
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
 lodmatrixADD <- -log10(pmatrixADD)
-write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
+#write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
 
 # Figure out the variance explained by each QTL considering the direction of the effect
 lodmatrixDOM <- read.csv("lodmatrixDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
