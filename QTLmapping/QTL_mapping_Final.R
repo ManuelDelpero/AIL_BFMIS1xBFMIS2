@@ -45,8 +45,8 @@ for(x in 1:nrow(genotypes)){
   numgeno[x, which(genotypes[x, ] == het)] <- 0
   numgeno[x, which(genotypes[x, ] == h2)] <- 1
 }
-phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:74)])
 
+phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:74)])
 # Getting rid of the outliers
 outliers <- apply(phenotypes[, phenonames],2, function(x){
   up <- mean(x, na.rm = TRUE) + 3 * sd(x, na.rm = TRUE)
@@ -69,10 +69,9 @@ for (x in tissues){
 switchLost <- phenotypes[,"D125"] - phenotypes[,"D126"]
 phenotypes <- cbind(phenotypes, switchLost)
 phenotypes <- phenotypes[colnames(genotypes),]
-
-
+phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:75)])
 # Dom dev + Add model without using the sum of LODS and no covariates (real dom)
-pmatrixADDDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
+pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
@@ -88,11 +87,11 @@ for (pname in phenonames){
   pmatrixADDDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixADDDOM <- -log10(pmatrixADDDOM)
-#write.table(lodmatrixADDDOM, file = "lodmatrixADDDOM_nosum.txt", quote = FALSE, sep = "\t")
+#write.table(lodmatrixADDDOM, file = "lodmatrixADDDOMComplete.txt", quote = FALSE, sep = "\t")
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
 
 # Dominance dev model
-pmatrixDOM <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
+pmatrixDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
@@ -107,10 +106,10 @@ for (pname in phenonames){
   pmatrixDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixDOM <- -log10(pmatrixDOM)
-#write.table(lodmatrixDOM, file = "lodmatrixDOM_nosum.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixDOM, file = "lodmatrixDOMComplete.txt", quote = FALSE, sep = "\t")
 
 # Additive model
-pmatrixADD <- matrix(NA, nrow(genotypes), length(phenonames), dimnames= list(rownames(genotypes), phenonames))
+pmatrixADD <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
@@ -125,12 +124,12 @@ for (pname in phenonames){
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
 lodmatrixADD <- -log10(pmatrixADD)
-#write.table(lodmatrixADD, file = "lodmatrixADD.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixADD, file = "lodmatrixADDComplete.txt", quote = FALSE, sep = "\t")
 
 # Figure out the variance explained by each QTL considering the direction of the effect
-lodmatrixDOM <- read.csv("lodmatrixDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
-lodmatrixADD <- read.csv("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
-lodmatrixADDDOM <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixDOM <- read.csv("lodmatrixDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixADD <- read.csv("lodmatrixADDComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixADDDOM <- read.table("lodmatrixADDDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
 
 # get just the top markers for the phenotypes
 phenos <- c("Gon", "Leber")
