@@ -20,8 +20,8 @@ DiffexprPankreas <- read.csv("pankreas_significant_ann.txt", sep = "\t", header 
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
 # Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
-regionsGon <- regions[c(39, 40, 41, 49, 50, 51, 52 , 55, 56),] # Gon fat
-regionsLiver <- regions[52,] # Liver
+regionsGon <- regions[c(44, 45, 46, 47),] # Gon fat
+regionsLiver <- regions[47,] # Liver
 
 library(biomaRt)
 
@@ -34,8 +34,7 @@ getregion <- function(bio.mart, chr, startpos, endpos) {
                                       "chromosome_name", "start_position", "end_position", "strand", 
                                       "external_gene_name", "mgi_id", "mgi_symbol", "mgi_description"), 
                        filters = c("chromosomal_region", "biotype"),                                        # Things that we will use to query biomart
-                       values = list(
-region, "protein_coding"),                                             # The thing that we are querying
+                       values = list(region, "protein_coding"),                                             # The thing that we are querying
                        mart = bio.mart)
 
   cat("function: ", " has ", nrow(res.biomart), "\n")
@@ -72,7 +71,7 @@ for(x in 1:nrow(regionsLiver)){
 uniquegenesGon <- NULL
 for(x in genesGon){ 
   if(!is.null(x)){
-    subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand")]
+    subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand", "mgi_symbol")]
 	uniquegenesGon <- rbind(uniquegenesGon, subset) 
   }
 }
@@ -82,7 +81,7 @@ table(uniquegenesGon[ ,"chromosome_name"])
 uniquegenesLiver <- NULL
 for(x in genesLiver){ 
   if(!is.null(x)){
-    subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand")]
+    subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand", "mgi_symbol")]
 	uniquegenesLiver <- rbind(uniquegenesLiver, subset) 
   }
 }
@@ -105,7 +104,7 @@ VolcanoPlot <- function(x,y){
     points(not[, "logFC"], -log10(not[, "p.value"]), col = "red", pch= 1, cex = 1)
     points(int1[, "logFC"], -log10(int1[, "p.value"]), col = "orange", pch= myPchint1, cex = 1)
     points(int2[, "logFC"], -log10(int2[, "p.value"]), col = "orange", pch= myPchint2, cex = 1)
-    textToPlot <- sig[which(sig[,1] %in% y[,1]),]
+    textToPlot <- sig[which(sig[,"ensembl_gene_id"] %in% y[,"ensembl_gene_id"]),]
     names <- textToPlot[,3]
     posx <- textToPlot[, "logFC"]
     posy <- -log10(textToPlot[, "p.value"])
