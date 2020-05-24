@@ -122,5 +122,5 @@ for (pname in phenonames){
   })
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
-lodmatrixADD <- -log10(pmatrixADD)
+lodmatrixADD <- -log10(pmatrixADD)     # QTL on chr7 for liver weight and a small QTL on chr 16 for bodyweight
 write.table(lodmatrixADD, file = "lodmatrixADDF.txt", quote = FALSE, sep = "\t")
