@@ -35,6 +35,7 @@ for (x in 1:nrow(genotypes)){
 genotypes <- genotypes[, order(names(genotypes))]
 #write.table(genotypes, file = "genotypesComplete.txt", sep = "\t", quote = FALSE)
 
+
 # Convert genotypes to numerical values to map using an additive model and dom model or both
 numgeno <- matrix(NA, nrow(genotypes), ncol(genotypes), dimnames=list(rownames(genotypes), colnames(genotypes)))
 for(x in 1:nrow(genotypes)){
@@ -70,6 +71,7 @@ switchLost <- phenotypes[,"D125"] - phenotypes[,"D126"]
 phenotypes <- cbind(phenotypes, switchLost)
 phenotypes <- phenotypes[colnames(genotypes),]
 phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:75)])
+
 # Dom dev + Add model without using the sum of LODS and no covariates (real dom)
 pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
@@ -87,7 +89,7 @@ for (pname in phenonames){
   pmatrixADDDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixADDDOM <- -log10(pmatrixADDDOM)
-#write.table(lodmatrixADDDOM, file = "lodmatrixADDDOMComplete.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixADDDOM, file = "lodmatrixADDDOMComplete5.txt", quote = FALSE, sep = "\t")
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
 
 # Dominance dev model
@@ -106,7 +108,7 @@ for (pname in phenonames){
   pmatrixDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixDOM <- -log10(pmatrixDOM)
-write.table(lodmatrixDOM, file = "lodmatrixDOMComplete.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixDOM, file = "lodmatrixDOMComplete5.txt", quote = FALSE, sep = "\t")
 
 # Additive model
 pmatrixADD <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
@@ -124,7 +126,7 @@ for (pname in phenonames){
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
 lodmatrixADD <- -log10(pmatrixADD)
-write.table(lodmatrixADD, file = "lodmatrixADDComplete.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixADD, file = "lodmatrixADDComplete5.txt", quote = FALSE, sep = "\t")
 
 # Figure out the variance explained by each QTL considering the direction of the effect
 lodmatrixDOM <- read.csv("lodmatrixDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
