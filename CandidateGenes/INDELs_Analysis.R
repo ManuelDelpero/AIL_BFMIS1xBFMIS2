@@ -41,7 +41,7 @@ bamfiles <- c("/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/9/BFMI861-S2P_
               "/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/7/BFMI861-S1P_trimmed.aligned.sorted.dedup.recalibrated.bam",
 			  "/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/6/BFMI861-S1P_trimmed.aligned.sorted.dedup.recalibrated.bam")   
 			 
-# Snps in genes
+# INDELs in genes
 for(x in 1:nrow(uniquegenes)){ 
   startpos <- uniquegenes[x, 3]
   endpos <- uniquegenes[x, 4]
