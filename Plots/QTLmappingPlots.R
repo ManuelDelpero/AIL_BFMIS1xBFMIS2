@@ -6,11 +6,11 @@
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
-phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
+phenotypes <- read.csv("PhenotypesComplete.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
 genotypes <- read.csv("genotypesComplete.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
-lodmatrixDOM <- read.table("lodmatrixDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
-lodmatrixADD <- read.table("lodmatrixADD.txt", header = TRUE, sep = "\t", check.names = FALSE)
-mprofiles <- read.table("lodmatrixADDDOM_nosum.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixDOM <- read.table("lodmatrixDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixADD <- read.table("lodmatrixADDComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
+mprofiles <- read.table("lodmatrixADDDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
 markerannot$Index <- seq.int(nrow(markerannot))
@@ -514,7 +514,7 @@ boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC57
 
 # length
 phenotype <- "LÃ¤nge"
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,12), t = 'n', xlab="Chromosome", ylab="-log10(P)",xaxt='n', xaxs="i", yaxs="i",las=2,main="Manhattan plot - Length")
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,12), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i",las=2,main="Manhattan plot - Length")
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- mprofiles[onChr, phenotype]
@@ -552,7 +552,7 @@ legend("topright", #bg="gray"
   
 # Effect plot for top marker for the length (chr16) 
 UNCHS041714 <- cbind(phenotypes[, "LÃ¤nge"], t(genotypes["UNCHS041714",]))
-boxplot(as.numeric(UNCHS041714[which(UNCHS041714[,2] == "A"),1]), as.numeric(UNCHS041714[which(UNCHS041714[,2] == "H"),1]), as.numeric(UNCHS041714[which(UNCHS041714[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker UNCHS041714 [Chr 16]", ylab = "Length [cm]", ylim = c(9.5,13), xlab = "Genotypes" , las = 2, t = "n", xaxt = "n")
+boxplot(as.numeric(UNCHS041714[which(UNCHS041714[,2] == "A"),1]), as.numeric(UNCHS041714[which(UNCHS041714[,2] == "H"),1]), as.numeric(UNCHS041714[which(UNCHS041714[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker UNCHS041714 [Chr 16]", ylab = "Length [cm]", ylim = c(9.5,13), xlab = "Genotypes[UNCHS041714]" , las = 2, t = "n", xaxt = "n")
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -563,3 +563,54 @@ boxplot(as.numeric(UNCHS041714[which(UNCHS041714[,2] == "A"),1]), as.numeric(UNC
     cex = 1,
     text.col = "black")
   
+# lost of weight
+phenotype <- "switchLost"
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,8), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i",las=2,main=paste0("Manhattan plot - lost of weight during 12h fasting"))
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  currentADDDOM <- mprofiles[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, cex =1.5, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "black"))
+    }
+    if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "black"))
+    }
+      if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+        if (chr %in% seq(1,20,2))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5, col= "cornflowerblue")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5, col= "black"))
+    }
+  }
+}
+axis(1, chrs, at = chrmids)
+abline(h= 4, col="orange",lty=3)
+abline(h= 4.5, col="green",lty=3)
+axis(1, chrs, at = chrmids)
+legend("topright", #bg="gray"
+  bty = "n",
+  legend = c("Dominance", "Additive", "Dominance dev."),
+  pch = c(0, 18, 17))
+  
+  
+# Effect plot for top marker lost of weight 
+UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
+boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker UNC27568354 [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
+  axis(1, at = 1:3 , c("AA", "AG", "GG"))
+  legend("topright", #bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    #pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black")
