@@ -9,7 +9,7 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/Microarray Data/DN-2019_8745-Data/Rohda
 
 library(affy)
 
-dat <- ReadAffy(cdfname ='clariomsmousemmensgcdf') # Use the clariomsmouse CDF from http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/23.0.0/enst.asp
+dat <- ReadAffy(cdfname ='clariomsmousemmenstcdf') # Use the clariomsmouse CDF from http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/23.0.0/enst.asp
 eset <- mas5(dat)
 
 library("affyPLM")
