@@ -10,7 +10,7 @@ setwd("/home/manuel/AIL_S1xS2_old/RAWDATA/")
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
 # Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
-regions <- regions[c(39, 40, 41, 49, 50, 51, 52 , 55, 56),]
+regions <- regions[c(39, 40, 41, 49, 50, 52 , 55, 56),]
 
 # Get genes in regions
 genes <- vector("list", nrow(regions))
@@ -36,9 +36,9 @@ for(x in genes){
 uniquegenes <- uniquegenes[!duplicated(uniquegenes),] 
 table(uniquegenes[ ,"chromosome_name"])
 
-bamfiles <- c("/home/manuel/AIL_S1xS2/DNA/chr17153_S1.bam",  # 860-S12  (high coverage)
-             "/home/manuel/AIL_S1xS2/DNA/chr17153_S2.bam",    # 861-S1 (medium coverage)
-             "/home/manuel/AIL_S1xS2/DNA/chr17153_S12.bam")    # 861-S2 (medium coverage)
+bamfiles <- c("/home/manuel/AIL_S1xS2/DNA/chr17153_S12.bam",  # 860-S12  (high coverage) #create subset
+              "/home/manuel/AIL_S1xS2/DNA/chr17153_S1.bam",    # 861-S1 (medium coverage)
+              "/home/manuel/AIL_S1xS2/DNA/chr17153_S2.bam")    # 861-S2 (medium coverage
 			 
 
 setwd("/home/manuel/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver/SNPsGenesGonLiver/")
@@ -69,7 +69,7 @@ for(file in filelist){
 
 # Sort by chromosomes and position otherwise VEP is complaining
 allSNPs <- allSNPs[order(as.numeric(allSNPs[,3])),]
-chromosomes <- c(3, 12, 15, 17)
+chromosomes <- c(3, 15, 17)
 
 annotation <- c()
 for(chr in chromosomes){
@@ -82,7 +82,7 @@ header = readLines(filelist[1], n = 169)
 cat(paste0(header, collapse = "\n"), "\n", file = "all_combined.vcf")
 
 # File containing all SNPs in the genes
-write.table(allSNPs[,-1], file = "all_combinedBW.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
+write.table(allSNPs[,-1], file = "all_combined.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
 
 # Combine these results with the gene expression analysis, look first at genes that are differentially expressed in the QTL regions, then look at VEP results
 write.table(allSNPs[,-1], file = "all_combined.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
@@ -95,3 +95,14 @@ for(x in 1:nrow(regions)){
   endpos <- regions[x, 4] +10
   callSNPs(bamfiles, regions[x, 2], startpos, endpos, paste0(regions[x, 1], "Chr", regions[x,2])) 
 }
+
+# Call INDELs
+bed <- regions[, c(2,3,5)]
+bamstr = paste0(bamfiles, collapse = " ") # Collapse all the bam files in a single string
+scalpel = "/home/florian/Downloads/scalpel-0.5.4/scalpel-discovery --single" # Location of scalpel executable
+reference = "/home/danny/References/Mouse/GRCm38_95/Mus_musculus.GRCm38.dna.toplevel.fa" #Reference genome
+region = bed # Region requested in bed file
+outdir = "/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiver/"
+cmd <- paste0("nohup", scalpel, " --bam ~", bamstr, " --bed ~", bed, " --ref ~", reference, " --window 3500 --mapscore 10 --step 750", " --dir ~", outdir)
+execute(cmd)
+invisible("")
