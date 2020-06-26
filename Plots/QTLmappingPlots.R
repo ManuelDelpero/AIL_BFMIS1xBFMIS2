@@ -6,7 +6,7 @@
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
-phenotypes <- read.csv("PhenotypesComplete.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
+phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
 genotypes <- read.csv("genotypesComplete.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 lodmatrixDOM <- read.table("lodmatrixDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
 lodmatrixADD <- read.table("lodmatrixADDComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
@@ -420,7 +420,7 @@ legend("topright", #bg="gray"
 # Effect plot for top marker for Gon weight (chr 17) using glucose as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
 JAX00432128 <- cbind(phenotypes[, "Gluc172"], t(genotypes["JAX00432128",]))
 UNC5791802 <- cbind(phenotypes[, "Gluc172"], t(genotypes["UNC5791802",]))
-boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker JAX00432128 [Chr 17]", ylab = "Glucose [mg/dL]", xlab = "Genotypes[JAX00432128]" , ylim = c(0, 600), las = 2, t = "n", xaxt = "n")
+boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "H"),1]), as.numeric(JAX00432128[which(JAX00432128[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Final glucose [Chr 17]", ylab = "Glucose [mg/dL]", xlab = "Genotypes[JAX00432128]" , ylim = c(0, 600), las = 2, t = "n", xaxt = "n")
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -433,7 +433,7 @@ boxplot(as.numeric(JAX00432128[which(JAX00432128[,2] == "A"),1]), as.numeric(JAX
     text.col = "black")
 	
 # Effect plot for top marker for Gon weight (chr3) using glucose as phenotypes, this marker is responsile for ectopic fat storage and also for the glucose level 
-boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Effect plot marker UNC5791802 [Chr 3]", ylab = "Glucose [mg/dL]", xlab = "Genotypes[UNC5791802]",  ylim = c(0, 600), las = 2, t = "n", xaxt = "n")
+boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Final glucose [Chr 3]", ylab = "Glucose [mg/dL]", xlab = "Genotypes[UNC5791802]",  ylim = c(0, 600), las = 2, t = "n", xaxt = "n")
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
