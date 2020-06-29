@@ -1,4 +1,4 @@
-# Analysis in diff. express genes BFMI S1xS2
+# Analysis in diff. express genes after noise in BFMI S1xS2
 #
 # copyright (c) 2018-2020 - Brockmann group - HU Berlin, Manuel Delpero
 # last written october, 2019
@@ -14,7 +14,7 @@ skeletalmuscle <- which(grepl("S", colnames(expressions)))
 pankreas <- which(grepl("P", colnames(expressions)))
 
 # Diff. gene expression analysis
-getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 1){
+getSignificant <- function(expressions, Tissue = "G", adjust = "BH", p.val = 0.05){
   S1P <- which(grepl("S1", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
   S2P <- which(grepl("S2", colnames(expressions)) & grepl(Tissue, colnames(expressions)))
 
@@ -47,24 +47,49 @@ DiffExprLiver <- annotate(getSignificant(expressions, "L"))
 DiffExprPank <- annotate(getSignificant(expressions, "P"))
 DiffExprMuscle <- annotate(getSignificant(expressions, "S"))
 
-write.table(DiffExprLiver, "liverExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(DiffExprGon, "GonExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(DiffExprMuscle, "SkExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(DiffExprPank, "PankreasExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+#write.table(DiffExprLiver, "liverExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+#write.table(DiffExprGon, "GonExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+#write.table(DiffExprMuscle, "SkExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+#write.table(DiffExprPank, "PankreasExpressions.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
+# Get genes in the QTL regions and check whichones are diff expressed in all the tissues
+library(biomaRt)
 
-# Figured out which genes in the QTL regions for the gonadal fat weight, liver weight and glucose are diff. expressed
-myvep <- read.csv("VEP.txt", sep = "\t", header=TRUE, colClasses="character")
-colnames(myvep) <- c("Uploaded_variation", "Location", "Allele", "Consequence", "IMPACT", "SYMBOL", "Gene", "Feature_type", "Feature", "BIOTYPE", "EXON", "INTRON", "HGVSc", "HGVSp", "cDNA_position", "CDS_position", "Protein_position", "Amino_acids", "Codons", "Existing_variation", "DISTANCE", "STRAND", "FLAGS", "SYMBOL_SOURCE", "HGNC_ID", "TSL", "APPRIS", "REFSEQ_MATCH", "SIFT", "CLIN_SIG", "SOMATIC", "PHENO", "MOTIF_NAME", "MOTIF_POS", "HIGH_INF_POS", "MOTIF_SCORE_CHANGE")
+bio.mart <- useMart("ensembl", dataset="mmusculus_gene_ensembl")
 
-genes <- myvep[, "Gene"]
-Diffexprgenesg <- DiffExprGon[which(rownames(DiffExprGon) %in% genes) ,]
-Diffexprgenesg <- Diffexprgenes[, c("chromosome_name", "mgi_symbol")]
-Diffexprgenesg <- Diffexprgenes[order(as.numeric(Diffexprgenes[, "chromosome_name"])),]
-write.table(Diffexprgenes, file = "GenesDiffExpr.txt", sep = "\t", quote = FALSE)
+getregion <- function(bio.mart, chr, startpos, endpos) {
+  region <- paste0(chr, ":",startpos, ":", endpos)
+  cat("function: ", " has region: ", region, "\n")
+  res.biomart <- getBM(attributes = c("ensembl_gene_id",                                                    # Things that we want to get from biomart
+                                      "chromosome_name", "start_position", "end_position", "strand", 
+                                      "external_gene_name", "mgi_id", "mgi_symbol", "mgi_description"), 
+                       filters = c("chromosomal_region", "biotype"),                                        # Things that we will use to query biomart
+                       values = list(region, "protein_coding"),                                             # The thing that we are querying
+                       mart = bio.mart)
 
-Diffexprgenesl <- DiffExprLiver[which(rownames(DiffExprLiver) %in% genes) ,]
-Diffexprgenesl <- Diffexprgenes[, c("chromosome_name", "mgi_symbol")]
-Diffexprgenesl <- Diffexprgenes[order(as.numeric(Diffexprgenes[, "chromosome_name"])),]
+  cat("function: ", " has ", nrow(res.biomart), "\n")
+  return (res.biomart) 
+}
+
+regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
+
+# Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
+regions <- regions[c(25, 44, 47),]
+
+# Get genes in regions
+genes <- vector("list", nrow(regions))
+for(x in 1:nrow(regions)){																			
+  if(!is.na(regions[x, "Chr"])){
+    genes[[x]] <- getregion(bio.mart, regions[x, "Chr"], regions[x, "StartPos"], regions[x, "StopPos"])
+	cat(x, " has ", nrow(genes[[x]]), "genes\n")
+    fname <- paste0("genes_in_", regions[x, "Chr"],"-", regions[x, "StartPos"], ":", regions[x, "StopPos"], as.character(regions[x, "Phenotype"]) , ".txt") 
+    #write.table(genes[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
+  }else{
+ 	cat(x, " has NA region\n")
+  }
+}
+
+
+
+
 
