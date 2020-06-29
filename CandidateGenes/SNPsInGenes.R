@@ -95,14 +95,3 @@ for(x in 1:nrow(regions)){
   endpos <- regions[x, 4] +10
   callSNPs(bamfiles, regions[x, 2], startpos, endpos, paste0(regions[x, 1], "Chr", regions[x,2])) 
 }
-
-# Call INDELs
-bed <- regions[, c(2,3,5)]
-bamstr = paste0(bamfiles, collapse = " ") # Collapse all the bam files in a single string
-scalpel = "/home/florian/Downloads/scalpel-0.5.4/scalpel-discovery --single" # Location of scalpel executable
-reference = "/home/danny/References/Mouse/GRCm38_95/Mus_musculus.GRCm38.dna.toplevel.fa" #Reference genome
-region = bed # Region requested in bed file
-outdir = "/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiver/"
-cmd <- paste0("nohup", scalpel, " --bam ~", bamstr, " --bed ~", bed, " --ref ~", reference, " --window 3500 --mapscore 10 --step 750", " --dir ~", outdir)
-execute(cmd)
-invisible("")
