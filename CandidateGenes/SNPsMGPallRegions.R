@@ -137,6 +137,7 @@ uniquegenes <- uniquegenes[!duplicated(uniquegenes),]
 table(uniquegenes[ ,"chromosome_name"])
 
 setwd("/home/manuel/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver/SNPsMGP/")
+
 # Snps in genes
 for(x in 1:nrow(uniquegenes)){ 
   startpos <- uniquegenes[x, 3]
@@ -148,3 +149,37 @@ for(x in 1:nrow(uniquegenes)){
   }
   callSNPs(bamfiles, uniquegenes[x, 2], startpos, endpos, uniquegenes[x, 1]) 
 }
+
+# Let´s combine all the SNPs for each gene into one unique vcf file
+filelist <- list.files(".") 
+
+allSNPs <- NULL
+for(file in filelist){
+  if(length(readLines(file)) > 96){
+    mcontent <- read.csv(file, sep = "\t", skip = 96, header=FALSE, colClasses=c("character"))
+    gene = gsub(".snps-filtered.vcf", "", file, fixed=T)
+    allSNPs <- rbind(allSNPs, cbind(gene, mcontent))
+  }
+}
+
+chromosomes <- c(3, 15, 17)
+
+
+allSNPsAnnot <- allSNPs[order(allSNPs[,"V2"]),]
+
+annotation <- c()
+for (chr in chromosomes){
+  annotation <- rbind(annotation, allSNPsAnnot[as.numeric(allSNPsAnnot[,"V1"]) == chr,])
+}
+
+allSNPsAnnot <- annotation
+header = readLines(filelist[1], n = 96)
+cat(paste0(header, collapse = "\n"), "\n", file = "all_combined.vcf")
+
+# File containing all SNPs in the genes
+write.table(allSNPsAnnot[,-1], file = "all_combined.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
+
+# sort the vcf file
+cmdsort <- "cat all_combined.vcf | awk '$1 ~ /^#/ {print $0;next} {print $0 | \"sort -k1,1 -k2,2n\"}' > out_sorted.vcf"
+
+execute(cmdsort)
