@@ -1,1 +1,1 @@
-/home/arends/ensembleVEP/ensembl-tools-release-84/scripts/variant_effect_predictor/variant_effect_predictor.pl  --species mus musculus --cache  -i out_sorted.vcf -o output.vcf --vcf
+/home/arends/ensembleVEP/ensembl-tools-release-84/scripts/variant_effect_predictor/variant_effect_predictor.pl  --species mus musculus --cache  -i out_sorted.vcf -o outputVEP.vcf --vcf --check_existing
