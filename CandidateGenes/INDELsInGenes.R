@@ -2,15 +2,15 @@
 #
 # copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero & Danny Arends
 # 
-# first written december, 2019
+# first written june, 2020
 
-setwd("/home/manuel/AIL_S1xS2_old/RAWDATA/")
+setwd("/home/manuel/AIL_S1xS2/RAWDATA/")
 
 
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
 # Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
-regions <- regions[c(39, 40, 41, 49, 50, 52 , 55, 56),]
+regions <- regions[c(19, 44, 47),]
 
 # Get genes in regions
 genes <- vector("list", nrow(regions))
@@ -36,10 +36,11 @@ for(x in genes){
 uniquegenes <- uniquegenes[!duplicated(uniquegenes),] 
 table(uniquegenes[ ,"chromosome_name"])
 
-bamfiles <- c("/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/9/BFMI861-S2P_trimmed.aligned.sorted.dedup.recalibrated.bam",  
-              "/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/8/BFMI861-S2P_trimmed.aligned.sorted.dedup.recalibrated.bam",    
-              "/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/7/BFMI861-S1P_trimmed.aligned.sorted.dedup.recalibrated.bam",
-	      "/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/6/BFMI861-S1P_trimmed.aligned.sorted.dedup.recalibrated.bam")   
+bamfileS1 <- c("/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/7/BFMI861-S1P_trimmed.aligned.sorted.dedup.recalibrated.bam",
+	           "/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/6/BFMI861-S1P_trimmed.aligned.sorted.dedup.recalibrated.bam") 
+
+bamfileS2 <- c("/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/9/BFMI861-S2P_trimmed.aligned.sorted.dedup.recalibrated.bam",  
+               "/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/8/BFMI861-S2P_trimmed.aligned.sorted.dedup.recalibrated.bam")			  
 
 execute <- function(x, intern = FALSE, execute = TRUE){
   cat("----", x, "\n")
@@ -50,18 +51,12 @@ execute <- function(x, intern = FALSE, execute = TRUE){
   }
 }
 
+setwd("/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiverS1")
+		 
+## INDELs in genes
 
-callINDELs <- function(bamfiles, chr = 1, startpos = 1, endpos = 2, outname = "myINDELs") {
-  bamstr = paste0(bamfiles, collapse = " ") # Collapse all the bam files in a single string
-  scalpel = "/home/florian/Downloads/scalpel-0.5.4/scalpel-discovery --single" # Location of scalpel executable
-  reference = "/home/danny/References/Mouse/GRCm38_95/Mus_musculus.GRCm38.dna.toplevel.fa" #Reference genome
-  region = paste0(chr, ":", format(startpos, scientific = FALSE), "-", format(endpos, scientific = FALSE)) # Region requested in bed file
-  cmd <- paste0(scalpel, " --bam ", bamstr, " --ref ", reference, " --bed ", region, " --dir /home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiver > ", outname, ".INDELs-filtered.vcf")
-  execute(cmd)
-  invisible("")
-}
-			 
-# INDELs in genes
+# Create the BED file with the regions
+bedfile <- c()
 for(x in 1:nrow(uniquegenes)){ 
   startpos <- uniquegenes[x, 3]
   endpos <- uniquegenes[x, 4]
@@ -70,5 +65,30 @@ for(x in 1:nrow(uniquegenes)){
   }else{
     endpos <- endpos +500
   }
-  callINDELs(bamfiles, uniquegenes[x, 2], startpos, endpos, uniquegenes[x, 1]) 
+  bedfile <- rbind(bedfile, c(uniquegenes[x, 2], format(startpos, scientific = FALSE), format(endpos, scientific = FALSE)))
 }
+
+bedfile <- bedfile[-1,]
+bedfile[,1] <- gsub("3", "chr3", bedfile[,1])
+bedfile[,1] <- gsub("15", "chr15", bedfile[,1])
+bedfile[,1] <- gsub("17", "chr17", bedfile[,1])
+bedfile[,2] <- as.numeric(bedfile[,2])
+bedfile[,3] <- as.numeric(bedfile[,3])
+bedfile <- cbind(as.numeric(bedfile[,1]), as.numeric(bedfile[,2]), as.numeric(bedfile[,3]))
+write.table(bedfile, file = "bedfile.bed.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+# Call INDELs in multiple regions using the BED file
+callINDELs <- function(bamfiles) {
+  bamstr = paste0(bamfiles, collapse = " ") # Collapse all the bam files in a single string
+  scalpel = "/home/florian/Downloads/scalpel-0.5.4/scalpel-discovery --single" # Location of scalpel executable
+  reference = "/home/danny/References/Mouse/GRCm38_95/Mus_musculus.GRCm38.dna.toplevel.fa" #Reference genome
+  bedfile = "/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiverS1/bedfile.bed.txt"
+  cmd <- paste0(scalpel, " --bam ", bamstr, " --bed ", bedfile, " --ref ", reference)
+  execute(cmd)
+  invisible("")
+}
+
+setwd("/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiverS1")
+callINDELs(bamfileS1)
+setwd("/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiverS2") 
+callINDELs(bamfiles2)
