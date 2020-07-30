@@ -20,7 +20,7 @@ DiffexprPankreas <- read.csv("pankreas_significant_ann.txt", sep = "\t", header 
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
 # Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
-regionsGon <- regions[c(44, 45, 46, 47),] # Gon fat
+regionsGon <- regions[c(30, 44, 45, 46, 47, 56),] # Gon fat
 regionsLiver <- regions[47,] # Liver
 
 library(biomaRt)
@@ -99,15 +99,17 @@ VolcanoPlot <- function(x,y){
   myPchint1 <- ifelse(int1[,1] %in% y[,1], 16, 1)
   myPchint2 <- ifelse(int2[,1] %in% y[,1], 16, 1)
   title <- readline(prompt="Enter name of the tissue: ")
-  plot(main = paste0("Volcano Plot - ", title), x = c(-1,1), y = c(0,15), ylab="log10[pvalue]", xlab="log2 Fold change", ylim = c(0, 17), xlim = c(-0.8,0.8), t = "n")
+  plot(main = paste0("Volcano Plot - ", title), x = c(-1,1), y = c(0,15), ylab="-log10[pvalue]", xlab="log2 Fold change", ylim = c(0, 17), xlim = c(-0.8,0.8), t = "n")
     points(sig[, "logFC"], -log10(sig[, "p.value"]), col = "green", pch= myPchsig, cex = myCexsig)
     points(not[, "logFC"], -log10(not[, "p.value"]), col = "red", pch= 1, cex = 1)
     points(int1[, "logFC"], -log10(int1[, "p.value"]), col = "orange", pch= myPchint1, cex = 1)
     points(int2[, "logFC"], -log10(int2[, "p.value"]), col = "orange", pch= myPchint2, cex = 1)
-    textToPlot <- sig[which(sig[,"ensembl_gene_id"] %in% y[,"ensembl_gene_id"]),]
-    names <- textToPlot[,3]
-    posx <- textToPlot[, "logFC"]
-    posy <- -log10(textToPlot[, "p.value"])
+    textToPlot1 <- sig[which(sig[,"ensembl_gene_id"] %in% y[,"ensembl_gene_id"]),]
+	textToPlot2 <- int1[which(int1[,"ensembl_gene_id"] %in% y[,"ensembl_gene_id"]),]
+	textToPlot3 <- int2[which(int2[,"ensembl_gene_id"] %in% y[,"ensembl_gene_id"]),]
+    names <- c(as.character(textToPlot1[,3]), as.character(textToPlot2[,3]), as.character(textToPlot3[,3]))
+    posx <- c(textToPlot1[, "logFC"], textToPlot2[, "logFC"], textToPlot3[, "logFC"])
+    posy <- c(-log10(textToPlot1[, "p.value"]), -log10(textToPlot2[, "p.value"]), -log10(textToPlot3[, "p.value"]))
     text(posx, posy, names)  
     legend("topright",  bg="gray",
       legend=c("Significant", "Interesting", "Not significant","In QTLs","Out of QTLs"), 
