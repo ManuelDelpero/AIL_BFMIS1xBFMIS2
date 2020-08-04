@@ -31,7 +31,11 @@ lodannotmatrix <- cbind(annotation, lodmatrix)
 index <- order(pheno[,"Gon"], decreasing = FALSE)
 sortWeight <- pheno[index,]
 
-# Plot to represent the correlation between the tissues weight, add the correlation values!
+# Calculate correlation
+data <- pheno[, c("Gon", "Leber", "Gluc172")]
+cor(data, use = "pairwise.complete.obs")
+# Plot to represent the correlation between the tissues weight
+
 plot(main="Tissues weight sorted by gondadal fat weight", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="Weight (grams)", ylim = c(0,0.14), las = 2, xaxt = "n")
 axis(1, at = c(0, 100, 200, 300, 400, 500), c("0", "100", "200", "300", "400", "500"))
 lines(sortWeight[,"Gon"], col = "orange" , lwd=1 , pch=20 , type="l")
@@ -50,24 +54,14 @@ GonLiver <- pheno[, c("Gon", "Leber")]
 corGonLiver <- cor(GonLiver, use = "pairwise.complete.obs")
 rownames(corGonLiver) <- c("Gonadal fat", "Liver")
 colnames(corGonLiver) <- c("Gonadal fat", "Liver")
-write.table(corGonLiver, file = "CorrelationGonLiverWeight.txt", quote = FALSE, sep = "\t")
+#write.table(corGonLiver, file = "CorrelationGonLiverWeight.txt", quote = FALSE, sep = "\t")
    
 # CTL mapping curve across chromosome 15
 
 chr15 <- lodannotmatrix[which(lodannotmatrix[,"Chromosome"] == 15),]
 chr15 <- chr15[order(chr15[,"Position"]),]
-plot(main = "QTL profile bodyweight [Chr 15]", c(min(as.numeric(chr15[, "Position"])), max(as.numeric(chr15[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+plot(main = "CTL profile liver ~ gonadal fat weight [Chr 15]", c(min(as.numeric(chr15[, "Position"])), max(as.numeric(chr15[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"lodmatrix"] , type = "l", col="dodgerblue", lwd = 1)
   abline(h=4.7, col="green")
   abline(h=4.2, col="orange")
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
-
-
-
-
-
-
-
-
-
-
