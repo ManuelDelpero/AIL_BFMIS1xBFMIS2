@@ -7,7 +7,9 @@
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 pheno <- read.table("allPhenotypes_final.txt", sep = "\t", row.names=1)
-lodmatrix <- read.table("lodscoresCTL.txt", sep = "\t", check.names = FALSE, header = TRUE)
+lodmatrixC <- read.table("lodscoresCTL.txt", sep = "\t", check.names = FALSE, header = TRUE)
+lodmatrixQ <- read.table("lodmatrixADDComplete.txt", sep = "\t", check.names = FALSE, header = TRUE)
+
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
 markerannot$Index <- seq.int(nrow(markerannot))
@@ -21,33 +23,40 @@ for(chr in chromosomes){
   annotation <- rbind(annotation, markerannot[markerannot[,"Chromosome"] == chr,])
 }
 
-lodmatrix <- lodmatrix[rownames(annotation),]
-lodmatrix <- data.frame(lodmatrix)
-rownames(lodmatrix) <- rownames(annotation)
-lodannotmatrix <- cbind(annotation, lodmatrix)
+lodmatrixC <- lodmatrixC[rownames(annotation),]
+lodmatrixC <- data.frame(lodmatrixC)
+rownames(lodmatrixC) <- rownames(annotation)
+lodannotmatrixC <- cbind(annotation, lodmatrixC)
+lodmatrixQ <- lodmatrixQ[rownames(annotation),]
+lodmatrixQ<- data.frame(lodmatrixQ)
+rownames(lodmatrixQ) <- rownames(annotation)
+lodannotmatrixQ <- cbind(annotation, lodmatrixQ)
 
 
 # Order columns by gon weight
 index <- order(pheno[,"Gon"], decreasing = FALSE)
 sortWeight <- pheno[index,]
-
+sortWeight[,c("Gon", "Leber")] <- sortWeight[,c("Gon", "Leber")] * sortWeight[,"Gewicht"]
 # Calculate correlation
 data <- pheno[, c("Gon", "Leber", "Gluc172")]
 cor(data, use = "pairwise.complete.obs")
-# Plot to represent the correlation between the tissues weight
 
-plot(main="Tissues weight sorted by gondadal fat weight", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="Weight (grams)", ylim = c(0,0.14), las = 2, xaxt = "n")
-axis(1, at = c(0, 100, 200, 300, 400, 500), c("0", "100", "200", "300", "400", "500"))
-lines(sortWeight[,"Gon"], col = "orange" , lwd=1 , pch=20 , type="l")
-lines(sortWeight[,"Leber"], col = "blue" , lwd=1 , pch=20 , type="l")
-lines(sortWeight[,"SCF"]/sortWeight[, "Gewicht"], col = "purple" , lwd=1 , pch=20 , type="l")
-text(360, 0.10, "r = -0.7050693")
-   legend("topleft",
-   legend = c("Liver", "Gon", "SCF"),
+# Plot to represent the correlation between the tissues weight
+par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
+mat <- matrix(c(1,2,3), 1, ,byrow = TRUE)
+layout(mat, widths = rep.int(3, ncol(mat)))
+
+plot(main="Tissues weight sorted by gonadal fat weight", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="Weight [g]", ylim = c(0,7), las = 2, xaxt = "n")
+  axis(1, at = c(0, 100, 200, 300, 400, 500), c("0", "100", "200", "300", "400", "500"))
+  points(sortWeight[,"Gon"], col = "orange" , lwd=0.8 , pch=20 , type="p")
+  points(sortWeight[,"Leber"], col = "blue" , lwd=0.8 , pch=20 , type="p")
+  points(sortWeight[,"SCF"], col = "purple" , lwd=0.8 , pch=20 , type="p")
+  legend("topleft",
+  legend = c("Liver", "Gon", "SCF"),
    col = c("blue", "orange", "purple"),
    pch = c(20,20,20),
    bty = "n",
-   pt.cex = 1.2,
+   pt.cex = 1.4,
    cex = 1,)
 
 GonLiver <- pheno[, c("Gon", "Leber")]
@@ -55,13 +64,35 @@ corGonLiver <- cor(GonLiver, use = "pairwise.complete.obs")
 rownames(corGonLiver) <- c("Gonadal fat", "Liver")
 colnames(corGonLiver) <- c("Gonadal fat", "Liver")
 #write.table(corGonLiver, file = "CorrelationGonLiverWeight.txt", quote = FALSE, sep = "\t")
-   
+
+# Correlation plot gonadal fat, liver
+plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,7), t = "n", xlab="Liver weigth [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
+points(sortWeight[,"Leber"],sortWeight[,"Gon"], lwd=0.8 , pch=20 , type="p")
+abline(lm(sortWeight[,"Leber"]~sortWeight[,"Gon"]), col="red")
+text(4.5, 3.5, "r = -0.71")
+
+
 # CTL mapping curve across chromosome 15
 
-chr15 <- lodannotmatrix[which(lodannotmatrix[,"Chromosome"] == 15),]
-chr15 <- chr15[order(chr15[,"Position"]),]
-plot(main = "CTL profile liver ~ gonadal fat weight [Chr 15]", c(min(as.numeric(chr15[, "Position"])), max(as.numeric(chr15[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
-  points(x = as.numeric(chr15[,"Position"]), y = chr15[,"lodmatrix"] , type = "l", col="dodgerblue", lwd = 1)
+chr15C <- lodannotmatrixC[which(lodannotmatrixC[,"Chromosome"] == 15),]
+chr15C <- chr15C[order(chr15C[,"Position"]),]
+chr15Q <- lodannotmatrixQ[which(lodannotmatrixQ[,"Chromosome"] == 15),]
+chr15Q <- chr15Q[order(chr15Q[,"Position"]),]
+
+plot(main = "CTL profile liver ~ gonadal fat weight [Chr 15]", c(min(as.numeric(chr15Q[, "Position"])), max(as.numeric(chr15Q[, "Position"]))), c(-8,8), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+  points(x = as.numeric(chr15C[,"Position"]), y = chr15C[,"lodmatrixC"] , type = "l", col="black", lwd = 1)
+  points(x = as.numeric(chr15Q[,"Position"]), y = -(chr15Q[,"Gon"]) , type = "l", col="blue", lwd = 1)
+  points(x = as.numeric(chr15Q[,"Position"]), y = -(chr15Q[,"Leber"]) , type = "l", col="brown", lwd = 1)
   abline(h=4.7, col="green")
   abline(h=4.2, col="orange")
+  abline(h=-4.7, col="green")
+  abline(h=-4.2, col="orange")
+  abline(h=0, col="black")
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
+  legend("topleft",
+   legend = c("QTL mapping liver", "QTL mapping Gonadal fat", "CTL mapping"),
+   col = c("brown", "blue", "black"),
+   pch = c(20,20,20),
+   bty = "n",
+   pt.cex = 1.4,
+   cex = 1,)
