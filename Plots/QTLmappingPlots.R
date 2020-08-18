@@ -8,9 +8,9 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep = "\t", colClasses = "character")
 genotypes <- read.csv("genotypesComplete.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
-lodmatrixDOM <- read.table("lodmatrixDOMnoKasp.txt", header = TRUE, sep = "\t", check.names = FALSE)
-lodmatrixADD <- read.table("lodmatrixADDnoKasp.txt", header = TRUE, sep = "\t", check.names = FALSE)
-mprofiles <- read.table("lodmatrixADDDOMnoKasp.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixDOM <- read.table("lodmatrixDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
+lodmatrixADD <- read.table("lodmatrixADDComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
+mprofiles <- read.table("lodmatrixADDDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
 markerannot$Index <- seq.int(nrow(markerannot))
@@ -33,7 +33,7 @@ lodmatrixADDDOM <- mprofiles[rownames(annotation),]
 bw <- mprofiles[,c(1:32)]
 rotate <- function(x) t(apply(x, 2, rev))
 image(rotate(bw))
-lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
+lodannotmatrix <- cbind(annotation[rownames(lodmatrixADD), ], lodmatrixADD)
 chr17 <- lodannotmatrix[which(lodannotmatrix[,"Chromosome"] == 17),]
 chr17ord <- chr17[order(chr17[,2], decreasing = FALSE),]
 # Gon chr 17
@@ -72,7 +72,7 @@ plot(main = "QTL profile bodyweight [Chr 15]", c(min(as.numeric(chr15[, "Positio
 
 
 ## Manhattan plots (Plot the effect with the highest  lod score and use three different symbols for each one) 
-par(cex.lab=1.4, cex.main = 1.8, cex.axis = 1.5)
+par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
 mat <- matrix(c(1,1,2,3), 2, 2, byrow = TRUE)
 layout(mat, widths = rep.int(3, ncol(mat)))
 
@@ -622,8 +622,39 @@ plot(main = "QTL profile bodyweight [Chr 15]", c(min(as.numeric(dataset[, "Posit
     pt.bg = "lightsteelblue1",
     cex = 1,
     text.col = "black")
+
+## Manhattan plots (Plot the effect with the highest  lod score and use three different symbols for each one) 
+par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
+mat <- matrix(c(1,1,2,3), 2, 2, byrow = TRUE)
+layout(mat, widths = rep.int(3, ncol(mat)))
+
+chrs <- as.character(c(3,12,15,17))
+gap <- 80000000
+map.sorted <- NULL
+chr.lengths <- c()
+chr.starts <- c(0)
+chrmids <- c()
+i <- 1
+for(chr in chrs){
+  onChr <- which(markerannot[,"Chromosome"] == chr)
+  map.sorted <- rbind(map.sorted, markerannot[onChr,])
+  chr.lengths <- c(chr.lengths, max(markerannot[onChr, "Position"]))
+  chr.starts <- c(chr.starts, chr.starts[i] + max(markerannot[onChr, "Position"]) + gap)
+  i <- i + 1
+}
+
+chr.start <- chr.starts[-5]
+chr.ends <- chr.start + chr.lengths
+names(chr.starts) <- chrs
+names(chr.lengths) <- chrs
+
+for (x in chrs){
+  chrmid <- as.numeric(chr.lengths[x]/2) + as.numeric(chr.starts[x])
+  chrmids <- c(chrmids, chrmid)
+}
+
 	
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plot"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plot liver and gonadal fat weight"))
 phenotype <- "Gon"
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
@@ -678,9 +709,12 @@ for(chr in chrs){
     }
   }
 }
+lim <- par("usr")
+#rect(xc[1:4], c(0,0,0,0), xc[5:8], yc[1:4], border = "red")
 axis(1, chrs, at = chrmids)
-abline(h= 4, col="orange",lty=3)
-abline(h= 4.5, col="green",lty=3)
+abline(h = 4.2, col="orange",lty=3)
+abline(v = c(chr.start,chr.ends), col = "red") 
+abline(h= 4.7, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", #bg="gray"
   bty = "n",
