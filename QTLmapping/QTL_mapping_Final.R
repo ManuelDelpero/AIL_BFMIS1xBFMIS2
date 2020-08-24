@@ -7,7 +7,9 @@
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 #setwd("/home/manuel/AIL_S1xS2/DATA")
 genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
-phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
+#phenotypes <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
+phenotypes <- read.csv("GlucSeries.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
+rownames(phenotypes) <- gsub("V 888-", "", rownames(phenotypes))
 annotation <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 annotation <- annotation[, c(1,2,3,6)]
 colnames(annotation) <- c("Chromosome", "Position", "GenTrain Score", "SNP")
@@ -47,7 +49,8 @@ for(x in 1:nrow(genotypes)){
   numgeno[x, which(genotypes[x, ] == h2)] <- 1
 }
 
-phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:74)])
+#phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:74)])
+phenonames <- colnames(phenotypes)
 # Getting rid of the outliers
 outliers <- apply(phenotypes[, phenonames],2, function(x){
   up <- mean(x, na.rm = TRUE) + 3 * sd(x, na.rm = TRUE)
@@ -71,6 +74,14 @@ switchLost <- phenotypes[,"D125"] - phenotypes[,"D126"]
 phenotypes <- cbind(phenotypes, switchLost)
 phenotypes <- phenotypes[colnames(genotypes),]
 phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:75)])
+#write.table(phenotypes, file = "PhenotypesComplete.txt", sep = "\t", quote = FALSE, row.names = TRUE)
+
+sex <- read.csv("allPhenotypes.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
+sex <- sex[rownames(phenotypes), "Sex"]
+phenotypes <- cbind(sex, phenotypes)
+colnames(phenotypes) <- c("Sex","Gluc42" , "Gluc70" , "Gluc98" , "Gluc125" ,"Gluc139" ,"Gluc147" ,"Gluc154" ,"Gluc157" ,"Gluc160" ,"Gluc163" ,"Gluc166" ,"Gluc169" ,"Gluc172")
+phenotypes <- phenotypes[colnames(genotypes),]
+
 
 # Dom dev + Add model without using the sum of LODS and no covariates (real dom)
 pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
@@ -89,7 +100,7 @@ for (pname in phenonames){
   pmatrixADDDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixADDDOM <- -log10(pmatrixADDDOM)
-write.table(lodmatrixADDDOM, file = "lodmatrixADDDOMComplete5.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixADDDOM, file = "lodmatrixADDDOMCompleteGlucSeries.txt", quote = FALSE, sep = "\t")
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
 
 # Dominance dev model
@@ -108,7 +119,7 @@ for (pname in phenonames){
   pmatrixDOM[names(pvalues), pname] <- pvalues
 }
 lodmatrixDOM <- -log10(pmatrixDOM)
-write.table(lodmatrixDOM, file = "lodmatrixDOMComplete5.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixDOM, file = "lodmatrixDOMCompleteGlucSeries.txt", quote = FALSE, sep = "\t")
 
 # Additive model
 pmatrixADD <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
@@ -126,7 +137,7 @@ for (pname in phenonames){
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
 lodmatrixADD <- -log10(pmatrixADD)
-write.table(lodmatrixADD, file = "lodmatrixADDComplete5.txt", quote = FALSE, sep = "\t")
+write.table(lodmatrixADD, file = "lodmatrixADDCompleteGlucSeries.txt", quote = FALSE, sep = "\t")
 
 # Figure out the variance explained by each QTL considering the direction of the effect
 lodmatrixDOM <- read.csv("lodmatrixDOMComplete.txt", header = TRUE, sep = "\t", check.names = FALSE)
@@ -191,7 +202,7 @@ getVarianceExplained <- function(genotypes, phenotypes, pheno.col = "d77", marke
   littersize <- as.factor(phenotypes[, "WG"])
   subfamily <- as.factor(phenotypes[, "Mutter"])
   sex <- as.factor(phenotypes[, "Sex"])
-  phenotype <- phenotypes[, pheno.col]
+  phenotype <- as.numeric(phenotypes[, pheno.col])
   model <- lm(phenotype ~ genotype)
   tryCatch(res  <- anova(model), error = function(e){ res <<- NA })
   cat(names(model$coefficients),"\n")
@@ -201,4 +212,4 @@ getVarianceExplained <- function(genotypes, phenotypes, pheno.col = "d77", marke
   return(round(varExplained * 100, digits=1))
 }
 
-getVarianceExplained(genotypes, phenotypes, pheno.col = "D98", marker = "UNCHS041907")
+getVarianceExplained(genotypes, phenotypes, pheno.col = "Gon", marker = "UNCHS041907")
