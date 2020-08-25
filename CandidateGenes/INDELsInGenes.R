@@ -10,7 +10,7 @@ setwd("/home/manuel/AIL_S1xS2/RAWDATA/")
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
 # Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
-regions <- regions[c(19, 44, 47),]
+regions <- regions[c(32,34,35,44,45,47,56),]
 
 # Get genes in regions
 genes <- vector("list", nrow(regions))
@@ -50,8 +50,6 @@ execute <- function(x, intern = FALSE, execute = TRUE){
     if(res[1] >= 1) q("no")
   }
 }
-
-setwd("/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiverS1")
 		 
 ## INDELs in genes
 
@@ -68,12 +66,16 @@ for(x in 1:nrow(uniquegenes)){
   bedfile <- rbind(bedfile, c(uniquegenes[x, 2], format(startpos, scientific = FALSE), format(endpos, scientific = FALSE)))
 }
 
+
+setwd("/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiverS1")
 bedfile <- bedfile[-1,]
-bedfile[,1] <- gsub("3", "chr3", bedfile[,1])
-bedfile[,1] <- gsub("15", "chr15", bedfile[,1])
-bedfile[,1] <- gsub("17", "chr17", bedfile[,1])
-bedfile[,2] <- as.numeric(bedfile[,2])
-bedfile[,3] <- as.numeric(bedfile[,3])
+#bedfile[,1] <- gsub("3", "chr3", bedfile[,1])
+#bedfile[,1] <- gsub("12", "chr12", bedfile[,1])
+#bedfile[,1] <- gsub("15", "chr15", bedfile[,1])
+#bedfile[,1] <- gsub("16", "chr16", bedfile[,1])
+#bedfile[,1] <- gsub("17", "chr17", bedfile[,1])
+#bedfile[,2] <- as.numeric(bedfile[,2])
+#bedfile[,3] <- as.numeric(bedfile[,3])
 bedfile <- cbind(as.numeric(bedfile[,1]), as.numeric(bedfile[,2]), as.numeric(bedfile[,3]))
 write.table(bedfile, file = "bedfile.bed.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
@@ -91,4 +93,4 @@ callINDELs <- function(bamfiles) {
 setwd("/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiverS1")
 callINDELs(bamfileS1)
 setwd("/home/manuel/AIL_S1xS2/RAWDATA/INDELsGenesGonLiverS2") 
-callINDELs(bamfiles2)
+callINDELs(bamfileS2)
