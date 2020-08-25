@@ -92,7 +92,7 @@ bamfiles <- c("/home/danny/NAS/Mouse/DNA/Sequencing/Alignment2020/1/SJLP_trimmed
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
 # Keep the three interesting regions 
-regions <- regions[56,]
+regions <- regions[c(56, 57 , 45),]
 
 # Get genes in regions
 library(biomaRt)
@@ -143,9 +143,9 @@ for(x in 1:nrow(uniquegenes)){
   startpos <- uniquegenes[x, 3]
   endpos <- uniquegenes[x, 4]
   if(uniquegenes[x, 5] == 1){
-    startpos <- startpos-500
+    startpos <- startpos-6000
   }else{
-    endpos <- endpos +500
+    endpos <- endpos +6000
   }
   callSNPs(bamfiles, uniquegenes[x, 2], startpos, endpos, uniquegenes[x, 1]) 
 }
@@ -162,7 +162,7 @@ for(file in filelist){
   }
 }
 
-chromosomes <- 15
+chromosomes <- c(15,12)
 
 
 allSNPsAnnot <- allSNPs[order(allSNPs[,"V2"]),]
@@ -180,6 +180,6 @@ cat(paste0(header, collapse = "\n"), "\n", file = "all_combined.vcf")
 write.table(allSNPsAnnot[,-1], file = "all_combined.vcf", sep = "\t", quote=FALSE, append = TRUE, col.names=FALSE, row.names= FALSE)
 
 # sort the vcf file
-cmdsort <- "cat all_combined.vcf | awk '$1 ~ /^#/ {print $0;next} {print $0 | \"sort -k1,1 -k2,2n\"}' > out_sorted.vcf"
+cmdsort <- "cat all_combined.vcf | awk '$1 ~ /^#/ {print $0;next} {print $0 | \"sort -k1,1 -k2,2n\"}' > all_combined_sorted.vcf"
 
 execute(cmdsort)
