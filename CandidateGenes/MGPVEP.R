@@ -1,6 +1,6 @@
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver/SNPsGenesMetS")
 
-mdata <- read.table("outputVEPMGP.vcf", header = TRUE)
+mdata <- read.table("outputVEP.vcf", header = TRUE)
 
 gts <- apply(mdata[,10:ncol(mdata)],2,function(x){unlist(lapply(strsplit(x, ":"),"[",1)) })
 gts[gts=="./."] <- NA
@@ -8,6 +8,7 @@ gts[gts=="./."] <- NA
 vepp <- unlist(lapply(strsplit(as.character(mdata[,8]), ";"), "[",15))
 veppsplit <- strsplit(gsub("CSQ=", "", vepp), ",")
 rsIDs <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",18))
+domains <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",24))
 types <- unlist(lapply(lapply(veppsplit, strsplit, "|", fixed=TRUE), function(x){ 
   type <- unlist(lapply(x,"[",2))
   gene <- unlist(lapply(x,"[",4))
@@ -27,9 +28,17 @@ types <- unlist(lapply(lapply(veppsplit, strsplit, "|", fixed=TRUE), function(x)
   return("\t")
 }))
 
-mexcel <- cbind("RSID" = rsIDs, mdata[, c(1,2,4,5,6)], "TYPE" = types, gts)
+mexcel <- cbind("RSID" = rsIDs, mdata[, c(1,2,4,5,6)], "TYPE" = types, "DOMAIN" = domains, gts)
 
-# Only SNPs that are found in the BFMI
-mexcel <- mexcel[which(!(mexcel[, "BFMI861.S1"] == "0/0" & mexcel[, "BFMI861.S2"] == "0/0" & mexcel[, "BFMI860.12"] == "0/0")),]
+# Only SNPs that are found in the S1 and not in the S2
+mexcel <- mexcel[which((mexcel[, "BFMI861.S1"] == "1/1" & mexcel[, "BFMI861.S2"] == "0/0" )),]
 
-write.table(mexcel, file="MGP_Chr3_36000000-37000000.snps-filtered.tsv", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
+write.table(mexcel, file="annotationSNPsCandidateGenes_all.csv", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
+
+# get only the important SNPs
+mexcel <- mexcel[which(!mexcel[, "TYPE"] == "\t"),]
+write.table(mexcel, file="annotationSNPsCandidateGenes_Filtered.csv", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
+
+annotGenes <- read.table("annotationSNPsCandidateGenes_Filtered.txt", sep = "\t", header = TRUE, check.names= FALSE)
+candidates <- as.character(unique(annotGenes[,8]))
+candidates <- genes[-grep("ENSMU", genes)]
