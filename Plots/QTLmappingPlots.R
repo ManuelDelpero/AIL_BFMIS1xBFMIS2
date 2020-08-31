@@ -628,7 +628,7 @@ par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
 mat <- matrix(c(1,1,2,3), 2, 2, byrow = TRUE)
 layout(mat, widths = rep.int(3, ncol(mat)))
 
-chrs <- as.character(c(3,12,15,17))
+chrs <- c(1:19,"X")
 gap <- 80000000
 map.sorted <- NULL
 chr.lengths <- c()
@@ -654,7 +654,7 @@ for (x in chrs){
 }
 
 	
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,10), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plot liver and gonadal fat weight"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(-9,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots"))
 phenotype <- "Gon"
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
@@ -709,16 +709,196 @@ for(chr in chrs){
     }
   }
 }
+phenotype <- "Gluc172"
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  currentADDDOM <- -(lodmatrixADDDOM[onChr, phenotype])
+  currentDOM <- -(lodmatrixDOM[onChr, phenotype])
+  currentADD <- -(lodmatrixADD[onChr, phenotype])
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "lightgreen")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] <  currentDOM[p]) && (currentADDDOM[p] < currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "orange")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "orange"))
+    }
+    if ((currentDOM[p] <  currentADDDOM[p]) && (currentDOM[p] < currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1,5, col= "orange")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "orange"))
+    }
+      if ((currentADD[p] <  currentADDDOM[p]) && (currentADD[p] < currentDOM[p])){
+        if (chr %in% seq(1,20,2))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5, col= "orange")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5,col= "orange"))
+    }
+  }
+}
 lim <- par("usr")
 #rect(xc[1:4], c(0,0,0,0), xc[5:8], yc[1:4], border = "red")
 axis(1, chrs, at = chrmids)
 abline(h = 4.2, col="orange",lty=3)
-abline(v = c(chr.start,chr.ends), col = "red") 
+abline(h = 0, col="black",lty=3)
+#abline(v = c(chr.start,chr.ends), col = "red") 
+abline(h= 4.7, col="green",lty=3)
+abline(h = -4.2, col="orange",lty=3)
+abline(h = -4.7, col="green",lty=3)
+axis(1, chrs, at = chrmids)
+legend("topright", #bg="gray"
+  bty = "n",
+  legend = c("Dominance", "Additive", "Dominance dev.", "Gonadal fat", "Liver", "Glucose"),
+  pch = c(0, 18, 17, 15, 15, 15),
+  col = c("black", "black", "black", "cornflowerblue", "lightgreen", "orange"))
+
+## Manhattan plots (Plot the effect with the highest  lod score and use three different symbols for each one) 
+par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
+mat <- matrix(c(1,1,2,3), 2, 2, byrow = TRUE)
+layout(mat, widths = rep.int(3, ncol(mat)))
+
+chrs <- c(1:19,"X")
+gap <- 80000000
+map.sorted <- NULL
+chr.lengths <- c()
+chr.starts <- c(0)
+chrmids <- c()
+i <- 1
+for(chr in chrs){
+  onChr <- which(markerannot[,"Chromosome"] == chr)
+  map.sorted <- rbind(map.sorted, markerannot[onChr,])
+  chr.lengths <- c(chr.lengths, max(markerannot[onChr, "Position"]))
+  chr.starts <- c(chr.starts, chr.starts[i] + max(markerannot[onChr, "Position"]) + gap)
+  i <- i + 1
+}
+
+chr.start <- chr.starts[-5]
+chr.ends <- chr.start + chr.lengths
+names(chr.starts) <- chrs
+names(chr.lengths) <- chrs
+
+for (x in chrs){
+  chrmid <- as.numeric(chr.lengths[x]/2) + as.numeric(chr.starts[x])
+  chrmids <- c(chrmids, chrmid)
+}
+
+	
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots"))
+phenotype <- "Gon"
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  currentADDDOM <- lodmatrixADDDOM[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "cornflowerblue")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "cornflowerblue"))
+    }
+    if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1,5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "cornflowerblue"))
+    }
+      if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+        if (chr %in% seq(1,20,2))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5, col= "cornflowerblue")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5,col= "cornflowerblue"))
+    }
+  }
+}
+phenotype <- "Leber"
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  currentADDDOM <- lodmatrixADDDOM[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = mprofiles[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "lightgreen")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "lightgreen")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "lightgreen"))
+    }
+    if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1,5, col= "lightgreen")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "lightgreen"))
+    }
+      if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+        if (chr %in% seq(1,20,2))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5, col= "lightgreen")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.5,col= "lightgreen"))
+    }
+  }
+}
+#rect(xc[1:4], c(0,0,0,0), xc[5:8], yc[1:4], border = "red")
+axis(1, chrs, at = chrmids)
+abline(h = 4.2, col="orange",lty=3)
+#abline(v = c(chr.start,chr.ends), col = "red") 
 abline(h= 4.7, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", #bg="gray"
   bty = "n",
   legend = c("Dominance", "Additive", "Dominance dev.", "Gonadal fat", "Liver"),
-  pch = c(0, 18, 17, 15, 15),
+  pch = c(0, 18, 17, 15, 15, 15),
   col = c("black", "black", "black", "cornflowerblue", "lightgreen"))
-
+  
+# Effect plots for each qtl
+#chr3
+UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
+boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "lost of weight during 12h fasting [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
+  axis(1, at = 1:3 , c("AA", "AG", "GG"))
+  legend("topright", #bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    #pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black") 
+	
+#chr12
+UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
+boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "lost of weight during 12h fasting [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
+  axis(1, at = 1:3 , c("AA", "AG", "GG"))
+  legend("topright", #bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    #pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black") 
+	
+#chr15
+UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
+boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "lost of weight during 12h fasting [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
+  axis(1, at = 1:3 , c("AA", "AG", "GG"))
+  legend("topright", #bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    #pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black") 
+	
+#chr17
+UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
+boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "lost of weight during 12h fasting [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
+  axis(1, at = 1:3 , c("AA", "AG", "GG"))
+  legend("topright", #bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    #pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black") 
