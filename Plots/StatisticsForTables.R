@@ -22,6 +22,11 @@ for(chr in chromosomes){
 
 lodannotmatrix <- cbind(annotation[rownames(lodmatrix), ], lodmatrix)
 
+# Calculate the original tissue weight
+tissues <- colnames(phenotypes[, c(46:55)])
+for (x in tissues){
+  phenotypes[, x] <- phenotypes[, x] * phenotypes[, "Gewicht"]
+}
 
 # Make sure that the ordering between phenotypes and genotypes matches !!!!!
 # Also sort the markers by their natural chromosome ordering
@@ -61,3 +66,8 @@ stat(lodannotmatrix, pheno = "Triglycerides", chr = 17)
 
 stat(lodannotmatrix, pheno = "Gluc172", chr = 3)
 stat(lodannotmatrix, pheno = "Gluc172", chr = 17)
+
+stat(lodannotmatrix, pheno = "Triglycerides", chr = 17)
+stat(lodannotmatrix, pheno = "Triglycerides", chr = 7)
+
+stat(lodannotmatrix, pheno = "Triglycerides", chr = 17)
