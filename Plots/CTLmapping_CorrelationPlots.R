@@ -1,4 +1,4 @@
-# AIL_S1xS2 Analysis on Phenotypes
+# AIL_S1xS2 CTL mapping plots
 #
 # copyright (c) - Manuel Delpero
 # first written july, 2020
@@ -48,12 +48,12 @@ layout(mat, widths = rep.int(3, ncol(mat)))
 
 plot(main="Tissues weight sorted by gonadal fat weight", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="Weight [g]", ylim = c(0,7), las = 2, xaxt = "n")
   axis(1, at = c(0, 100, 200, 300, 400, 500), c("0", "100", "200", "300", "400", "500"))
-  points(sortWeight[,"Gon"], col = "orange" , lwd=0.8 , pch=20 , type="p")
-  points(sortWeight[,"Leber"], col = "blue" , lwd=0.8 , pch=20 , type="p")
-  points(sortWeight[,"SCF"], col = "purple" , lwd=0.8 , pch=20 , type="p")
+  points(sortWeight[,"Gon"], col = "blue" , lwd=0.8 , pch=20 , type="p")
+  points(sortWeight[,"Leber"], col = "darkgreen" , lwd=0.8 , pch=20 , type="p")
+  points(sortWeight[,"SCF"], col = "orange" , lwd=0.8 , pch=20 , type="p")
   legend("topleft",
-  legend = c("Liver", "Gon", "SCF"),
-   col = c("blue", "orange", "purple"),
+  legend = c("Liver", "Gonadal fat", "SCF"),
+   col = c("darkgreen", "blue", "orange"),
    pch = c(20,20,20),
    bty = "n",
    pt.cex = 1.4,
@@ -67,9 +67,10 @@ colnames(corGonLiver) <- c("Gonadal fat", "Liver")
 
 # Correlation plot gonadal fat, liver
 plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,7), t = "n", xlab="Liver weigth [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
-points(sortWeight[,"Leber"],sortWeight[,"Gon"], lwd=0.8 , pch=20 , type="p")
-abline(lm(sortWeight[,"Leber"]~sortWeight[,"Gon"]), col="red")
-text(4.5, 3.5, "r = -0.71")
+  points(sortWeight[,"Leber"],sortWeight[,"Gon"], lwd=0.8 , pch=20 , type="p")
+  axis(1, at = c(0, 1, 2, 3, 4, 5), c("0", "1", "2", "3", "4", "5"))
+  abline(lm(sortWeight[,"Leber"]~sortWeight[,"Gon"]), col="red")
+  text(4.5, 3.5, "r = -0.71")
 
 
 # CTL mapping curve across chromosome 15
@@ -80,9 +81,9 @@ chr15Q <- lodannotmatrixQ[which(lodannotmatrixQ[,"Chromosome"] == 15),]
 chr15Q <- chr15Q[order(chr15Q[,"Position"]),]
 
 plot(main = "CTL profile liver ~ gonadal fat weight [Chr 15]", c(min(as.numeric(chr15Q[, "Position"])), max(as.numeric(chr15Q[, "Position"]))), c(-8,8), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
-  points(x = as.numeric(chr15C[,"Position"]), y = chr15C[,"lodmatrixC"] , type = "l", col="black", lwd = 1)
-  points(x = as.numeric(chr15Q[,"Position"]), y = -(chr15Q[,"Gon"]) , type = "l", col="blue", lwd = 1)
-  points(x = as.numeric(chr15Q[,"Position"]), y = -(chr15Q[,"Leber"]) , type = "l", col="brown", lwd = 1)
+  points(x = as.numeric(chr15C[,"Position"]), y = chr15C[,"lodmatrixC"] , type = "l", col="black", lwd = 2)
+  points(x = as.numeric(chr15Q[,"Position"]), y = (chr15Q[,"Gon"]) , type = "l", col="blue", lwd = 1)
+  points(x = as.numeric(chr15Q[,"Position"]), y = -(chr15Q[,"Leber"]) , type = "l", col="darkgreen", lwd = 1)
   abline(h=4.7, col="green")
   abline(h=4.2, col="orange")
   abline(h=-4.7, col="green")
@@ -90,7 +91,7 @@ plot(main = "CTL profile liver ~ gonadal fat weight [Chr 15]", c(min(as.numeric(
   abline(h=0, col="black")
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
   legend("topleft",
-   legend = c("QTL mapping liver", "QTL mapping Gonadal fat", "CTL mapping"),
+   legend = c("QTL mapping liver", "QTL mapping gonadal fat", "CTL mapping"),
    col = c("brown", "blue", "black"),
    pch = c(20,20,20),
    bty = "n",
