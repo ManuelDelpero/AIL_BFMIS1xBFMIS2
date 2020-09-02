@@ -7,6 +7,7 @@
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 pheno <- read.table("allPhenotypes_final.txt", sep = "\t", row.names=1)
+genotypes <- read.csv("genotypesComplete.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 lodmatrixC <- read.table("lodscoresCTL.txt", sep = "\t", check.names = FALSE, header = TRUE)
 lodmatrixQ <- read.table("lodmatrixADDComplete.txt", sep = "\t", check.names = FALSE, header = TRUE)
 
@@ -66,15 +67,40 @@ colnames(corGonLiver) <- c("Gonadal fat", "Liver")
 #write.table(corGonLiver, file = "CorrelationGonLiverWeight.txt", quote = FALSE, sep = "\t")
 
 # Correlation plot gonadal fat, liver
+
+chr15TopMarker <- t(genotypes[c("UNC25805470",1),])
+#chr15TopMarker <- chr15TopMarker[-which(is.na(chr15TopMarker[,1])),]
+sortWeight <- sortWeight[rownames(chr15TopMarker),]
+S1 <- names(which(chr15TopMarker[,1] == "A"))
+S2 <- names(which(chr15TopMarker[,1] == "B"))
+HET <- names(which(chr15TopMarker[,1] == "H"))
+
 plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,7), t = "n", xlab="Liver weigth [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
-  points(sortWeight[,"Leber"],sortWeight[,"Gon"], lwd=0.8 , pch=20 , type="p")
+  mycols = c()
+  for (x in 1:nrow(sortWeight)){
+    if (rownames(sortWeight[x,]) %in% S1){
+	  mycol <- "orange"
+	}else if (rownames(sortWeight[x,]) %in% S2){
+	  mycol <- "blue"
+	}else if (rownames(sortWeight[x,]) %in% HET){
+	  mycol <- "black"
+	}
+  mycols <- c(mycols, mycol)
+  }
+  points(sortWeight[,"Leber"],sortWeight[,"Gon"], lwd=0.8 , pch=16 , type="p", col = mycols)
   axis(1, at = c(0, 1, 2, 3, 4, 5), c("0", "1", "2", "3", "4", "5"))
   abline(lm(sortWeight[,"Leber"]~sortWeight[,"Gon"]), col="red")
-  text(4.5, 3.5, "r = -0.71")
+  text(3.5, 6, "r = -0.71, p-value < 2.2e-16")
+  legend("topleft",
+   legend = c("S1", "HET", "S2"),
+   col = c("orange", "black", "blue"),
+   pch = c(20,20,20),
+   bty = "n",
+   pt.cex = 1.4,
+   cex = 1,)
 
 
 # CTL mapping curve across chromosome 15
-
 chr15C <- lodannotmatrixC[which(lodannotmatrixC[,"Chromosome"] == 15),]
 chr15C <- chr15C[order(chr15C[,"Position"]),]
 chr15Q <- lodannotmatrixQ[which(lodannotmatrixQ[,"Chromosome"] == 15),]
