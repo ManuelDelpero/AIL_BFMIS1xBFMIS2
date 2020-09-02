@@ -15,14 +15,14 @@ Diffexprliver <- read.csv("liver_significant_ann.txt", sep = "\t", header = TRUE
 DiffexprGonadalfat <- read.csv("gonadalfat_significant_ann.txt", sep = "\t", header = TRUE, check.names = FALSE)
 DiffexprSkeletalmuscle <- read.csv("skeletalmuscle_significant_ann.txt", sep = "\t", header = TRUE, check.names = FALSE)
 DiffexprPankreas <- read.csv("pankreas_significant_ann.txt", sep = "\t", header = TRUE, check.names = FALSE)
-Candidates <- read.csv("CandidatesGonliver.txt", sep = "\t", header = TRUE, check.names = FALSE)
+CandidatesGon <- read.csv("CandidatesGon.txt", sep = "\t", header = TRUE, check.names = FALSE)
+CandidatesLiver <- read.csv("CandidatesLiver.txt", sep = "\t", header = TRUE, check.names = FALSE)
 
 ## Volcano Plots
 regions <- read.table("QTLregions2212020.txt", sep = "\t", header = TRUE)
 
-# Keep the regions that overlap between the traits that show correlation (f.i. gonadal adipose tissue weight and liver) 
-regionsGon <- regions[c(30, 44, 45, 46, 47, 56,57),] # Gon fat
-regionsLiver <- regions[47,] # Liver
+# Keep the regions that overlaps
+regions <- regions[c(32,34,35,44,45,47,56),] 
 
 library(biomaRt)
 
@@ -42,26 +42,13 @@ getregion <- function(bio.mart, chr, startpos, endpos) {
   return (res.biomart) 
 }
 
-# Get genes in regions for Gon fat
-genesGon <- vector("list", nrow(regionsGon))
-for(x in 1:nrow(regionsGon)){																			
-  if(!is.na(regionsGon[x, "Chr"])){
-    genesGon[[x]] <- getregion(bio.mart, regionsGon[x, "Chr"], regionsGon[x, "StartPos"], regionsGon[x, "StopPos"])
-	cat(x, " has ", nrow(genesGon[[x]]), "genes\n")
-    fname <- paste0("genes_in_", regionsGon[x, "Chr"],"-", regionsGon[x, "StartPos"], ":", regionsGon[x, "StopPos"], as.character(regionsGon[x, "Phenotype"]) , ".txt") 
-    #write.table(genes[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
-  }else{
- 	cat(x, " has NA region\n")
-  }
-}
-
-# Get genes in regions for liver
-genesLiver <- vector("list", nrow(regionsLiver))
-for(x in 1:nrow(regionsLiver)){																			
-  if(!is.na(regionsLiver[x, "Chr"])){
-    genesLiver[[x]] <- getregion(bio.mart, regionsLiver[x, "Chr"], regionsLiver[x, "StartPos"], regionsLiver[x, "StopPos"])
-	cat(x, " has ", nrow(genesLiver[[x]]), "genes\n")
-    fname <- paste0("genes_in_", regionsLiver[x, "Chr"],"-", regionsLiver[x, "StartPos"], ":", regionsLiver[x, "StopPos"], as.character(regionsLiver[x, "Phenotype"]) , ".txt") 
+# Get genes in regions 
+Genes <- vector("list", nrow(regions))
+for(x in 1:nrow(regions)){																			
+  if(!is.na(regions[x, "Chr"])){
+    Genes[[x]] <- getregion(bio.mart, regions[x, "Chr"], regions[x, "StartPos"], regions[x, "StopPos"])
+	cat(x, " has ", nrow(Genes[[x]]), "genes\n")
+    fname <- paste0("genes_in_", regions[x, "Chr"],"-", regions[x, "StartPos"], ":", regions[x, "StopPos"], as.character(regions[x, "Phenotype"]) , ".txt") 
     #write.table(genes[[x]], file = fname, sep="\t", quote = FALSE, row.names = FALSE)
   }else{
  	cat(x, " has NA region\n")
@@ -69,32 +56,22 @@ for(x in 1:nrow(regionsLiver)){
 }
 
 # figure out all the unique genes, result: matrix with 4 columns: name, chromosome, start position, end position
-uniquegenesGon <- NULL
-for(x in genesGon){ 
+Uniquegenes <- NULL
+for(x in Genes){ 
   if(!is.null(x)){
     subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand", "mgi_symbol")]
-	uniquegenesGon <- rbind(uniquegenesGon, subset) 
+	Uniquegenes <- rbind(Uniquegenes, subset) 
   }
 }
-uniquegenesGon <- uniquegenesGon[!duplicated(uniquegenesGon),] 
-table(uniquegenesGon[ ,"chromosome_name"])
-
-uniquegenesLiver <- NULL
-for(x in genesLiver){ 
-  if(!is.null(x)){
-    subset <- x[ ,c("ensembl_gene_id", "chromosome_name", "start_position", "end_position", "strand", "mgi_symbol")]
-	uniquegenesLiver <- rbind(uniquegenesLiver, subset) 
-  }
-}
-uniquegenesLiver <- uniquegenesLiver[!duplicated(uniquegenesLiver),] 
-table(uniquegenesLiver[ ,"chromosome_name"])
+Uniquegenes <- Uniquegenes[!duplicated(Uniquegenes),] 
+table(Uniquegenes[ ,"chromosome_name"])
 
 # Volvano plot function	(expression values and annotation of the genes in the QTL region as arguments)	 
-VolcanoPlot <- function(x,y){       
-  sig <- x[which((x[,"logFC"] < -0.2 | x[,"logFC"] > 0.2) & (x[,"p.value"] < 0.05/5000)),]
-  int1 <- x[which((x[,"logFC"] < -0.2 | x[,"logFC"] > 0.2) & (x[,"p.value"] > 0.05/5000)),]
-  int2 <- x[which((x[,"logFC"] > -0.2 | x[,"logFC"] < 0.2) & (x[,"p.value"] < 0.05/5000) & (!(x[,1] %in% sig[,1]))),]
-  not <- x[which((x[,"logFC"] > -0.2 | x[,"logFC"] < 0.2) & (x[,"p.value"] > 0.05/5000) & (!(x[,1] %in% int1[,1]))),]
+VolcanoPlot <- function(x,y,z){       
+  sig <- x[which((x[,"logFC"] < -0.2 | x[,"logFC"] > 0.2) & (x[,"p.value"] < max(z[,"p.value"]))),]
+  int1 <- x[which((x[,"logFC"] < -0.2 | x[,"logFC"] > 0.2) & (x[,"p.value"] > max(z[,"p.value"]))),]
+  int2 <- x[which((x[,"logFC"] > -0.2 | x[,"logFC"] < 0.2) & (x[,"p.value"] < max(z[,"p.value"])) & (!(x[,1] %in% sig[,1]))),]
+  not <- x[which((x[,"logFC"] > -0.2 | x[,"logFC"] < 0.2) & (x[,"p.value"] > max(z[,"p.value"])) & (!(x[,1] %in% int1[,1]))),]
   myPchsig <- ifelse(sig[,1] %in% y[,1], 16, 1)
   myCexsig <- ifelse(sig[,1] %in% y[,1], 2, 1)
   myPchint1 <- ifelse(int1[,1] %in% y[,1], 16, 1)
@@ -118,13 +95,13 @@ VolcanoPlot <- function(x,y){
     #posy <- c(-log10(textToPlot1[, "p.value"]), -log10(textToPlot2[, "p.value"]), -log10(textToPlot3[, "p.value"]))
     text(posx, posy, names)  
     legend("topright",  bg="gray",
-      legend=c("Significant", "Interesting", "Not significant","In QTLs","Out of QTLs"), 
-      col=c("green","orange", "red","black", "black"), pch=c(16, 16, 16, 16, 1),
+      legend=c("Significant", "Interesting", "Not significant"), 
+      col=c("green","orange", "red"), pch=c(16, 16, 16),
       bty="n", border=F, ncol=2)
 }
 
 par(cex.lab=1.2, cex.main = 1.8, cex.axis = 1.4)
 par(mfrow = c(1,2))
 
-VolcanoPlot(exprGonadalfat, Candidates)
-VolcanoPlot(exprliver, uniquegenesGon)
+VolcanoPlot(exprGonadalfat, CandidatesGon, DiffexprGonadalfat)
+VolcanoPlot(exprliver, CandidatesLiver, Diffexprliver)
