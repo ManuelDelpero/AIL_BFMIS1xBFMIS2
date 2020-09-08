@@ -752,7 +752,7 @@ legend("topright", #bg="gray"
   pch = c(0, 18, 17, 15, 15, 15),
   col = c("black", "black", "black", "cornflowerblue", "lightgreen", "orange"))
 
-## Manhattan plots (Plot the effect with the highest  lod score and use three different symbols for each one) 
+## Manhattan plots (Plot the effect with the highest lod score) 
 par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
 mat <- matrix(c(1,1,2,3), 2, 2, byrow = TRUE)
 layout(mat, widths = rep.int(3, ncol(mat)))
@@ -796,13 +796,13 @@ for(chr in chrs){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "cornflowerblue"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.5, col= "cornflowerblue"))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1,5, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "cornflowerblue"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,5, col= "cornflowerblue")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.5, col= "cornflowerblue"))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
@@ -823,13 +823,13 @@ for(chr in chrs){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "lightgreen")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 0, cex = 1.5, col= "lightgreen"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.5, col= "lightgreen")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.5, col= "lightgreen"))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1,5, col= "lightgreen")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 17, cex = 1.5, col= "lightgreen"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,5, col= "lightgreen")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.5, col= "lightgreen"))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
@@ -846,15 +846,15 @@ abline(h= 4.7, col="green",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", #bg="gray"
   bty = "n",
-  legend = c("Dominance", "Additive", "Dominance dev.", "Gonadal fat", "Liver"),
-  pch = c(0, 18, 17, 15, 15, 15),
-  col = c("black", "black", "black", "cornflowerblue", "lightgreen"))
+  legend = c("Gonadal fat", "Liver"),
+  pch = c(15, 15),
+  col = c("cornflowerblue", "lightgreen"))
   
 # Effect plots for each qtl
 #chr3
-UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
-boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "lost of weight during 12h fasting [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
-  axis(1, at = 1:3 , c("AA", "AG", "GG"))
+UNC5791802 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC5791802",]))
+boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal fat weight",  ylab = "Weight [Gr.]", xlab = "Genotype UNC5791802 [chr 3]" , las = 2, t = "n", xaxt = "n", ylim = c(0,5))
+  axis(1, at = 1:3 , c("TT", "TC", "CC"))
   legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
@@ -865,8 +865,8 @@ boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC
     text.col = "black") 
 	
 #chr12
-UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
-boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "lost of weight during 12h fasting [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
+UNC20599050 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC20599050",]))
+boxplot(as.numeric(UNC20599050[which(UNC20599050[,2] == "A"),1]), as.numeric(UNC20599050[which(UNC20599050[,2] == "H"),1]), as.numeric(UNC20599050[which(UNC20599050[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal fat weight", ylab = "Weight [Gr.]", xlab = "Genotype UNC20599050 [chr 12]" , las = 2, t = "n", xaxt = "n", ylim = c(0,5))
   axis(1, at = 1:3 , c("AA", "AG", "GG"))
   legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -878,8 +878,21 @@ boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC
     text.col = "black") 
 	
 #chr15
-UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
-boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "lost of weight during 12h fasting [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
+UNC25805470 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC25805470",]))
+boxplot(as.numeric(UNC25805470[which(UNC25805470[,2] == "A"),1]), as.numeric(UNC25805470[which(UNC25805470[,2] == "H"),1]), as.numeric(UNC25805470[which(UNC25805470[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal fat weight", ylab = "Weight [Gr.]", xlab = "Genotype UNC25806117 [chr 15]" , las = 2, t = "n", xaxt = "n", ylim = c(0,9))
+  axis(1, at = 1:3 , c("CC", "AG", "GG"))
+  legend("topright", #bg="gray",
+  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+    col = c("lightskyblue1", "cyan3", "dodgerblue4"),
+    pch = 15,
+    pt.cex = 1.7,
+    #pt.bg = "lightsteelblue1",
+    cex = 1,
+    text.col = "black") 
+	
+#chr17
+UNCHS043909 <- cbind(phenotypes[, "Gon"], t(genotypes["UNCHS043909",]))
+boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "H"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal fat weight", ylab = "Weight [Gr.]", xlab = "Genotype UNCHS043909 [chr 17]" , las = 2, t = "n", xaxt = "n", ylim = c(0,9))
   axis(1, at = 1:3 , c("AA", "AG", "GG"))
   legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
@@ -891,8 +904,8 @@ boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC
     text.col = "black") 
 	
 #chr17
-UNC27568354 <- cbind(phenotypes[, "switchLost"], t(genotypes["UNC27568354",]))
-boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "lost of weight during 12h fasting [Chr 17]", ylab = "Weight [Gr.]", xlab = "Genotypes[UNC27568354]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8.5))
+UNCHS043909 <- cbind(phenotypes[, "Leber"], t(genotypes["UNCHS043909",]))
+boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "H"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight", ylab = "Weight [Gr.]", xlab = "Genotype UNCHS043909 [chr 17]" , las = 2, t = "n", xaxt = "n", ylim = c(0,6))
   axis(1, at = 1:3 , c("AA", "AG", "GG"))
   legend("topright", #bg="gray",
   legend = c( "BFMI-S1", "HET", "BFMI-S2"),
