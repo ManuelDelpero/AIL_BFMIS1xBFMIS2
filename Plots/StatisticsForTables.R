@@ -71,3 +71,24 @@ stat(lodannotmatrix, pheno = "Triglycerides", chr = 17)
 stat(lodannotmatrix, pheno = "Triglycerides", chr = 7)
 
 stat(lodannotmatrix, pheno = "Triglycerides", chr = 17)
+
+stat(lodannotmatrix, pheno = "D172", chr = 15)
+
+# Calculate correlation differences between genotypes top marker CTL
+topM <- "UNC25735466"
+data <- phenotypes[, c("Gon", "Leber", "Gluc172")]
+cor(data, use = "pairwise.complete.obs")
+
+topmarker <- t(genotypes[topM,])
+topmarker <- data.frame(topmarker[-which(is.na(topmarker[,1])),])
+apply(topmarker,2,  table)
+pheno <- phenotypes[,c("Gon", "Leber")]
+pheno <- pheno[rownames(topmarker),]
+genopheno <- cbind(topmarker, pheno)
+genopheno[,1] <- as.character(genopheno[,1])
+AAcor <- genopheno[which(genopheno[,1] == "A"),]
+BBcor <- genopheno[which(genopheno[,1] == "B"),]
+ABcor <- genopheno[which(genopheno[,1] == "H"),]
+AAcor <- cor(AAcor[,c(2,3)], use = "pairwise.complete.obs")[2,1]
+BBcor <- cor(BBcor[,c(2,3)], use = "pairwise.complete.obs")[2,1]
+HHcor <- cor(ABcor[,c(2,3)], use = "pairwise.complete.obs")[2,1]
