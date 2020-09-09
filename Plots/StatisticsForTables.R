@@ -92,3 +92,21 @@ ABcor <- genopheno[which(genopheno[,1] == "H"),]
 AAcor <- cor(AAcor[,c(2,3)], use = "pairwise.complete.obs")[2,1]
 BBcor <- cor(BBcor[,c(2,3)], use = "pairwise.complete.obs")[2,1]
 HHcor <- cor(ABcor[,c(2,3)], use = "pairwise.complete.obs")[2,1]
+
+# t-test between genotype classes for each  top marker
+stat <- function(lodannotmatrix, pheno = "Gon", chr = 3){  
+  lodannotmatrix <- lodannotmatrix[, c("chr", "bp_mm10", pheno)]
+  chr3 <- lodannotmatrix[which(lodannotmatrix[,"chr"] == chr ),]
+  topmarkerID <- rownames(chr3[which.max(chr3[,pheno]),])
+  topmarker <- t(genotypes[topmarkerID,])
+  groupsSize <- apply(genotypes,1,  table)[[topmarkerID]]
+  genopheno <- cbind(topmarker, phenotypes[,pheno])
+  colnames(genopheno) <- c("Genotype", pheno)
+  S2 <- as.numeric(genopheno[which(genopheno[, "Genotype"] == "A"), 2])
+  S1 <- as.numeric(genopheno[which(genopheno[, "Genotype"] == "B"), 2])
+  HET <- as.numeric(genopheno[which(genopheno[, "Genotype"] == "H"), 2])
+  PS1vsS2 <- t.test(S1, S2)["p.value"]
+  PS1vsHET <- t.test(S1, HET)["p.value"]
+  PS2vsHET <- t.test(S2, HET)["p.value"]
+  return(c(PS1vsS2, "S1 vs S2", PS1vsHET, " S1 vs HET",  PS2vsHET, "S2 vs HET"))
+}
