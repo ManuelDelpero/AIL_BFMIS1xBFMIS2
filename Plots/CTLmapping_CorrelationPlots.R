@@ -47,19 +47,25 @@ par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
 mat <- matrix(c(1,2,3), 1, ,byrow = TRUE)
 layout(mat, widths = rep.int(3, ncol(mat)))
 
-plot(main="Tissues weight sorted by gonadal fat weight", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="Weight [g]", ylim = c(0,7), las = 2, xaxt = "n")
+par(mar = c(5, 4, 4, 4) + 0.3)  # Leave space for z axis
+plot(main="Tissues weight sorted by gonadal fat weight", c(1, nrow(sortWeight)), c(0, max(sortWeight[,"Gon"], na.rm=TRUE)), t = "n", xlab="Individuals", ylab="", ylim = c(0,7), las = 2, xaxt = "n")
   axis(1, at = c(0, 100, 200, 300, 400, 500), c("0", "100", "200", "300", "400", "500"))
   points(sortWeight[,"Gon"], col = "blue" , lwd=0.8 , pch=20 , type="p")
   points(sortWeight[,"Leber"], col = "darkgreen" , lwd=0.8 , pch=20 , type="p")
   points(sortWeight[,"SCF"], col = "orange" , lwd=0.8 , pch=20 , type="p")
   legend("topleft",
-  legend = c("Liver", "Gonadal fat", "SCF"),
-   col = c("darkgreen", "blue", "orange"),
+  legend = c("Liver", "Gonadal fat", "SCF", "Blood glucose"),
+   col = c("darkgreen", "blue", "orange", "red"),
    pch = c(20,20,20),
    bty = "n",
-   pt.cex = 1.4,
-   cex = 1,)
-
+   pt.cex = 1.8,
+   cex = 1.5,)
+par(new = TRUE)
+plot(1:nrow(sortWeight), sortWeight[,"Gluc172"], lwd=0.8 ,pch=20 ,type="p", col = "red", axes = FALSE, bty = "n", xlab = "", ylab = "", ylim = c(0, 800))
+  axis(side=4, at = c(pretty(range(sortWeight[,"Gluc172"])), "700", "800"))
+  mtext("Blood glucose [mg/dl]", side=4, line=3)
+  mtext("Weight[Gr.]", side=2, line=3)
+   
 GonLiver <- pheno[, c("Gon", "Leber")]
 corGonLiver <- cor(GonLiver, use = "pairwise.complete.obs")
 rownames(corGonLiver) <- c("Gonadal fat", "Liver")
@@ -68,14 +74,18 @@ colnames(corGonLiver) <- c("Gonadal fat", "Liver")
 
 # Correlation plot gonadal fat, liver
 
-chr15TopMarker <- t(genotypes[c("UNC25805470",1),])
+chr15TopMarker <- t(genotypes[c("UNC25735466",1),])
 #chr15TopMarker <- chr15TopMarker[-which(is.na(chr15TopMarker[,1])),]
 sortWeight <- sortWeight[rownames(chr15TopMarker),]
-S1 <- names(which(chr15TopMarker[,1] == "A"))
-S2 <- names(which(chr15TopMarker[,1] == "B"))
+S1 <- names(which(chr15TopMarker[,1] == "B"))
+S2 <- names(which(chr15TopMarker[,1] == "A"))
 HET <- names(which(chr15TopMarker[,1] == "H"))
+sortWeightS1 <- sortWeight[S1,]
+sortWeightS2 <- sortWeight[S2,]
+sortWeightHET <- sortWeight[HET,]
+sortWeight <- sortWeight[c(S1, S2, HET),]
 
-plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,7), t = "n", xlab="Liver weigth [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
+plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,5), t = "n", xlab="Liver weigth [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
   mycols = c()
   for (x in 1:nrow(sortWeight)){
     if (rownames(sortWeight[x,]) %in% S1){
@@ -90,14 +100,16 @@ plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,7), 
   points(sortWeight[,"Leber"],sortWeight[,"Gon"], lwd=0.8 , pch=16 , type="p", col = mycols)
   axis(1, at = c(0, 1, 2, 3, 4, 5), c("0", "1", "2", "3", "4", "5"))
   abline(lm(sortWeight[,"Leber"]~sortWeight[,"Gon"]), col="red")
-  text(3.5, 6, "r = -0.71, p-value < 2.2e-16")
+  abline(lm(sortWeightS1[,"Leber"]~sortWeightS1[,"Gon"]), col="orange")
+  abline(lm(sortWeightS2[,"Leber"]~sortWeightS2[,"Gon"]), col="blue")
+  #text(3.5, 6, "r = -0.71, p-value < 2.2e-16")
   legend("topleft",
-   legend = c("S1", "HET", "S2"),
+   legend = c("BFMI-S1", "HET", "BFMI-S2"),
    col = c("orange", "black", "blue"),
    pch = c(20,20,20),
    bty = "n",
-   pt.cex = 1.4,
-   cex = 1,)
+   pt.cex = 1.8,
+   cex = 1.5,)
 
 
 # CTL mapping curve across chromosome 15
@@ -121,5 +133,5 @@ plot(main = "CTL profile liver ~ gonadal fat weight [Chr 15]", c(min(as.numeric(
    col = c("brown", "blue", "black"),
    pch = c(20,20,20),
    bty = "n",
-   pt.cex = 1.4,
-   cex = 1,)
+   pt.cex = 1.8,
+   cex = 1.5,)
