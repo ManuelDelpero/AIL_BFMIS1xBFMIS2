@@ -10,22 +10,6 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 Diffexprliver <- read.csv("DiffExprLiver.txt", sep = "\t", header = TRUE, check.names = FALSE)
 DiffexprGonadalfat <- read.csv("DiffExprGon.txt", sep = "\t", header = TRUE, check.names = FALSE)
 GenesInfo <- read.csv("genesInfo.txt", sep = "\t", header = TRUE, check.names = FALSE)
-DiffexprGonadalfat <- read.csv("DiffExprGon.txt", sep = "\t", header = TRUE, check.names = FALSE)
-mmu00010 <- read.table("kegg/mmu00010_Glycolysis Gluconeogenesis.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04910 <- read.table("kegg/mmu04910_Insulin signaling pathway.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04940 <- read.table("kegg/mmu04940_Type I diabetes mellitus.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04930 <- read.table("kegg/mmu04930_Type II diabetes mellitus.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04950 <- read.table("kegg/mmu04950_MODY.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04931 <- read.table("kegg/mmu04931_Insulin resistance.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04975 <- read.table("kegg/mmu04975_Fat digestion and absorption.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu00061 <- read.table("kegg/mmu00061_Fatty acid biosynthesis.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu01040 <- read.table("kegg/mmu01040_Biosynthesis of unsaturated fatty acids.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04920 <- read.table("kegg/mmu04920_Adipocytokine signaling pathway.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04923 <- read.table("kegg/mmu04923_Regulation of lipolysis in adipocytes.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04973 <- read.table("kegg/mmu04973_Carbohydrate digestion and absorption.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-mmu04974 <- read.table("kegg/mmu04974_Protein digestion and absorption.txt",sep='\t', row.names=2, header = FALSE, fill = TRUE)
-GenesInPathways <- c(rownames(mmu00010),rownames(mmu04910),rownames(mmu04940),rownames(mmu04930),rownames(mmu04950),rownames(mmu04931),rownames(mmu04975),rownames(mmu00061),rownames(mmu01040),rownames(mmu04920),rownames(mmu04923),rownames(mmu04973),rownames(mmu04974))
-GenesInPathways <- unique(GenesInPathways)
 #DiffexprSkeletalmuscle <- read.csv("DiffExprMuscle.txt", sep = "\t", header = TRUE, check.names = FALSE)
 #DiffexprPankreas <- read.csv("DiffExprPankreas.txt", sep = "\t", header = TRUE, check.names = FALSE)
 FullList[, "GENE"] <- as.character(FullList[, "GENE"])
@@ -40,6 +24,29 @@ GenesInfo[, "mgi_symbol"] <-  as.character(GenesInfo[, "mgi_symbol"])
 
 #write.table(FullList, file="fulllist.txt", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
 
+# Download genes in interesting pathways
+library("StarBioTrek")
+species="mmusculus"
+pathwaydb="kegg"
+path<-GetData(species,pathwaydb)
+
+# Select interesting pathways
+fattyAcidsPathways1 <- path[grep("Fatty", path)]
+fattyAcidsPathways2 <- path[grep("Fat", path)]
+CholersterolPathways <- path[grep("Cholest", path)]
+LipidPathways <- path[grep("lipid", path)]
+SteroidPathways <- path[grep("Steroid", path)]
+CarboPathways1 <- path[grep("Glyco", path)]
+CarboPathways2 <- path[grep("Carbo", path)]
+InsulinPathways <- path[grep("Insulin", path)]
+CortisolPathways <- path[grep("Cortisol", path)]
+ArgininPathways <- path[grep("Arginine", path)]
+AlaninePathways <- path[grep("Alanine", path)]
+AminoAcidPathways <- path[grep("Amino", path)]
+pathways <- c(fattyAcidsPathways1, fattyAcidsPathways2, CholersterolPathways, LipidPathways, SteroidPathways, CarboPathways1, CarboPathways2, InsulinPathways, CortisolPathways,ArgininPathways, AlaninePathways, AminoAcidPathways)
+pathway_ALLGENE<-GetPathData(pathways)
+pathway_ALLGENE<-ConvertedIDgenes(pathways)
+pathway_ALLGENE <- unique(unlist(pathway_ALLGENE, recursive = TRUE, use.names = FALSE))
 
 # Score genes based on mutations (Decision tree)
 RankCandidates <- matrix(NA, nrow = length(Candidates), ncol = 9, dimnames = list(Candidates,c("AAchange", "UTRs", "Promoter", "CTCF B-site", "Enhancer", "DOMAIN", "Expression", "Annotation", "SCORE")))
@@ -93,10 +100,24 @@ for (gene in Candidates) {
 	  Score = Score +2
 	}
   }
-  if (gene %in% GenesInPathways){	# Check the annotation
+  if (gene %in% pathway_ALLGENE){	# Check the annotation
     RankCandidates[gene, "Annotation"] = "+"
 	Score = Score + 1
   }
   RankCandidates[gene,"SCORE"] <- Score  
 }
 RankCandidates <- data.frame(RankCandidates[order(as.numeric(RankCandidates[,"SCORE"], decreasing = TRUE)),])
+
+
+library(biomaRt)
+bio.mart <- useMart("ensembl", dataset="mmusculus_gene_ensembl")
+biomart.RankCandidates <- getBM(attributes = c("ensembl_gene_id", "chromosome_name", "mgi_symbol"), 
+                          filters = c("external_gene_name"), values = rownames(RankCandidates), mart = bio.mart)
+rownames(biomart.RankCandidates) <- biomart.RankCandidates[,3]
+RankCandidates <- RankCandidates[which(rownames(RankCandidates) %in% rownames(biomart.RankCandidates)),]
+biomart.RankCandidates <- biomart.RankCandidates[rownames(RankCandidates),]
+RankCandidates <- cbind(biomart.RankCandidates, RankCandidates)
+
+RankCandidates <- RankCandidates[order(RankCandidates[, "chromosome_name"]),]
+
+write.table(RankCandidates, file = "CandidatesScores.txt", sep = "\t", quote = FALSE, row.names = FALSE)
