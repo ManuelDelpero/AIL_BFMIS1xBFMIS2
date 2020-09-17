@@ -10,12 +10,14 @@ veppsplit <- strsplit(gsub("CSQ=", "", vepp), ",")
 rsIDs <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",18))
 domains <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",24))
 types <- unlist(lapply(lapply(veppsplit, strsplit, "|", fixed=TRUE), function(x){ 
+  sift <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",24))
   type <- unlist(lapply(x,"[",2))
   gene <- unlist(lapply(x,"[",4))
   change <- paste0(unlist(lapply(x,"[",9)), " ", unlist(lapply(x,"[",15)), " ", unlist(lapply(x,"[",16)))
-  transcript <- unlist(lapply(x,"[",7))
+  transcript <- paste0(unlist(lapply(x,"[",7)), " ", unlist(lapply(x,"[",8)))
   for(x in 1:length(type)){
-    if(type[x] %in% c("missense_variant")) { return(paste0(type[x], "\t", " ", change[x], " ", gene[x], "")) }
+    #if(type[x] %in% c("missense_variant")) { return(paste0(type[x], "\t", " ", change[x], " ", gene[x], "")) }
+	if(type[x] %in% c("missense_variant")) { return(paste0(type[x], "\t", " ",gene[x], "", sift[x])) }
     if(type[x] %in% c("regulatory_region_variant")) { return(paste0("regulatory\t", transcript[x], "")) }
     if(type[x] %in% c("splice_acceptor_variant")) { return(paste0("splice_acceptor\t", gene[x], "")) }
     if(type[x] %in% c("splice_donor_variant")) { return(paste0("splice_donor\t", gene[x], "")) }
@@ -30,7 +32,7 @@ types <- unlist(lapply(lapply(veppsplit, strsplit, "|", fixed=TRUE), function(x)
 }))
 
 mexcel <- cbind("RSID" = rsIDs, mdata[, c(1,2,4,5,6)], "TYPE" = types, "DOMAIN" = domains, gts)
-write.table(mexcel, file="annotationSNPsCandidateGenes_allS1S2.txt", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
+#write.table(mexcel, file="annotationSNPsCandidateGenes_all.txt", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
 
 # Only SNPs that are found in the S1 and not in the S2
 mexcel <- mexcel[which((mexcel[, "BFMI861.S1"] == "1/1" & mexcel[, "BFMI861.S2"] == "0/0" )),]
