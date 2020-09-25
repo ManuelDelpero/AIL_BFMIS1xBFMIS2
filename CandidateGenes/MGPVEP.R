@@ -1,23 +1,25 @@
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver/SNPsGenesMetS")
 
-mdata <- read.table("outputVEP.vcf", header = TRUE)
+mdata <- read.table("outputVEPall_combinedTrig_sorted.vcf", header = TRUE)
 
 gts <- apply(mdata[,10:ncol(mdata)],2,function(x){unlist(lapply(strsplit(x, ":"),"[",1)) })
 gts[gts=="./."] <- NA
 
-vepp <- unlist(lapply(strsplit(as.character(mdata[,8]), ";"), "[",15))
+vepp <- strsplit(as.character(mdata[,8]), ";")
+vepp <- (unlist(vepp))
+vepp <- vepp[grep("CSQ", vepp)]
 veppsplit <- strsplit(gsub("CSQ=", "", vepp), ",")
 rsIDs <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",18))
-domains <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",24))
+domains <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",25))
 types <- unlist(lapply(lapply(veppsplit, strsplit, "|", fixed=TRUE), function(x){ 
-  sift <- unlist(lapply(strsplit(unlist(lapply(veppsplit, "[", 1)), "|",fixed=TRUE), "[",24))
   type <- unlist(lapply(x,"[",2))
+  sift <- unlist(lapply(x,"[",24))
   gene <- unlist(lapply(x,"[",4))
   change <- paste0(unlist(lapply(x,"[",9)), " ", unlist(lapply(x,"[",15)), " ", unlist(lapply(x,"[",16)))
   transcript <- paste0(unlist(lapply(x,"[",7)), " ", unlist(lapply(x,"[",8)))
   for(x in 1:length(type)){
     #if(type[x] %in% c("missense_variant")) { return(paste0(type[x], "\t", " ", change[x], " ", gene[x], "")) }
-	if(type[x] %in% c("missense_variant")) { return(paste0(type[x], "\t", " ",gene[x], "", sift[x])) }
+	if(type[x] %in% c("missense_variant")) { return(paste0(type[x], " ", sift[x], "\t", " ",gene[x])) }
     if(type[x] %in% c("regulatory_region_variant")) { return(paste0("regulatory\t", transcript[x], "")) }
     if(type[x] %in% c("splice_acceptor_variant")) { return(paste0("splice_acceptor\t", gene[x], "")) }
     if(type[x] %in% c("splice_donor_variant")) { return(paste0("splice_donor\t", gene[x], "")) }
@@ -37,7 +39,7 @@ mexcel <- cbind("RSID" = rsIDs, mdata[, c(1,2,4,5,6)], "TYPE" = types, "DOMAIN" 
 # Only SNPs that are found in the S1 and not in the S2
 mexcel <- mexcel[which((mexcel[, "BFMI861.S1"] == "1/1" & mexcel[, "BFMI861.S2"] == "0/0" )),]
 
-write.table(mexcel, file="annotationSNPsCandidateGenes_all.txt", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
+write.table(mexcel, file="annotationSNPsCandidateGenes_allTrig.txt", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
 
 # Filter the candidates, get only the important SNPs
 mexcel <- mexcel[which(!mexcel[, "TYPE"] == "\t"),]
