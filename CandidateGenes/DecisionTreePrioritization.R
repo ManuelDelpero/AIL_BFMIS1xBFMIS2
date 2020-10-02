@@ -5,11 +5,11 @@
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver/SNPsGenesMetS")
 
-FullList <- read.table("annotationSNPsCandidateGenes_all.txt", sep = "\t", check.names = FALSE, header=TRUE)
+FullList <- read.table("annotationSNPsCandidateGenes_allTrig.txt", sep = "\t", check.names = FALSE, header=TRUE)
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 Diffexprliver <- read.csv("DiffExprLiver.txt", sep = "\t", header = TRUE, check.names = FALSE)
 DiffexprGonadalfat <- read.csv("DiffExprGon.txt", sep = "\t", header = TRUE, check.names = FALSE)
-GenesInfo <- read.csv("genesInfo.txt", sep = "\t", header = TRUE, check.names = FALSE)
+GenesInfo <- read.csv("genesInfoTrig.txt", sep = "\t", header = TRUE, check.names = FALSE)
 #DiffexprSkeletalmuscle <- read.csv("DiffExprMuscle.txt", sep = "\t", header = TRUE, check.names = FALSE)
 #DiffexprPankreas <- read.csv("DiffExprPankreas.txt", sep = "\t", header = TRUE, check.names = FALSE)
 FullList[, "GENE"] <- as.character(FullList[, "GENE"])
@@ -49,7 +49,7 @@ pathway_ALLGENE<-ConvertedIDgenes(pathways)
 pathway_ALLGENE <- unique(unlist(pathway_ALLGENE, recursive = TRUE, use.names = FALSE))
 
 # Score genes based on mutations (Decision tree)
-RankCandidates <- matrix(NA, nrow = length(Candidates), ncol = 10, dimnames = list(Candidates,c("SIFT_del", "SIFT_tol", "UTRs", "Promoter", "CTCF B-site", "Enhancer", "DOMAIN", "Expression", "Annotation", "SCORE")))
+RankCandidates <- matrix(NA, nrow = length(Candidates), ncol = 10, dimnames = list(Candidates,c("SIFT_del", "SIFT_tol","DOMAIN", "stop_gained", "stop_lost", "splice_donor", "splice_acceptor",  "UTRs", "Promoter", "CTCF B-site", "Enhancer", "Expression", "Annotation", "SCORE")))
 for (gene in Candidates) {
   Score <- 0
   GeneInfo <- GenesInfo[which(GenesInfo[, "mgi_symbol"] == gene),]
@@ -72,6 +72,14 @@ for (gene in Candidates) {
 	  Score = Score + 1
 	}
   }
+  if (length(grep("stop_gained", geneVar[, "TYPE"]) > 0){
+    RankCandidates[gene, "stop_gained"] = 3
+    Score = Score + 3 
+  }
+  if (length(grep("stop_lost", geneVar[, "TYPE"]) > 0){
+    RankCandidates[gene, "stop_lost"] = 3
+    Score = Score + 3 
+  }
   if ((length(grep("missense_variant", geneVar[, "TYPE"]) > 0)) || ("splice_donor_variant" %in% geneVar[, "TYPE"]) ||  ("stop_gained" %in% geneVar[, "TYPE"]) || ("stop_lost" %in% geneVar[, "TYPE"])) { # if the gene contains a mutation in the coding sequence
     if (length(grep("deleterious", geneVar[, "TYPE"]) > 0)){
 	  Score <- Score + 3 
@@ -80,10 +88,18 @@ for (gene in Candidates) {
 	  Score <- Score + 1
 	  RankCandidates[gene, "SIFT_tol"] = 1
 	  }
-	if (any(!(is.na(geneVar[, "DOMAIN"])))){ # if the gene contains a mutation in a coding sequence located in a domain
+	if (any(!(is.na(geneVar[, "DOMAIN"])))){ 
       Score = Score + 3
 	  RankCandidates[gene, "DOMAIN"] = 3
 	  }
+  }
+  if (length(grep("splice_donor", geneVar[, "TYPE"]) > 0){
+    RankCandidates[gene, "splice_donor"] = 3
+	Score = Score + 3
+  }
+  if (length(grep("splice_acceptor", geneVar[, "TYPE"]) > 0){
+    RankCandidates[gene, "splice_acceptor"] = 3
+	Score = Score + 3
   }
   if (length(geneVar[, "GENE"]) > 0) {
     if ((gene %in% DiffexprGonadalfat[, "mgi_symbol"]) || (gene %in% Diffexprliver[, "mgi_symbol"])){ # Check the expressions
@@ -111,11 +127,12 @@ RankCandidates <- cbind(biomart.RankCandidates, RankCandidates)
 
 RankCandidate <- RankCandidates[order(-RankCandidates[, "SCORE"], decreasing = FALSE),]
 
-chromosomes <- c(3,12,15,16,17)
+#chromosomes <- c(3,12,15,16,17)
+chromosomes <- c(7)
 RankCandidates <- c()
 for(chr in chromosomes){
   RankCandidates <- rbind(RankCandidates, RankCandidate[RankCandidate[,"chromosome_name"] == chr,])
 }
 
 
-write.table(RankCandidates, file = "CandidatesScores2.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(RankCandidates, file = "CandidatesScoresTrig.txt", sep = "\t", quote = FALSE, row.names = FALSE)
