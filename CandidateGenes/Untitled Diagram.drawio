@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-10-02T10:07:53.011Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36" etag="5Rq8O-UJ6QhLTM6jTi7F" version="13.7.7" type="github">
+<mxfile host="app.diagrams.net" modified="2020-10-02T10:55:18.561Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36" etag="tzXa33uduhIfQoGxt8xK" version="13.7.7" type="github">
   <diagram id="6a731a19-8d31-9384-78a2-239565b7b9f0" name="Page-1">
     <mxGraphModel dx="1564" dy="1638" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="583" background="#FFFFFF" math="0" shadow="1">
       <root>
@@ -154,7 +154,7 @@
         <mxCell id="uNuodr2vqJfuBRN9zhuD-10" value="+3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1010" y="-267" width="40" height="44" as="geometry" />
         </mxCell>
-        <mxCell id="ZNRlTDL6FQUxyOxurLqD-1" value="&lt;b&gt;Stop gained/lost variants&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;labelBackgroundColor=none;strokeColor=none;strokeWidth=3;fillColor=#64bbe2;fontFamily=Helvetica;fontSize=14;fontColor=#FFFFFF;align=center;spacing=5;arcSize=7;perimeterSpacing=2;" vertex="1" parent="1">
+        <mxCell id="ZNRlTDL6FQUxyOxurLqD-1" value="&lt;b&gt;Stop gain/lost variants&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;labelBackgroundColor=none;strokeColor=none;strokeWidth=3;fillColor=#64bbe2;fontFamily=Helvetica;fontSize=14;fontColor=#FFFFFF;align=center;spacing=5;arcSize=7;perimeterSpacing=2;" vertex="1" parent="1">
           <mxGeometry x="199" y="-293" width="177" height="60" as="geometry" />
         </mxCell>
         <mxCell id="ZNRlTDL6FQUxyOxurLqD-2" value="&lt;b&gt;Missense variants&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;labelBackgroundColor=none;strokeColor=none;strokeWidth=3;fillColor=#64bbe2;fontFamily=Helvetica;fontSize=14;fontColor=#FFFFFF;align=center;spacing=5;arcSize=7;perimeterSpacing=2;" vertex="1" parent="1">
@@ -171,6 +171,9 @@
             <mxPoint x="468.9999999999998" y="-236.00000000000023" as="sourcePoint" />
             <mxPoint x="329" y="-170" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="ZNRlTDL6FQUxyOxurLqD-10" value="+3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="400" y="-229" width="40" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
