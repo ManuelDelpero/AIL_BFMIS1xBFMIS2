@@ -79,7 +79,7 @@ CovS1_7 <- read.table("chr7_S1.coverage", header=FALSE)
 covS1_7 <- cbind(CovS1_7[,2], CovS1_7[,3] + CovS1_7[,4])
 
 colnames(covS1_7) <- c("position", "coverage")
-chr7_region <- covS1_7[which((covS1_7[, "position"] > 16692359) & (covS1_7[, "position"] < 17022025)),]
+chr7_regionS1 <- covS1_7[which((covS1_7[, "position"] > 16692359) & (covS1_7[, "position"] < 17022025)),]
 
 max(chr7_regionS1[,"coverage"])
  
@@ -108,20 +108,40 @@ max(chr12_region[,"coverage"])
  
 min(chr12_region[,"coverage"])
 
-PlotCoverage(chr12_region, n_Kb = 10000)
+CovS2_12 <- read.table("chr12_S2.coverage", header=FALSE)
+covS2_12 <- cbind(CovS2_12[,2], CovS2_12[,3] + CovS2_12[,4])
+
+colnames(covS2_12) <- c("position", "coverage")
+chr12_regionS2 <- covS2_12[which((covS2_12[, "position"] > 16692359) & (covS2_12[, "position"] < 17022025)),]
+
+max(chr12_regionS2[,"coverage"])
+ 
+min(chr12_regionS2[,"coverage"])
+
+PlotCoverage(chr12_regionS1, chr12_regionS2, n_Kb = 10000)
 
 #chr 15 coverage
 CovS1_15 <- read.table("chr15_S1.coverage", header=FALSE)
 covS1_15 <- cbind(CovS1_15[,2], CovS1_15[,3] + CovS1_15[,4])
 
 colnames(covS1_15) <- c("position", "coverage")
-chr15_region <- covS1_15[which((covS1_15[, "position"] > 3569173) & (covS1_15[, "position"] < 9870025)),]
+chr15_regionS1 <- covS1_15[which((covS1_15[, "position"] > 3569173) & (covS1_15[, "position"] < 9870025)),]
 
-max(chr15_region[,"coverage"])
+max(chr15_regionS1[,"coverage"])
  
-min(chr15_region[,"coverage"])
+min(chr15_regionS1[,"coverage"])
 
-PlotCoverage(chr15_region, n_Kb = 10000)
+CovS2_15 <- read.table("chr15_S2.coverage", header=FALSE)
+covS2_15 <- cbind(CovS2_15[,2], CovS2_15[,3] + CovS2_15[,4])
+
+colnames(covS2_15) <- c("position", "coverage")
+chr15_regionS2 <- covS2_15[which((covS2_15[, "position"] > 67855285) & (covS2_15[, "position"] < 77770986)),]
+
+max(chr15_regionS2[,"coverage"])
+ 
+min(chr15_regionS2[,"coverage"])
+
+PlotCoverage(chr15_regionS1, chr15regionsS2 n_Kb = 10000)
 
 #chr 16 coverage
 CovS1_16 <- read.table("chr16_S1.coverage", header=FALSE)
