@@ -1,4 +1,4 @@
-# Creating a coverage plot from Samtools output for S1 and S2 seq data
+# Visualization of Samtools depth function output 
 #
 # copyright (c) - Manuel Delpero
 
