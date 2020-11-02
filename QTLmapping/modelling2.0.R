@@ -15,7 +15,7 @@ colnames(genotypes) <- gsub("AIL", "" , colnames(genotypes))
 dim(genotypes)
 dim(phenotypes)
 
-## QTL mapping using also the genotypes by KASP assay
+## Adding genotypes by KASP assay to the genotypes matrix
 # Adjust KASP dataset and combine it with the gigaMUGA genotypes
 KASPgenotypes <- read.csv("KASPgenotypes.txt", sep = "\t", header = TRUE, check.names = FALSE, colClasses="character")
 KASPgenotypes[] <- lapply(KASPgenotypes, function(x) gsub("Homozygous A/A|Homozygous T/T", "A", x))
@@ -67,7 +67,7 @@ phenonames <- c("Gon", "Leber", "Gluc172", "D174", "Triglycerides", "ITTauc")
 # map first using the raw models for each phenotype
 phenonames <- c("Gon", "Leber", "Gluc172", "D174", "Triglycerides", "ITTauc")
 
-# Dom dev + Add model without using the sum of LODS and no covariates (real dom)
+# Dom dev + Add model (real dom)
 pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
@@ -121,38 +121,65 @@ for (pname in phenonames){
 lodmatrixADDrow <- -log10(pmatrixADD)
 
 ## start defining the right models for each phenotype
-## Blood glucose 
+## model for Blood glucose 
 resLiver <- anova(lm(phenotypes[,"Gluc172"] ~ phenotypes[,"Leber"]))
 resGon <- anova(lm(phenotypes[,"Gluc172"] ~ phenotypes[,"Gon"]))
 phenotype <- as.numeric(phenotypes[, "Gluc172"])
 
-# Define variance explained by liver
+# Define glucose variance explained by liver
 varExplainedLiver  <- resLiver[, "Sum Sq"] / sum((phenotype - mean(phenotype, na.rm=TRUE))^2, na.rm=TRUE)
 round(varExplainedLiver * 100, digits=1) 
 
-# Define variance explained by Gonadal fat
+# Define glucose variance explained by Gonadal fat
 varExplainedGon  <- resGon[, "Sum Sq"] / sum((phenotype - mean(phenotype, na.rm=TRUE))^2, na.rm=TRUE)
 round(varExplainedGon * 100, digits=1) 
 
 # Colinearity between gonadal fat an liver therefore is difficult to define the exact variance explained of glucose 
-# by each phenotype but only the range (up to 60.7 for liver and up to 39.2 for gonadal fat) 
+# by each phenotype but only the range (up to 60.7 % for liver and up to 39.2 % for gonadal fat) 
 # liver and gonadal fat explains most of the variation of glucose
 # Using the raw models we identified overlapping QTLs for gonadal fat, liver and glucose and also liver triglycerides 
-# we assume that the QTLs identified for blood glucose have an indirect effect on it
+# we assume that the QTLs for glucose that overlaps with the other QTLs for liver and gonadal fat have an indirect effect on glucose
 # we know that liver and gonadal fat can influence the blood glucose
 # Final decision: Map glucose including liver and gonadal fat as covariates to identify QTLs directly responsible for the glucose levels and not indirectly
 
-## Gonada fat weight and liver
-# See if the liver influences the gonadal fat and the other way round
+## Models for gonadal fat weight and liver
+# See if the liver influences the gonadal fat and the other way round with causal modelling 
 anova(lm(phenotypes[, "Gon"] ~ phenotypes[,"Leber"]))
 anova(lm(phenotypes[, "Leber"] ~ phenotypes[,"Gon"]))
 hist(residuals(lm(phenotypes[, "Gon"] ~ 1)))
 hist(residuals(lm(phenotypes[, "Gon"] ~ phenotypes[,"Leber"])))
 hist(residuals(lm(phenotypes[, "Leber"] ~ 1)))
-# They both influence each other, however when we look at the distribution of the residuals, for gonadal fat they become a normal distribution only when we use the liver as a covariate
-# Therefore when we map the gonadal fat weight we need to include liver weight in the model.
-# Residuals for liver weight already show a normal distribution, therefore we do not need to include gonadal fat when building the model.
-# Final decision: map gonadal fat correcting for liver and map liver using the raw model
+
+numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["UNCHS043909",])) != 0)
+numgenoAddd <- as.numeric(unlist(numgeno["UNCHS043909",]))
+mdata <- data.frame(cbind(sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
+isNA <- which(apply(apply(mdata,1,is.na),2,any))
+if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+
+lm1 <- lm(gon ~ sex + liver + A + D, data = mdata)
+lm0 <- lm(gon ~ sex + liver, data = mdata)
+anova(lm1,lm0)
+# When we add the liver as a covariate the LOD score of the QTL on chr17 for gonadal fat drops from 8.59 to 3.65 
+
+lm1 <- lm(liver ~ sex + gon + A + D, data = mdata)
+lm0 <- lm(liver ~ sex + gon, data = mdata)
+anova(lm1,lm0)
+# The same happen for liver, adding gonadal fat as a covariate the Lod score drops from 7.5 to 2.9
+
+# They both influence each other
+# Final decision: map gonadal fat and liver using the raw models since we are not able do define exactly which one is influecning the other one
+
+# Liver triglycerides
+numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["JAX00632487",])) != 0)
+numgenoAddd <- as.numeric(unlist(numgeno["JAX00632487",]))
+mdata <- data.frame(cbind(sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], trig = phenotypes[, "Triglycerides"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
+isNA <- which(apply(apply(mdata,1,is.na),2,any))
+if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+
+lm1 <- lm(trig ~ sex + liver + A , data = mdata)
+lm0 <- lm(trig ~ sex + liver, data = mdata)
+anova(lm1,lm0)
+# Final decision: correct liver triglycerides using liver weight
 
 pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
@@ -166,7 +193,7 @@ for (pname in phenonames){
 	if (pname == "Gluc172"){ 
       lm0 <- lm(pheno ~ 1 + sex + liver + gon, data = mdata)
       mmodel <- lm(pheno ~ D + A + sex + gon + liver, data = mdata)	
-	} else if (pname == "Gon"){
+	} else if (pname == "Triglycerides"){
 	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
       mmodel <- lm(pheno ~ D + A + sex + liver, data = mdata)	
     } else {
@@ -185,12 +212,20 @@ for (pname in phenonames){
   cat(pname, " ", "\n")
   pvalues <- apply(numgeno, 1, function(numgeno) {
     numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
-    mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], D = numgenoDomm))
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], liver = phenotypes[,"Leber"], gon = phenotypes[,"Gon"], sex = phenotypes[, "Sex"], D = numgenoDomm))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-      lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+    if (pname == "Gluc172"){ 
+      lm0 <- lm(pheno ~ 1 + sex + liver + gon, data = mdata)
+      mmodel <- lm(pheno ~ D + sex + liver + gon, data = mdata)	
+	} else if (pname == "Triglycerides"){
+	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ D + sex + liver, data = mdata)	
+    } else {
+	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
       mmodel <- lm(pheno ~ D + sex, data = mdata)
-      return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+    }
+    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
   pmatrixDOM[names(pvalues), pname] <- pvalues
 }
@@ -208,7 +243,7 @@ for (pname in phenonames){
 	if (pname == "Gluc172"){ 
       lm0 <- lm(pheno ~ 1 + sex + liver + gon, data = mdata)
       mmodel <- lm(pheno ~ A + sex + liver + gon, data = mdata)
-	} else if (pname == "Gon"){
+	} else if (pname == "Triglycerides"){
 	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
       mmodel <- lm(pheno ~ A + sex + liver, data = mdata)		  
     } else {
@@ -222,7 +257,17 @@ for (pname in phenonames){
 lodmatrixADD <- -log10(pmatrixADD)
 
 ## make plots with row models and adjusted models
-# row models 
+
+# make some transparancy colors, note: always pass alpha on the 0-255 scale
+
+makeTransparent<-function(someColor, alpha=100)
+{
+  newColor<-col2rgb(someColor)
+  apply(newColor, 2, function(curcoldata){rgb(red=curcoldata[1], green=curcoldata[2],
+    blue=curcoldata[3],alpha=alpha, maxColorValue=255)})
+}
+makeTransparent("red")
+# Plots for row models 
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
 markerannot <- markerannot[order(markerannot[,"bp_mm10"]),]
@@ -269,7 +314,7 @@ for (x in chrs){
 }
 
 	
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots - Row models"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots - Raw models"))
 phenotype <- "Gon"
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
@@ -331,23 +376,23 @@ for(chr in chrs){
   currentDOM <- lodmatrixDOMrow[onChr, phenotype]
   currentADD <- lodmatrixADDrow[onChr, phenotype]
   if (chr == "X")
-    lines(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "red")
+    lines(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col = rgb(0, 0, 255, max = 255, alpha = 125, names = "blue50"))
   for (p in 1:length(currentADDDOM)){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        lines(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "red")
-      else (lines(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "red"))
+        lines(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= makeTransparent("red"))
+      else (lines(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= makeTransparent("red")))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        lines(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "red")
-      else (lines(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "red"))
+        lines(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= makeTransparent("red"))
+      else (lines(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= makeTransparent("red")))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
-          lines(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "red")
-	else (lines(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "red"))
+          lines(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= makeTransparent("red"))
+	else (lines(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= makeTransparent("red")))
     }
   }
 }
@@ -364,7 +409,7 @@ legend("topright", #bg="gray"
   col = c("cornflowerblue", "lightgreen", "red"))
   
   
-# Full models
+# Plots for full models
 chrs <- c(1:19,"X")
 gap <- 80000000
 map.sorted <- NULL
@@ -394,7 +439,7 @@ lodmatrixDOM <- lodmatrixDOM[rownames(annotation),]
 lodmatrixADD <- lodmatrixADD[rownames(annotation),]
 lodmatrixADDDOM <- lodmatrixADDDOM[rownames(annotation),]
 
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots - Full models"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots - Full model blood glucose"))
 phenotype <- "Gon"
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
@@ -461,18 +506,18 @@ for(chr in chrs){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "red")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "red"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col = makeTransparent("red"))
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col = makeTransparent("red")))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "red")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "red"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col = makeTransparent("red"))
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col = makeTransparent("red")))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
-          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "red")
-	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "red"))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col = makeTransparent("red"))
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col = makeTransparent("red")))
     }
   }
 }
@@ -488,4 +533,74 @@ legend("topright", #bg="gray"
   pch = c(15, 15),
   col = c("cornflowerblue", "lightgreen", "red"))
 
-# Figure out if make really sense to correct gonaal fat weight with liver weight!!
+## Pie charts with variance explained 
+# Glucose 
+numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["JAX00063853",])) != 0)
+numgenoAddd <- as.numeric(unlist(numgeno["JAX00063853",]))
+mdata <- data.frame(cbind(glucose = phenotypes[, "Gluc172"], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
+isNA <- which(apply(apply(mdata,1,is.na),2,any))
+if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+lm1 <- lm(gon ~ sex + liver + A + D, data = mdata)
+lm0 <- lm(gon ~ sex + liver, data = mdata)
+anova(lm1,lm0)
+res <- anova(lm(glucose ~ sex + liver + gon + A + D, data = mdata))
+phenotype <- as.numeric(mdata[,"glucose"])
+varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))^2, na.rm = TRUE)
+varExplained <- round(varExplained * 100, digits =1)
+varExplained <- c(20.8, 1.9, 20.7, 21.2, 33.7, 1.6)
+slices <- c(varExplained)
+lbls <- c("Sex (20.8 %)","Gonadal fat (1.9 %)", "Shared gonadal fat and liver (20.7 %)", "Liver (21.2 %)","Unknown (33.7 %)", "QTL chr 15 (1.6 %)")
+pie(slices, labels = lbls, main="Blood glucose variance explained", init.angle = 120, col = c("lightblue", "darkorange", "darkorange2", "darkorange4", "white", "darkolivegreen3"))
+
+# Liver
+numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["UNCHS043909",])) != 0)
+numgenoAddd <- as.numeric(unlist(numgeno["UNCHS043909",]))
+mdata <- data.frame(cbind(glucose = phenotypes[, "Gluc172"], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
+isNA <- which(apply(apply(mdata,1,is.na),2,any))
+if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+lm1 <- lm(liver ~ sex + A + D, data = mdata)
+lm0 <- lm(liver ~ sex, data = mdata)
+anova(lm1,lm0)
+res <- anova(lm(liver ~ sex + A + D, data = mdata))
+phenotype <- as.numeric(mdata[,"liver"])
+varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))^2, na.rm = TRUE)
+varExplained <- round(varExplained * 100, digits =1)
+varExplained <- c(31.6, 4.2, 64.3)
+slices <- c(varExplained)
+lbls <- c("Sex (31.6 %)", "QTL chr 17 (4.2 %)", "Unknown (64.3 %)")
+pie(slices, labels = lbls, main="Liver variance explained", col = c("lightblue", "orange", "white"))
+
+# Gonadal fat QTL chr 17
+numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["UNCHS043909",])) != 0)
+numgenoAddd <- as.numeric(unlist(numgeno["UNCHS043909",]))
+mdata <- data.frame(cbind(glucose = phenotypes[, "Gluc172"], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
+isNA <- which(apply(apply(mdata,1,is.na),2,any))
+if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+lm1 <- lm(gon ~ sex + A + D, data = mdata)
+lm0 <- lm(gon ~ sex, data = mdata)
+anova(lm1,lm0)
+res <- anova(lm(gon ~ sex + A + D, data = mdata))
+phenotype <- as.numeric(mdata[,"gon"])
+varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))^2, na.rm = TRUE)
+varExplained <- round(varExplained * 100, digits =1)
+varExplained <- c(73.1, 2.1, 24.9)
+slices <- c(varExplained)
+lbls <- c("Sex (73.1 %)", "QTL chr 17 (2.1 %)", "Unknown (24.9 %)")
+pie(slices, labels = lbls, main="Gonadal fat variance explained", init.angle = 180, col = c("lightblue", "orange", "white"))
+
+# Gonadal fat QTL chr 3 
+numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["UNC5791802",])) != 0)
+numgenoAddd <- as.numeric(unlist(numgeno["UNC5791802",]))
+mdata <- data.frame(cbind(glucose = phenotypes[, "Gluc172"], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
+isNA <- which(apply(apply(mdata,1,is.na),2,any))
+if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+lm1 <- lm(gon ~ sex + A + D, data = mdata)
+lm0 <- lm(gon ~ sex, data = mdata)
+anova(lm1,lm0)
+res <- anova(lm(gon ~ sex + A , data = mdata))
+phenotype <- as.numeric(mdata[,"gon"])
+varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))^2, na.rm = TRUE)
+varExplained <- round(varExplained * 100, digits =1)
+slices <- c(varExplained)
+lbls <- c("QTL chr 3 (14.4 %)", "Unknown (85.6 %)")
+pie(slices, labels = lbls, main="Gonadal fat variance explained", col = c("orange", "white"))
