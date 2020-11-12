@@ -3,13 +3,13 @@
 # copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero
 # 
 
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver/SNPsGenesMetS")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
 
-FullList <- read.table("annotationSNPsCandidateGenes_allTrig.txt", sep = "\t", check.names = FALSE, header=TRUE)
+FullList <- read.table("annotationSNPsCandidateGenes_allCLT.txt", sep = "\t", check.names = FALSE, header=TRUE)
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 Diffexprliver <- read.csv("DiffExprLiver.txt", sep = "\t", header = TRUE, check.names = FALSE)
 DiffexprGonadalfat <- read.csv("DiffExprGon.txt", sep = "\t", header = TRUE, check.names = FALSE)
-GenesInfo <- read.csv("genesInfoTrig.txt", sep = "\t", header = TRUE, check.names = FALSE)
+GenesInfo <- read.csv("genesInfoGon.txt", sep = "\t", header = TRUE, check.names = FALSE)
 #DiffexprSkeletalmuscle <- read.csv("DiffExprMuscle.txt", sep = "\t", header = TRUE, check.names = FALSE)
 #DiffexprPankreas <- read.csv("DiffExprPankreas.txt", sep = "\t", header = TRUE, check.names = FALSE)
 FullList[, "GENE"] <- as.character(FullList[, "GENE"])
@@ -49,7 +49,7 @@ pathway_ALLGENE<-ConvertedIDgenes(pathways)
 pathway_ALLGENE <- unique(unlist(pathway_ALLGENE, recursive = TRUE, use.names = FALSE))
 
 # Score genes based on mutations (Decision tree)
-RankCandidates <- matrix(NA, nrow = length(Candidates), ncol = 10, dimnames = list(Candidates,c("SIFT_del", "SIFT_tol","DOMAIN", "stop_gained", "stop_lost", "splice_donor", "splice_acceptor",  "UTRs", "Promoter", "CTCF B-site", "Enhancer", "Expression", "Annotation", "SCORE")))
+RankCandidates <- matrix(NA, nrow = length(Candidates), ncol = 14, dimnames = list(Candidates,c("SIFT_del", "SIFT_tol","DOMAIN", "stop_gained", "stop_lost", "splice_donor", "splice_acceptor",  "UTRs", "Promoter", "CTCF B-site", "Enhancer", "Expression", "Annotation", "SCORE")))
 for (gene in Candidates) {
   Score <- 0
   GeneInfo <- GenesInfo[which(GenesInfo[, "mgi_symbol"] == gene),]
@@ -72,11 +72,11 @@ for (gene in Candidates) {
 	  Score = Score + 1
 	}
   }
-  if (length(grep("stop_gained", geneVar[, "TYPE"]) > 0){
+  if (length(grep("stop_gained", geneVar[, "TYPE"]) > 0)){
     RankCandidates[gene, "stop_gained"] = 3
     Score = Score + 3 
   }
-  if (length(grep("stop_lost", geneVar[, "TYPE"]) > 0){
+  if (length(grep("stop_lost", geneVar[, "TYPE"]) > 0)){
     RankCandidates[gene, "stop_lost"] = 3
     Score = Score + 3 
   }
@@ -93,11 +93,11 @@ for (gene in Candidates) {
 	  RankCandidates[gene, "DOMAIN"] = 3
 	  }
   }
-  if (length(grep("splice_donor", geneVar[, "TYPE"]) > 0){
+  if (length(grep("splice_donor", geneVar[, "TYPE"]) > 0)){
     RankCandidates[gene, "splice_donor"] = 3
 	Score = Score + 3
   }
-  if (length(grep("splice_acceptor", geneVar[, "TYPE"]) > 0){
+  if (length(grep("splice_acceptor", geneVar[, "TYPE"]) > 0)){
     RankCandidates[gene, "splice_acceptor"] = 3
 	Score = Score + 3
   }
@@ -135,4 +135,4 @@ for(chr in chromosomes){
 }
 
 
-write.table(RankCandidates, file = "CandidatesScoresTrig.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(RankCandidates, file = "CandidatesScoresGon.txt", sep = "\t", quote = FALSE, row.names = FALSE)
