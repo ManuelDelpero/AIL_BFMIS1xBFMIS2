@@ -38,6 +38,7 @@ lodannotmatrixQ <- cbind(annotation, lodmatrixQ)
 index <- order(pheno[,"Gon"], decreasing = FALSE)
 sortWeight <- pheno[index,]
 sortWeight[,c("Gon", "Leber")] <- sortWeight[,c("Gon", "Leber")] * sortWeight[,"Gewicht"]
+sortWeight <- sortWeight[order(sortWeight[, "Gon"]),]
 # Calculate correlation
 data <- pheno[, c("Gon", "Leber", "Gluc172")]
 cor(data, use = "pairwise.complete.obs")
@@ -118,7 +119,7 @@ chr15C <- chr15C[order(chr15C[,"Position"]),]
 chr15Q <- lodannotmatrixQ[which(lodannotmatrixQ[,"Chromosome"] == 15),]
 chr15Q <- chr15Q[order(chr15Q[,"Position"]),]
 
-plot(main = "CTL profile liver ~ gonadal fat weight [Chr 15]", c(min(as.numeric(chr15Q[, "Position"])), max(as.numeric(chr15Q[, "Position"]))), c(-8,8), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+plot(main = "CTL profile gonadal fat weight ~ liver weight  [Chr 15]", c(min(as.numeric(chr15Q[, "Position"])), max(as.numeric(chr15Q[, "Position"]))), c(-8,8), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(chr15C[,"Position"]), y = chr15C[,"lodmatrixC"] , type = "l", col="black", lwd = 2)
   points(x = as.numeric(chr15Q[,"Position"]), y = (chr15Q[,"Gon"]) , type = "l", col="blue", lwd = 1)
   points(x = as.numeric(chr15Q[,"Position"]), y = -(chr15Q[,"Leber"]) , type = "l", col="darkgreen", lwd = 1)
