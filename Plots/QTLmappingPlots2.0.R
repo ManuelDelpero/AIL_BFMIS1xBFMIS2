@@ -2,7 +2,7 @@
 #
 # copyright (c) 2018-2021 - Brockmann group - HU Berlin Manuel Delpero & Danny Arends
 # 
-# first written december, 2019
+# first written november, 2020
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
@@ -50,13 +50,16 @@ for(x in 1:nrow(genotypes)){
   numgeno[x, which(genotypes[x, ] == h2)] <- 1
 }
 
-phenonames <- colnames(phenotypes[,c(3:57, 61:72)])
 
+phenotypes <- phenotypes[colnames(genotypes),]
+phenotypes <- phenotypes[which(phenotypes[, "Sex"] == "m"),]
+numgeno <- numgeno[,rownames(phenotypes)]
 
 #phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:75)])
 #write.table(phenotypes, file = "PhenotypesComplete.txt", sep = "\t", quote = FALSE, row.names = TRUE)
 # Covariates we could/need to include in the model
-phenotypes <- phenotypes[colnames(genotypes),]
+
+
 wg <- phenotypes[, "WG"]
 grandmother <- phenotypes[, "Grandma"]
 Leber <- phenotypes[, "Leber"]
@@ -275,8 +278,8 @@ lodmatrixADDrow <- lodmatrixADDrow[rownames(annotation),]
 lodmatrixADDDOMrow <- lodmatrixADDDOMrow[rownames(annotation),]
 
 par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
-mat <- matrix(c(1,1,2,2), 2, 2, byrow = TRUE)
-layout(mat, widths = rep.int(3, ncol(mat)))
+#mat <- matrix(c(1,1,2,2), 2, 2, byrow = TRUE)
+#layout(mat, widths = rep.int(3, ncol(mat)))
 
 chrs <- c(1:19,"X")
 gap <- 80000000
@@ -304,7 +307,7 @@ for (x in chrs){
 }
 
 	
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots - Gonadal adipose tissue weight"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2)
 phenotype <- "Gon"
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
@@ -312,34 +315,66 @@ for(chr in chrs){
   currentDOM <- lodmatrixDOMrow[onChr, phenotype]
   currentADD <- lodmatrixADDrow[onChr, phenotype]
   if (chr == "X")
-    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "cornflowerblue")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "gray61")
   for (p in 1:length(currentADDDOM)){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "cornflowerblue"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "gray61")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "gray61"))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,2, col= "cornflowerblue")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "cornflowerblue"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,2, col= "gray61")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "gray61"))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
-          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "cornflowerblue")
-	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "cornflowerblue"))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "gray61")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "gray61"))
+    }
+  }
+}
+phenotype <- "Leber"
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  currentADDDOM <- lodmatrixADDDOMrow[onChr, phenotype]
+  currentDOM <- lodmatrixDOMrow[onChr, phenotype]
+  currentADD <- lodmatrixADDrow[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "black")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "black"))
+    }
+    if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,2, col= "black")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "black"))
+    }
+      if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+        if (chr %in% seq(1,20,2))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "black")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "black"))
     }
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h = 4.3, col="orange",lty=3)
+abline(h = 4.3, col="gray",lty=3)
 #abline(v = c(chr.start,chr.ends), col = "red") 
-abline(h= 4.7, col="green",lty=3)
+abline(h= 4.7, col="black",lty=3)
 axis(1, chrs, at = chrmids)
+legend("topright", #bg="gray"
+  bty = "n",
+  legend = c("Gonadal fat weight", "Liver weight"),
+  pch = c(15, 15),
+  col = c("gray61", "black"))
 
 # Than Manhattan plot for liver weight
-plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots - Liver weight"))
+plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plot - Liver weight"))
 phenotype <- "Leber"
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
@@ -382,31 +417,67 @@ for(chr in chrs){
   currentDOM <- lodmatrixDOMrow[onChr, phenotype]
   currentADD <- lodmatrixADDrow[onChr, phenotype]
   if (chr == "X")
-    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "red")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "gray61")
   for (p in 1:length(currentADDDOM)){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "red")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "red"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "gray61")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "gray61"))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,2, col= "red")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "red"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,2, col= "gray61")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "gray61"))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
-          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "red")
-	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "red"))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "gray61")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "gray61"))
+    }
+  }
+}
+lodmatrixDOM <- lodmatrixDOM[rownames(annotation),]
+lodmatrixADD <- lodmatrixADD[rownames(annotation),]
+lodmatrixADDDOM <- lodmatrixADDDOM[rownames(annotation),]
+phenotype <- "Gluc172"
+for(chr in chrs){
+  onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
+  currentADDDOM <- lodmatrixADDDOM[onChr, phenotype]
+  currentDOM <- lodmatrixDOM[onChr, phenotype]
+  currentADD <- lodmatrixADD[onChr, phenotype]
+  if (chr == "X")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "black")
+  for (p in 1:length(currentADDDOM)){
+    pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
+    if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "black")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "black"))
+    }
+    if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
+      if (chr %in% seq(1,20,2))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,2, col= "black")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "black"))
+    }
+      if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
+        if (chr %in% seq(1,20,2))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "black")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "black"))
     }
   }
 }
 axis(1, chrs, at = chrmids)
-abline(h = 4.3, col="orange",lty=3)
+abline(h = 4.3, col="gray",lty=3)
 #abline(v = c(chr.start,chr.ends), col = "red") 
-abline(h= 4.7, col="green",lty=3)
+abline(h= 4.7, col="black",lty=3)
 axis(1, chrs, at = chrmids)
+legend("topright", #bg="gray"
+  bty = "n",
+  legend = c("Blood glucose raw model", "Blood glucose full model"),
+  pch = c(15, 15),
+  col = c("gray61", "black"))
+
 # Than Manhattan plot for glucose full models
 chrs <- c(1:19,"X")
 gap <- 80000000
@@ -445,23 +516,23 @@ for(chr in chrs){
   currentDOM <- lodmatrixDOM[onChr, phenotype]
   currentADD <- lodmatrixADD[onChr, phenotype]
   if (chr == "X")
-    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "red")
+    points(x=chr.starts[chr] + map.sorted[onChr,"Position"], y = lodmatrixADDrow[onChr, phenotype], t ='p', pch = 16, cex = 1.5, col= "coral")
   for (p in 1:length(currentADDDOM)){
     pos <- chr.starts[chr] + map.sorted[onChr,"Position"]
     if ((currentADDDOM[p] >  currentDOM[p]) && (currentADDDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "red")
-      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "red"))
+        points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "coral")
+      else (points(x=pos[p], y = currentADDDOM[p], t ='p', pch = 18, cex = 1.2, col= "coral"))
     }
     if ((currentDOM[p] >  currentADDDOM[p]) && (currentDOM[p] > currentADD[p])){
       if (chr %in% seq(1,20,2))
-        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,2, col= "red")
-      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "red"))
+        points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1,2, col= "coral")
+      else (points(x=pos[p], y = currentDOM[p], t ='p', pch = 18, cex = 1.2, col= "coral"))
     }
       if ((currentADD[p] >  currentADDDOM[p]) && (currentADD[p] > currentDOM[p])){
         if (chr %in% seq(1,20,2))
-          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "red")
-	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "red"))
+          points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2, col= "coral")
+	else (points(x=pos[p], y = currentADD[p], t ='p', pch = 18, cex = 1.2,col= "coral"))
     }
   }
 }
@@ -473,12 +544,18 @@ axis(1, chrs, at = chrmids)
 
 # Lod curve across chr 3, 15 and 17 with all the traits and pie charts
 # chr 3
+par(cex.lab=1.5, cex.main = 1.5, cex.axis = 1.5)
+mat <- matrix(c(1,2,3), 1, ,byrow = TRUE)
+layout(mat, widths = rep.int(3, ncol(mat)))
+
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADD), ], lodmatrixADD)
 chr3 <- lodannotmatrix[which(lodannotmatrix[,"Chromosome"] == 3),]
 dataset <- chr3[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+dataset <- dataset[which(dataset[,"Position"] > 75000000),]
 lodannotmatrixRaw <- cbind(annotation[rownames(lodmatrixADDrow), ], lodmatrixADDrow)
 chr3row <- lodannotmatrixRaw[which(lodannotmatrixRaw[,"Chromosome"] == 3),]
 datasetRow <- chr3row[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+datasetRow <- datasetRow[which(datasetRow[,"Position"] > 75000000),]
 
 plot(main = "QTL profiles [Chr 3]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gon"], t ='l', col="cornflowerblue", lwd = 0.7)
@@ -487,24 +564,26 @@ plot(main = "QTL profiles [Chr 3]", c(min(as.numeric(dataset[, "Position"])), ma
   lines(x = as.numeric(datasetRow[,"Position"]), y = datasetRow[,"Gluc172"], t = "l", lty = 1, col="red", lwd = 0.7)
   abline(h=4.7, col="green")
   abline(h=4.3, col="orange")
-  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
+  axis(1, at = c(0, 25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
   legend("topright", bg="gray",
-  legend = c("Gonadal fat weight", "Liver", "Glucose raw model", "Glucose full model"),
+  legend = c("Gonadal fat weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
     bty = "n",
     col = c("cornflowerblue", "gray32", "red", "red"),
     lty=c(1,1,1,2),
     pt.cex = 1.7,
     pt.bg = "lightsteelblue1",
-    cex = 1,
+    cex = 1.5,
     text.col = "black")
 
 # chr 15
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADD), ], lodmatrixADD)
 chr3 <- lodannotmatrix[which(lodannotmatrix[,"Chromosome"] == 15),]
 dataset <- chr3[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+dataset <- dataset[which((dataset[,"Position"] > 50000000) & (dataset[,"Position"] < 85000000)),]
 lodannotmatrixRaw <- cbind(annotation[rownames(lodmatrixADDrow), ], lodmatrixADDrow)
 chr3row <- lodannotmatrixRaw[which(lodannotmatrixRaw[,"Chromosome"] == 15),]
 datasetRow <- chr3row[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+datasetRow <- datasetRow[which((datasetRow[,"Position"] > 50000000) & (datasetRow[,"Position"] < 85000000)),]
 
 plot(main = "QTL profiles [Chr 15]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gon"], t ='l', col="cornflowerblue", lwd = 0.7)
@@ -515,24 +594,24 @@ plot(main = "QTL profiles [Chr 15]", c(min(as.numeric(dataset[, "Position"])), m
   abline(h=4.3, col="orange")
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
   legend("topright", bg="gray",
-  legend = c("Gonadal fat weight", "Liver", "Glucose raw model", "Glucose full model"),
+  legend = c("Gonadal fat weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
     bty = "n",
     col = c("cornflowerblue", "gray32", "red", "red"),
     lty=c(1,1,1,2),
     pt.cex = 1.7,
     pt.bg = "lightsteelblue1",
-    cex = 1,
+    cex = 1.5,
     text.col = "black")
 	
 # chr 17
 lodannotmatrix <- cbind(annotation[rownames(lodmatrixADDDOM), ], lodmatrixADDDOM)
 chr3 <- lodannotmatrix[which(lodannotmatrix[,"Chromosome"] == 17),]
 dataset <- chr3[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+dataset <- dataset[which(dataset[,"Position"] < 55389801),]
 lodannotmatrixRaw <- cbind(annotation[rownames(lodmatrixADDrow), ], lodmatrixADDrow)
 chr3row <- lodannotmatrixRaw[which(lodannotmatrixRaw[,"Chromosome"] == 17),]
 datasetRow <- chr3row[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
-
-
+datasetRow <- datasetRow[which(datasetRow[,"Position"] < 55389801),]
 
 plot(main = "QTL profiles [Chr 17]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gon"], t ='l', col="cornflowerblue", lwd = 0.7)
@@ -543,22 +622,22 @@ plot(main = "QTL profiles [Chr 17]", c(min(as.numeric(dataset[, "Position"])), m
   abline(h=4.3, col="orange")
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
   legend("topright",
-  legend = c("Gonadal fat weight", "Liver", "Glucose raw model", "Glucose full model"),
+  legend = c("Gonadal fat weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
     bty = "n",
     col = c("cornflowerblue", "gray32", "red", "red"),
     lty=c(1,1,1,2),
     pt.cex = 1.7,
     pt.bg = "lightsteelblue1",
-    cex = 1,
+    cex = 1.5,
     text.col = "black")
 	
 ## Pie charts with variance explained chr 3
-par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
-mat <- matrix(c(1,1,2,2), 2, 2, byrow = TRUE)
-layout(mat, widths = rep.int(3, ncol(mat)))
+par(cex.lab=1.5, cex.main = 1.5, cex.axis = 1.5)
+#mat <- matrix(c(1,1,2,2), 2, 2, byrow = TRUE)
+#layout(mat, widths = rep.int(3, ncol(mat)))
 # Glucose 
-numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["JAX00063853",])) != 0)
-numgenoAddd <- as.numeric(unlist(numgeno["JAX00063853",]))
+numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["UNC5812781",])) != 0)
+numgenoAddd <- as.numeric(unlist(numgeno["UNC5812781",]))
 mdata <- data.frame(cbind(glucose = phenotypes[, "Gluc172"], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
 isNA <- which(apply(apply(mdata,1,is.na),2,any))
 if (length(isNA) > 0) mdata <- mdata[-isNA, ]
@@ -568,11 +647,11 @@ anova(lm1,lm0)
 res <- anova(lm(glucose ~ sex + liver + gon, data = mdata))
 phenotype <- as.numeric(mdata[,"glucose"])
 varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))^2, na.rm = TRUE)
-varExplained <- round(varExplained * 100, digits =1)
-varExplained <- c(20.8, 1.9, 3.0, 20.7, 21.2, 35.3)
+varExplained <- round(varExplained * 100, digits = 1)
+varExplained <- c(20.8, 1.9, 3.1, 20.7, 21.2, 35.2)
 slices <- c(varExplained)
-lbls <- c("Sex (20.8 %)", "Gonadal fat (1.9 %)", "QTL chromosome 3 (3.0 %)", "Shared gonadal fat and liver (20.7 %)", "Liver (21.2 %)", "Unknown (35.3 %)")
-pie(slices, labels = lbls, main="Blood glucose variance explained", init.angle = 120, col = c("lightblue", "darkorange", "darkorange", "darkorange2", "darkorange4", "white"))
+lbls <- c("Sex (20.8 %)", "Gonadal fat weight (1.9 %)", "QTL chr 3 (3.0 %)", "Shared gonadal fat and liver weight (20.7 %)", "Liver weight (21.2 %)", "Unknown (35.3 %)")
+pie(slices, labels = lbls, main="Blood glucose variance explained", init.angle = 230, col = c("lightblue", "darkorange", "darkorange", "darkorange2", "darkorange4", "white"))
 
 # Gonadal fat
 numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["UNC5812781",])) != 0)
@@ -590,7 +669,7 @@ varExplained <- round(varExplained * 100, digits =1)
 varExplained <- c(72.8, 1.2, 26.1)
 slices <- c(varExplained)
 lbls <- c("Sex (72.8 %)", "QTL chr 3 (1.2 %)", "Unknown (26.1 %)")
-pie(slices, labels = lbls, main="Gonadal fat variance explained", init.angle = 120, col = c("lightblue", "orange", "white"))
+pie(slices, labels = lbls, main="Gonadal fat weight variance explained", init.angle = 0, col = c("lightblue", "orange", "white"))
 
 ## Pie charts with variance explained chr 15
 # Gonadal fat 
@@ -606,10 +685,10 @@ res <- anova(lm(gon ~ sex + A + D, data = mdata))
 phenotype <- as.numeric(mdata[,"gon"])
 varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))^2, na.rm = TRUE)
 varExplained <- round(varExplained * 100, digits =1)
-varExplained <- c(73.1, 2.1, 1.2,  24.9)
+varExplained <- c(73.1, 1.2, 1.5,  24.9)
 slices <- c(varExplained)
-lbls <- c("Sex (73.1 %)", "QTL chr 17 (2.1 %)", "QTL chr 3 (1.2 %)", "Unknown (24.9 %)")
-pie(slices, labels = lbls, main="Gonadal fat variance explained", init.angle = 0, col = c("lightblue", "orange", "darkorange" , "white"))
+lbls <- c("Sex (73.1 %)", "QTL chr 15 (0.7 %)", "QTL chr 3 (1.2 %)", "Unknown (24.9 %)")
+pie(slices, labels = lbls, main="Gonadal fat weight variance explained", init.angle = 70, col = c("lightblue", "orange", "darkorange" , "white"))
 
 # Glucose
 numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["JAX00063853",])) != 0)
@@ -626,8 +705,8 @@ varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))
 varExplained <- round(varExplained * 100, digits =1)
 varExplained <- c(20.8, 1.9, 3.0, 20.7, 21.2, 1.6, 33.7)
 slices <- c(varExplained)
-lbls <- c("Sex (20.8 %)", "Gonadal fat (1.9 %)", "QTL chromosome 3 (3.0 %)", "Shared gonadal fat and liver (20.7 %)", "Liver (21.2 %)", "QTL chromosome 15 (1.6 %)" ,"Unknown (33.7 %)")
-pie(slices, labels = lbls, main="Glucose variance explained", init.angle = 0, col = c("lightblue", "darkorange", "darkorange", "darkorange2", "darkorange4", "gray32", "white"))
+lbls <- c("Sex (20.8 %)", "Gonadal fat (1.9 %)", "QTL chr 3 (3.0 %)", "Shared gonadal fat and liver (20.7 %)", "Liver (21.2 %)", "QTL chr 15 (1.6 %)" ,"Unknown (33.7 %)")
+pie(slices, labels = lbls, main="Glucose variance explained", init.angle = 300, col = c("lightblue", "darkorange", "darkorange", "darkorange2", "darkorange4", "red", "white"))
 
 
 ## Pie charts with variance explained chr 17
@@ -644,28 +723,28 @@ res <- anova(lm(gon ~ sex + A + D, data = mdata))
 phenotype <- as.numeric(mdata[,"gon"])
 varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))^2, na.rm = TRUE)
 varExplained <- round(varExplained * 100, digits =1)
-varExplained <- c(73.1, 2.1, 1.2,  24.9)
+varExplained <- c(73.1, 1.5, 1.2, 2.5, 22.9)
 slices <- c(varExplained)
-lbls <- c("Sex (73.1 %)", "QTL chr 17 (2.1 %)", "QTL chr 3 (1.2 %)", "Unknown (24.9 %)")
-pie(slices, labels = lbls, main="Gonadal fat variance explained", init.angle = 0, col = c("lightblue", "orange", "darkorange" , "white"))
+lbls <- c("Sex (73.1 %)", "QTL chr 3 (1.2 %)", "QTL chr 15 (0.7 %)","QTL chr 17 (2.1 %)", "Unknown (22.9 %)")
+pie(slices, labels = lbls, main="Gonadal fat weight variance explained", init.angle = 80, col = c("orange","cornflowerblue", "cornflowerblue", "cornflowerblue" , "white"))
 
 # Glucose
-numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["JAX00063853",])) != 0)
-numgenoAddd <- as.numeric(unlist(numgeno["JAX00063853",]))
+numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["UNCHS043909",])) != 0)
+numgenoAddd <- as.numeric(unlist(numgeno["UNCHS043909",]))
 mdata <- data.frame(cbind(glucose = phenotypes[, "Gluc172"], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
 isNA <- which(apply(apply(mdata,1,is.na),2,any))
 if (length(isNA) > 0) mdata <- mdata[-isNA, ]
 lm1 <- lm(glucose ~ sex + A + D, data = mdata)
 lm0 <- lm(glucose ~ sex, data = mdata)
 anova(lm1,lm0)
-res <- anova(lm(glucose ~ sex + liver + gon + A + D, data = mdata))
+res <- anova(lm(glucose ~ sex + A + D, data = mdata))
 phenotype <- as.numeric(mdata[,"glucose"])
 varExplained <- res[,"Sum Sq"] / sum((phenotype - mean(phenotype, na.rm = TRUE))^2, na.rm = TRUE)
 varExplained <- round(varExplained * 100, digits =1)
-varExplained <- c(20.8, 1.9, 3.0, 20.7, 21.2, 1.6, 33.7)
+varExplained <- c(20.8, 21.2, 20.7, 3.5, 2.5, 3.0, 2.2, 27.9)
 slices <- c(varExplained)
-lbls <- c("Sex (20.8 %)", "Gonadal fat (1.9 %)", "QTL chromosome 3 (3.0 %)", "Shared gonadal fat and liver (20.7 %)", "Liver (21.2 %)", "QTL chromosome 15 (1.6 %)" ,"Unknown (33.7 %)")
-pie(slices, labels = lbls, main="Glucose variance explained", init.angle = 0, col = c("lightblue", "darkorange", "darkorange", "darkorange2", "darkorange4", "gray32", "white"))
+lbls <- c("Sex (20.8 %)","Liver weight (21.2 %)", "gonadal fat and liver weight (20.7 %)", "QTL chr 17 (2.9 %)", "Gonadal fat weight (1.9 %)", "QTL chr 3 (3.0 %)", "QTL chr 15 (1.6 %)" ,"Unknown (27.9 %)")
+pie(slices, labels = lbls, main="Blood glucose variance explained", init.angle = 350, col = c("orange", "black", "darkblue","darkblue", "cornflowerblue", "cornflowerblue", "red", "white"))
 
 # Liver
 numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["UNCHS043909",])) != 0)
@@ -683,4 +762,4 @@ varExplained <- round(varExplained * 100, digits =1)
 varExplained <- c(31.6, 4.2, 64.3)
 slices <- c(varExplained)
 lbls <- c("Sex (31.6 %)", "QTL chr 17 (4.2 %)", "Unknown (64.3 %)")
-pie(slices, labels = lbls, main="Liver variance explained", col = c("lightblue", "orange", "white"))
+pie(slices, labels = lbls, main="Liver weight variance explained", init.angle = 150, col = c("orange", "black", "white"))
