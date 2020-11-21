@@ -267,6 +267,7 @@ makeTransparent<-function(someColor, alpha=100)
     blue=curcoldata[3],alpha=alpha, maxColorValue=255)})
 }
 makeTransparent("red")
+
 # Plots for row models 
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
@@ -533,7 +534,7 @@ legend("topright", #bg="gray"
   pch = c(15, 15),
   col = c("cornflowerblue", "lightgreen", "red"))
 
-## Pie charts with variance explained 
+## Pie charts with variance explained chr 3
 # Glucose 
 numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["JAX00063853",])) != 0)
 numgenoAddd <- as.numeric(unlist(numgeno["JAX00063853",]))
