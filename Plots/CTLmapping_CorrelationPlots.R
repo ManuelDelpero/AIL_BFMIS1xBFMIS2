@@ -73,7 +73,7 @@ rownames(corGonLiver) <- c("Gonadal fat", "Liver")
 colnames(corGonLiver) <- c("Gonadal fat", "Liver")
 #write.table(corGonLiver, file = "CorrelationGonLiverWeight.txt", quote = FALSE, sep = "\t")
 
-# Correlation plot gonadal fat, liver
+# Correlation plot gonadal fat, liver and genotypes according to the CTL top marker
 
 chr15TopMarker <- t(genotypes[c("UNC25735466",1),])
 #chr15TopMarker <- chr15TopMarker[-which(is.na(chr15TopMarker[,1])),]
@@ -111,7 +111,30 @@ plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,5), 
    bty = "n",
    pt.cex = 1.8,
    cex = 1.5,)
+   
+# Normal correlation plots
+par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
+mat <- matrix(c(1,2,3), 1, ,byrow = TRUE)
+layout(mat, widths = rep.int(3, ncol(mat)))
 
+# Liver and gonadal fat
+pheno[,c("Gon", "Leber")] <- pheno[,c("Gon", "Leber")] * pheno[,"Gewicht"]
+plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,6), t = "n", xlab="Liver weight [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(pheno[,"Leber"],pheno[,"Gon"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Leber"]~pheno[,"Gon"]), col="red")
+
+# Liver and glucose
+plot(main="Correlation plot liver weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Liver weigth [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(pheno[,"Leber"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Gluc172"]~pheno[,"Leber"]), col="red")
+
+# Gonadal fat and glucose
+plot(main="Correlation plot gonadal fat weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Gonadal fat weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(pheno[,"Gon"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Gluc172"]~pheno[,"Gon"]), col="red")
 
 # CTL mapping curve across chromosome 15
 chr15C <- lodannotmatrixC[which(lodannotmatrixC[,"Chromosome"] == 15),]
