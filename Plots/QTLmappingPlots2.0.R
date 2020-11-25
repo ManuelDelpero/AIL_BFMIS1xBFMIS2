@@ -474,7 +474,7 @@ abline(h= 4.7, col="black",lty=3)
 axis(1, chrs, at = chrmids)
 legend("topright", #bg="gray"
   bty = "n",
-  legend = c("Blood glucose raw model", "Blood glucose full model"),
+  legend = c("Blood glucose = sex + marker", "Blood glucose = sex + liver weight + gonadal fat weight + marker"),
   pch = c(15, 15),
   col = c("gray61", "black"))
 
@@ -557,16 +557,17 @@ chr3row <- lodannotmatrixRaw[which(lodannotmatrixRaw[,"Chromosome"] == 3),]
 datasetRow <- chr3row[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
 datasetRow <- datasetRow[which(datasetRow[,"Position"] > 75000000),]
 
-plot(main = "QTL profiles [Chr 3]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+plot(main = "QTL profiles [Chr 3]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(-0.5,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gon"], t ='l', col="cornflowerblue", lwd = 0.7)
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Leber"], t ='l', col="gray32", lwd = 0.7)
   lines(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gluc172"], t = "l", lty = 2, col="red", lwd = 0.7)
   lines(x = as.numeric(datasetRow[,"Position"]), y = datasetRow[,"Gluc172"], t = "l", lty = 1, col="red", lwd = 0.7)
+  points(x = as.numeric(datasetRow[,"Position"]), y = rep(-0.5,nrow(datasetRow)), pch = "|", cex = 1, col = "gray15")
   abline(h=4.7, col="green")
   abline(h=4.3, col="orange")
-  axis(1, at = c(0, 25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
+  axis(1, at = c(0, 25000000, 50000000, 80000000, 100000000), c("0", "25", "50", "80", "100"))
   legend("topright", bg="gray",
-  legend = c("Gonadal fat weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
+  legend = c("gWAT weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
     bty = "n",
     col = c("cornflowerblue", "gray32", "red", "red"),
     lty=c(1,1,1,2),
@@ -585,16 +586,17 @@ chr3row <- lodannotmatrixRaw[which(lodannotmatrixRaw[,"Chromosome"] == 15),]
 datasetRow <- chr3row[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
 datasetRow <- datasetRow[which((datasetRow[,"Position"] > 50000000) & (datasetRow[,"Position"] < 85000000)),]
 
-plot(main = "QTL profiles [Chr 15]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+plot(main = "QTL profiles [Chr 15]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(-0.5,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gon"], t ='l', col="cornflowerblue", lwd = 0.7)
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Leber"], t ='l', col="gray32", lwd = 0.7)
   lines(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gluc172"], t = "l", lty = 2, col="red", lwd = 0.7)
   lines(x = as.numeric(datasetRow[,"Position"]), y = datasetRow[,"Gluc172"], t = "l", lty = 1, col="red", lwd = 0.7)
+  points(x = as.numeric(datasetRow[,"Position"]), y = rep(-0.5,nrow(datasetRow)), pch = "|", col = "black", lwd = 1)
   abline(h=4.7, col="green")
   abline(h=4.3, col="orange")
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
   legend("topright", bg="gray",
-  legend = c("Gonadal fat weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
+  legend = c("gWAT weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
     bty = "n",
     col = c("cornflowerblue", "gray32", "red", "red"),
     lty=c(1,1,1,2),
@@ -613,16 +615,17 @@ chr3row <- lodannotmatrixRaw[which(lodannotmatrixRaw[,"Chromosome"] == 17),]
 datasetRow <- chr3row[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
 datasetRow <- datasetRow[which(datasetRow[,"Position"] < 55389801),]
 
-plot(main = "QTL profiles [Chr 17]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+plot(main = "QTL profiles [Chr 17]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(-0.5,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gon"], t ='l', col="cornflowerblue", lwd = 0.7)
   points(x = as.numeric(dataset[,"Position"]), y = dataset[,"Leber"], t ='l', col="gray32", lwd = 0.7)
   lines(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gluc172"], t = "l", lty = 2, col="red", lwd = 0.7)
   lines(x = as.numeric(datasetRow[,"Position"]), y = datasetRow[,"Gluc172"], t = "l", lty = 1, col="red", lwd = 0.7)
+  points(x = as.numeric(datasetRow[,"Position"]), y = rep(-0.5,nrow(datasetRow)), pch = "|", col = "black", lwd = 1)
   abline(h=4.7, col="green")
   abline(h=4.3, col="orange")
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
   legend("topright",
-  legend = c("Gonadal fat weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
+  legend = c("gWAT weight", "Liver weight", "Blood glucose raw model", "Blood glucose full model"),
     bty = "n",
     col = c("cornflowerblue", "gray32", "red", "red"),
     lty=c(1,1,1,2),
