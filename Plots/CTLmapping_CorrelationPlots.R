@@ -75,16 +75,16 @@ colnames(corGonLiver) <- c("Gonadal fat", "Liver")
 
 # Correlation plot gonadal fat, liver and genotypes according to the CTL top marker
 
-chr15TopMarker <- t(genotypes[c("UNC25735466",1),])
+#chr15TopMarker <- t(genotypes[c("UNC25735466",1),])
 #chr15TopMarker <- chr15TopMarker[-which(is.na(chr15TopMarker[,1])),]
-sortWeight <- sortWeight[rownames(chr15TopMarker),]
+#sortWeight <- sortWeight[rownames(chr15TopMarker),]
 S1 <- names(which(chr15TopMarker[,1] == "B"))
 S2 <- names(which(chr15TopMarker[,1] == "A"))
 HET <- names(which(chr15TopMarker[,1] == "H"))
 sortWeightS1 <- sortWeight[S1,]
 sortWeightS2 <- sortWeight[S2,]
 sortWeightHET <- sortWeight[HET,]
-sortWeight <- sortWeight[c(S1, S2, HET),]
+#sortWeight <- sortWeight[c(S1, S2, HET),]
 
 plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,5), t = "n", xlab="Liver weigth [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
   mycols = c()
@@ -113,28 +113,88 @@ plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,5), 
    cex = 1.5,)
    
 # Normal correlation plots
-par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
+par(cex.lab=1.5, cex.main = 1.5, cex.axis = 1.3)
 mat <- matrix(c(1,2,3), 1, ,byrow = TRUE)
 layout(mat, widths = rep.int(3, ncol(mat)))
 
 # Liver and gonadal fat
 pheno[,c("Gon", "Leber")] <- pheno[,c("Gon", "Leber")] * pheno[,"Gewicht"]
-plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,6), t = "n", xlab="Liver weight [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
+plot(main="Correlation plot gWAT weight ~ liver weight", c(1,5), c(0,6), t = "n", xlab="Liver weight [g]", ylab="gWAT weight [g]", las = 2, xaxt = "n")
   axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
   points(pheno[,"Leber"],pheno[,"Gon"], lwd=0.8 , pch=16 , type="p")
   abline(lm(pheno[,"Leber"]~pheno[,"Gon"]), col="red")
 
 # Liver and glucose
-plot(main="Correlation plot liver weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Liver weigth [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+plot(main="Correlation plot liver weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Liver weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
   axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
   points(pheno[,"Leber"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
   abline(lm(pheno[,"Gluc172"]~pheno[,"Leber"]), col="red")
 
 # Gonadal fat and glucose
-plot(main="Correlation plot gonadal fat weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Gonadal fat weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+plot(main="Correlation plot gWAT weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="gWAT weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
   axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
   points(pheno[,"Gon"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
   abline(lm(pheno[,"Gluc172"]~pheno[,"Gon"]), col="red")
+  
+# Split the two groups and see if there is a difference in correlation
+FirstGroup <- sortWeight[1:400,]
+SecondGroup <- sortWeight[401:nrow(sortWeight),]
+
+FirstGroup <- FirstGroup[, c("Gon", "Leber", "Gluc172")]
+cor(FirstGroup, use = "pairwise.complete.obs")
+cor.test(FirstGroup[,"Leber"], FirstGroup[,"Gon"] , use = "pairwise.complete.obs")
+cor.test(FirstGroup[,"Leber"], FirstGroup[,"Gluc172"] , use = "pairwise.complete.obs")
+cor.test(FirstGroup[,"Gon"], FirstGroup[,"Gluc172"] , use = "pairwise.complete.obs")
+
+SecondGroup <- SecondGroup[, c("Gon", "Leber", "Gluc172")]
+cor(SecondGroup, use = "pairwise.complete.obs")
+cor.test(SecondGroup[,"Leber"], SecondGroup[,"Gon"] , use = "pairwise.complete.obs")
+cor.test(SecondGroup[,"Leber"], SecondGroup[,"Gluc172"] , use = "pairwise.complete.obs")
+cor.test(SecondGroup[,"Gon"], SecondGroup[,"Gluc172"] , use = "pairwise.complete.obs")
+
+# Liver and gonadal fat
+plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,6), t = "n", xlab="Liver weight [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(FirstGroup[,"Leber"],FirstGroup[,"Gon"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(FirstGroup[,"Leber"]~FirstGroup[,"Gon"]), col="red")
+  text(3.5, 4, "r = -0.45, p-value < 2.2e-16")
+  
+# Liver and glucose
+plot(main="Correlation plot liver weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Liver weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(FirstGroup[,"Leber"],FirstGroup[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(FirstGroup[,"Gluc172"]~FirstGroup[,"Leber"]), col="red")
+  text(5, 100, "r = 0.76, p-value < 2.2e-16")
+  
+# Gonadal fat and glucose
+plot(main="Correlation plot gonadal fat weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Gonadal fat weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(FirstGroup[,"Gon"],FirstGroup[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(FirstGroup[,"Gluc172"]~FirstGroup[,"Gon"]), col="red")
+  text(5, 100, "r = -0.51, p-value < 2.2e-16")
+  
+# Liver and gonadal fat
+plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,6), t = "n", xlab="Liver weight [g]", ylab="Gonadal fat weight [g]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(SecondGroup[,"Leber"],SecondGroup[,"Gon"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(SecondGroup[,"Leber"]~SecondGroup[,"Gon"]), col="red")
+  text(2, 2, "r = -0.09, p-value < 0.3127")
+  
+# Liver and glucose
+plot(main="Correlation plot liver weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Liver weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(SecondGroup[,"Leber"],SecondGroup[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(SecondGroup[,"Gluc172"]~SecondGroup[,"Leber"]), col="red")
+  text(5, 100, "r = 0.67, p-value < 2.2e-16")
+  
+# Gonadal fat and glucose
+plot(main="Correlation plot gonadal fat weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Gonadal fat weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
+  points(SecondGroup[,"Gon"],SecondGroup[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(SecondGroup[,"Gluc172"]~SecondGroup[,"Gon"]), col="red")
+  text(5, 100, "r = -0.31, p-value < 0.0006452")
+
+
 
 # CTL mapping curve across chromosome 15
 chr15C <- lodannotmatrixC[which(lodannotmatrixC[,"Chromosome"] == 15),]
