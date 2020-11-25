@@ -851,18 +851,18 @@ legend("topright", #bg="gray"
   col = c("cornflowerblue", "lightgreen"))
   
 # Effect plots for each qtl
-par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
+par(cex.lab=1.5, cex.main = 1.8, cex.axis = 1.6)
 mat <- matrix(c(1,2,3,4), 1, ,byrow = TRUE)
 layout(mat, widths = rep.int(4, ncol(mat)))
 #chr3
-UNC5791802 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC5791802",]))
-boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal fat weight",  ylab = "Weight [Gr.]", xlab = "Genotype UNC5791802 [chr 3]" , las = 2, t = "n", xaxt = "n", ylim = c(0,10))
+UNC5791802 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC5812781",]))
+boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "gWAT weight",  ylab = "Weight [g]", xlab = "UNC5812781 [chr 3]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8))
   axis(1, at = 1:3 , c("TT", "TC", "CC"))
   y1 <- 7
-  lines(c(1,3),c(y1,y1))
-  text(2, y1+0.3,"***", cex = 1.4)
+  #lines(c(1,3),c(y1,y1))
+  #text(2, y1+0.3,"***", cex = 1.4)
   legend("topright", #bg="gray",
-  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+  legend = c( "S1", "HET", "S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
@@ -870,16 +870,16 @@ boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC57
     cex = 1,
     text.col = "black") 
 
-UNC5791802 <- cbind(phenotypes[, "Gluc172"], t(genotypes["UNC5791802",]))
-boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Blood glucose", ylab = "Glucose [mg/dl]", xlab = "Genotype UNC5791802 [chr 3]" , las = 2, t = "n", xaxt = "n", ylim = c(0,700))
+UNC5791802 <- cbind(phenotypes[, "Gluc172"], t(genotypes["UNC5812781",]))
+boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "A"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "H"),1]), as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Blood glucose", ylab = "Glucose [mg/dl]", xlab = "UNC5812781 [chr 3]" , las = 2, t = "n", xaxt = "n", ylim = c(0,700))
   axis(1, at = 1:3 , c("TT", "CT", "CC"))
   y1 <- 550
-  lines(c(1,3),c(y1,y1))
-  lines(c(1,2),c(y1+30,y1+30))
-  text(2, y1+10,"***", cex = 1.4)
-  text(1.5, y1+40,"***", cex = 1.4)
+  #lines(c(1,3),c(y1,y1))
+  #lines(c(1,2),c(y1+30,y1+30))
+  #text(2, y1+10,"***", cex = 1.4)
+  #text(1.5, y1+40,"***", cex = 1.4)
   legend("topright", #bg="gray",
-  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+  legend = c( "S1", "HET", "S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
@@ -891,13 +891,13 @@ boxplot(as.numeric(UNC5791802[which(UNC5791802[,2] == "B"),1]), as.numeric(UNC57
 	
 #chr15
 UNC25805470 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC25805470",]))
-boxplot(as.numeric(UNC25805470[which(UNC25805470[,2] == "A"),1]), as.numeric(UNC25805470[which(UNC25805470[,2] == "H"),1]), as.numeric(UNC25805470[which(UNC25805470[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal fat weight", ylab = "Weight [Gr.]", xlab = "Genotype UNC25806117 [chr 15]" , las = 2, t = "n", xaxt = "n", ylim = c(0,10))
+boxplot(as.numeric(UNC25805470[which(UNC25805470[,2] == "A"),1]), as.numeric(UNC25805470[which(UNC25805470[,2] == "H"),1]), as.numeric(UNC25805470[which(UNC25805470[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "gWAT weight", ylab = "Weight [g]", xlab = "UNC25806117 [chr 15]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8))
   axis(1, at = 1:3 , c("CC", "AG", "GG"))
   y1 <- 7
-  lines(c(1,3),c(y1,y1))
-  text(2, y1+0.3,"***", cex = 1.4)
+  #lines(c(1,3),c(y1,y1))
+  #text(2, y1+0.3,"***", cex = 1.4)
   legend("topright", #bg="gray",
-  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+  legend = c( "S1", "HET", "S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
@@ -916,9 +916,13 @@ for(x in 1:nrow(genotypes)){
   numgeno[x, which(genotypes[x, ] == h2)] <- 1
 }
 	
-phenos <- pheno[colnames(genotypes),]
-numgeno <- as.numeric(unlist(numgeno["UNCHS040894",]))
-mdata <- data.frame(cbind(glucose = phenos[, "Gluc172"], liver = phenos[, "Leber"], gon = phenos[, "Gon"], geno = numgeno))
+phenos <- phenotypes[colnames(genotypes),]
+phenos[,"Gluc172"] <- as.numeric(phenos[,"Gluc172"])
+phenos[,"Leber"] <- as.numeric(phenos[,"Leber"])
+phenos[,"Gon"] <- as.numeric(phenos[,"Gon"])
+
+UNCHS040894 <- as.numeric(unlist(numgeno["JAX00063853",]))
+mdata <- data.frame(cbind(glucose = phenos[, "Gluc172"], liver = phenos[, "Leber"], gon = phenos[, "Gon"], geno = UNCHS040894))
 isNA <- which(apply(apply(mdata,1,is.na),2,any))
 mdata <- mdata[-isNA,]
 lmGluc <- lm(glucose ~ liver + gon + geno, data = mdata)
@@ -934,15 +938,15 @@ for(x in 1:nrow(mdata)){
   mdata[x, which(mdata[x, ] == h2)] <- "B"
 }
 
-boxplot(as.numeric(mdata[which(mdata[,"geno"] == "B"),1]), as.numeric(mdata[which(mdata[,"geno"] == "H"),1]), as.numeric(mdata[which(mdata[,"geno"] == "A"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Blood glucose", ylab = "Glucose [mg/dl]", xlab = "Genotype UNCHS040894 [chr 15]" , las = 2, t = "n", xaxt = "n", ylim = c(0,700))
+boxplot(as.numeric(mdata[which(mdata[,"geno"] == "A"),5]), as.numeric(mdata[which(mdata[,"geno"] == "H"),5]), as.numeric(mdata[which(mdata[,"geno"] == "B"),5]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Blood glucose", ylab = "Glucose adjusted [mg/dl]", xlab = "JAX00063853 [chr 15]" , las = 2, t = "n", xaxt = "n", ylim = c(0,700))
   axis(1, at = 1:3 , c("TT", "CT", "CC"))
-  y1 <- 550
-  lines(c(1,3),c(y1,y1))
-  lines(c(1,2),c(y1+30,y1+30))
-  text(2, y1+10,"***", cex = 1.4)
-  text(1.5, y1+40,"***", cex = 1.4)
+  y1 <- 200
+  #lines(c(1,3),c(y1,y1))
+  #lines(c(2,3),c(y1+30,y1+30))
+  #text(2, y1+10,"***", cex = 1.4)
+  #text(2.5, y1+40,"***", cex = 1.4)
   legend("topright", #bg="gray",
-  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+  legend = c( "S1", "HET", "S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
@@ -951,16 +955,16 @@ boxplot(as.numeric(mdata[which(mdata[,"geno"] == "B"),1]), as.numeric(mdata[whic
     text.col = "black")
 	
 #chr17
-UNCHS043909 <- cbind(phenotypes[, "Gon"], t(genotypes["UNCHS043909",]))
-boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "H"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Gonadal fat weight", ylab = "Weight [Gr.]", xlab = "Genotype UNCHS043909 [chr 17]" , las = 2, t = "n", xaxt = "n", ylim = c(0,10))
+UNC27568354 <- cbind(phenotypes[, "Gon"], t(genotypes["UNC27568354",]))
+boxplot(as.numeric(UNC27568354[which(UNC27568354[,2] == "A"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "H"),1]), as.numeric(UNC27568354[which(UNC27568354[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "gWAT weight", ylab = "Weight [g]", xlab = "UNC27568354 [chr 17]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8))
   axis(1, at = 1:3 , c("AA", "AG", "GG"))
   y1 <- 7
-  lines(c(1,3),c(y1,y1))
-  lines(c(2,3),c(y1+0.7,y1+0.7))
-  text(2, y1+0.3,"***", cex = 1.4)
-  text(2.5, y1+1,"***", cex = 1.4)
+  #lines(c(1,3),c(y1,y1))
+  #lines(c(2,3),c(y1+0.7,y1+0.7))
+  #text(2, y1+0.3,"***", cex = 1.4)
+ # text(2.5, y1+1,"***", cex = 1.4)
   legend("topright", #bg="gray",
-  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+  legend = c( "S1", "HET", "S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
@@ -968,16 +972,16 @@ boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNC
     cex = 1,
     text.col = "black") 
 
-JAX00434021 <- cbind(phenotypes[, "Gluc172"], t(genotypes["JAX00434021",]))
-boxplot(as.numeric(JAX00434021[which(JAX00434021[,2] == "A"),1]), as.numeric(JAX00434021[which(JAX00434021[,2] == "H"),1]), as.numeric(JAX00434021[which(JAX00434021[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Blood glucose", ylab = "Glucose [mg/dl]", xlab = "Genotype JAX00434021 [chr 17]" , las = 2, t = "n", xaxt = "n", ylim = c(0,700))
+UNCHS043909 <- cbind(phenotypes[, "Gluc172"], t(genotypes["UNCHS043909",]))
+boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "H"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Blood glucose", ylab = "Glucose [mg/dl]", xlab = "UNCHS043909 [chr 17]" , las = 2, t = "n", xaxt = "n", ylim = c(0,700))
   axis(1, at = 1:3 , c("TT", "CT", "CC"))
   y1 <- 550
-  lines(c(1,3),c(y1,y1))
-  lines(c(1,2),c(y1+30,y1+30))
-  text(2, y1+10,"***", cex = 1.4)
-  text(1.5, y1+40,"***", cex = 1.4)
+  #lines(c(1,3),c(y1,y1))
+  #lines(c(1,2),c(y1+30,y1+30))
+ # text(2, y1+10,"***", cex = 1.4)
+ # text(1.5, y1+40,"***", cex = 1.4)
   legend("topright", #bg="gray",
-  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+  legend = c( "S1", "HET", "S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
@@ -987,15 +991,15 @@ boxplot(as.numeric(JAX00434021[which(JAX00434021[,2] == "A"),1]), as.numeric(JAX
 	
 #chr17
 UNCHS043909 <- cbind(phenotypes[, "Leber"], t(genotypes["UNCHS043909",]))
-boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "H"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight", ylab = "Weight [Gr.]", xlab = "Genotype UNCHS043909 [chr 17]" , las = 2, t = "n", xaxt = "n", ylim = c(0,10))
+boxplot(as.numeric(UNCHS043909[which(UNCHS043909[,2] == "A"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "H"),1]), as.numeric(UNCHS043909[which(UNCHS043909[,2] == "B"),1]), col = c("lightskyblue1", "cyan3", "dodgerblue4"), main = "Liver weight", ylab = "Weight [g]", xlab = "UNCHS043909 [chr 17]" , las = 2, t = "n", xaxt = "n", ylim = c(0,8))
   axis(1, at = 1:3 , c("AA", "AG", "GG"))
   y1 <- 6
-  lines(c(1,3),c(y1,y1))
-  lines(c(2,3),c(y1+0.7,y1+0.7))
-  text(2, y1+0.3,"***", cex = 1.4)
-  text(2.5, y1+1,"***", cex = 1.4)
+  #lines(c(1,3),c(y1,y1))
+  #lines(c(2,3),c(y1+0.7,y1+0.7))
+  #text(2, y1+0.3,"***", cex = 1.4)
+  #text(2.5, y1+1,"***", cex = 1.4)
   legend("topright", #bg="gray",
-  legend = c( "BFMI-S1", "HET", "BFMI-S2"),
+  legend = c( "S1", "HET", "S2"),
     col = c("lightskyblue1", "cyan3", "dodgerblue4"),
     pch = 15,
     pt.cex = 1.7,
