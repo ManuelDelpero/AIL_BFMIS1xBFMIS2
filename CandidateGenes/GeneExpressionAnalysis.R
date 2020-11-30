@@ -6,7 +6,7 @@ setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/Microarray Data/DN-2019_8745-Data/Rohda
 library(affy)
 library("gplots")
 
-dat <- ReadAffy(cdfname ='clariomsmousemmensgcdf') # Use the clariomsmouse CDF from http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/23.0.0/enst.asp
+dat <- ReadAffy(cdfname ='ClariomSMouse_Mm_ENST') # Use the clariomsmouse CDF from http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/23.0.0/enst.asp
 eset <- mas5(dat)
 
 library("affyPLM")
@@ -28,10 +28,52 @@ colnames(expressions) <- arraymapping[ids, 1]
 
 corM <- cor(expressions)
 
-pdf("heatmapGeneExpression.pdf")
-heatmap.2(corM, scale = "none", col = bluered(100), 
-          trace = "none", density.info = "none")
-dev.off()
+# Heatmap
+
+col_labels <- c("orange","orange", "orange","orange","blue", "blue", 
+                "blue","blue", "blue","orange","orange","orange","blue",
+				"blue","blue", "blue", "orange", "blue", "blue", "orange",
+				"orange", "orange","orange","orange","orange", "blue", "blue",
+				"blue", "blue", "blue", "blue","blue", "blue", "orange","orange",
+				"blue","blue","blue","orange","orange", "orange","orange","orange",
+				"orange", "orange","orange","orange","orange", "orange","blue","blue",
+				"blue","blue","blue","blue","blue","blue")
+
+# But due to the way heatmap.2 works - we need to fix it to be in the 
+# order of the data!  
+colors = unique(c(seq(0.94, 1,length = 30)))
+
+my_palette <- rev(heat.colors(29))
+
+distance= dist(corM, method ="euclidean")    
+hcluster = hclust(distance, method ="ward.D")
+dend1 <- as.dendrogram(hcluster)
+cols_branches <- c("orange", "blue")
+dend1 <- color_branches(dend1, k = 4, col = cols_branches)
+col_labels <- col_labels[order(order.dendrogram(dend1))]
+
+
+heatmap.2(corM,
+  main = "Correlation", # heat map title
+  notecol="black",      # change font color of cell labels to black
+  density.info="none",  # turns off density plot inside color legend
+  trace="none", 
+  col=my_palette,
+  breaks = colors,  # turns off trace lines inside the heat map
+  #margins =c(12,9),     # widens margins around plot
+  dendrogram="col",     # only draw a row dendrogram
+  #Rowv="NA",
+  ColSideColors = col_labels,
+  key.xlab="correlation coefficient"
+  )
+legend("bottomleft",
+  bty = "n",
+  legend = c("S1", "S2"),
+  pch = c(15, 15),
+  col = c("orange", "blue"),
+  pt.cex=1.5,
+  cex=1.5)
+
 
 liverexpr <- expressions[, which(grepl("L", colnames(expressions)))]
 LiverS1expr <- liverexpr[, which(grepl("S1", colnames(liverexpr)))]
@@ -143,3 +185,9 @@ subset_gonadalfat <- gonadalfat[which(abs(gonadalfat[, "logFC"]) > 0.25),]
 subset_liver <- liver[which(abs(liver[, "logFC"]) > 0.25),]
 subset_skeletalmuscle <- skeletalmuscle[which(abs(skeletalmuscle[, "logFC"]) > 0.25),]
 subset_pankreas <- gonadalfat[which(abs(pankreas[, "logFC"]) > 0.25),]
+
+
+
+   
+ 
+
