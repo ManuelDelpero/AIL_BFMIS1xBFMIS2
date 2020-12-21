@@ -9,7 +9,7 @@ FullList <- read.table("annotationSNPsCandidateGenes_allCLT.txt", sep = "\t", ch
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 Diffexprliver <- read.csv("DiffExprLiver.txt", sep = "\t", header = TRUE, check.names = FALSE)
 DiffexprGonadalfat <- read.csv("DiffExprGon.txt", sep = "\t", header = TRUE, check.names = FALSE)
-GenesInfo <- read.csv("genesInfoGon.txt", sep = "\t", header = TRUE, check.names = FALSE)
+GenesInfo <- read.csv("genesInfoCTL.txt", sep = "\t", header = TRUE, check.names = FALSE)
 #DiffexprSkeletalmuscle <- read.csv("DiffExprMuscle.txt", sep = "\t", header = TRUE, check.names = FALSE)
 #DiffexprPankreas <- read.csv("DiffExprPankreas.txt", sep = "\t", header = TRUE, check.names = FALSE)
 FullList[, "GENE"] <- as.character(FullList[, "GENE"])
@@ -48,7 +48,7 @@ pathway_ALLGENE<-GetPathData(pathways)
 pathway_ALLGENE<-ConvertedIDgenes(pathways)
 pathway_ALLGENE <- unique(unlist(pathway_ALLGENE, recursive = TRUE, use.names = FALSE))
 
-# Score genes based on mutations (Decision tree)
+# Score genes based on mutations, gene expression data and KEGG pathway (Decision tree)
 RankCandidates <- matrix(NA, nrow = length(Candidates), ncol = 14, dimnames = list(Candidates,c("SIFT_del", "SIFT_tol","DOMAIN", "stop_gained", "stop_lost", "splice_donor", "splice_acceptor",  "UTRs", "Promoter", "CTCF B-site", "Enhancer", "Expression", "Annotation", "SCORE")))
 for (gene in Candidates) {
   Score <- 0
@@ -88,7 +88,7 @@ for (gene in Candidates) {
 	  Score <- Score + 1
 	  RankCandidates[gene, "SIFT_tol"] = 1
 	  }
-	if (any(!(is.na(geneVar[, "DOMAIN"])))){ 
+    if (any(!(is.na(geneVar[, "DOMAIN"])))){ 
       Score = Score + 3
 	  RankCandidates[gene, "DOMAIN"] = 3
 	  }
@@ -128,11 +128,11 @@ RankCandidates <- cbind(biomart.RankCandidates, RankCandidates)
 RankCandidate <- RankCandidates[order(-RankCandidates[, "SCORE"], decreasing = FALSE),]
 
 #chromosomes <- c(3,12,15,16,17)
-chromosomes <- c(7)
+chromosomes <- c(15)
 RankCandidates <- c()
 for(chr in chromosomes){
   RankCandidates <- rbind(RankCandidates, RankCandidate[RankCandidate[,"chromosome_name"] == chr,])
 }
 
 
-write.table(RankCandidates, file = "CandidatesScoresGon.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(RankCandidates, file = "CandidatesScoresCTL.txt", sep = "\t", quote = FALSE, row.names = FALSE)
