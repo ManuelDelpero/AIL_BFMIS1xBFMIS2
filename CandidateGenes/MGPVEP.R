@@ -1,6 +1,6 @@
-setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver/SNPsGenesMetS")
+setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA/SNPsGenesGonLiver")
 
-mdata <- read.table("outputVEPall_combinedTrig_sorted.vcf", header = TRUE)
+mdata <- read.table("outputVEPCTL.vcf", header = TRUE)
 
 gts <- apply(mdata[,10:ncol(mdata)],2,function(x){unlist(lapply(strsplit(x, ":"),"[",1)) })
 gts[gts=="./."] <- NA
@@ -39,7 +39,7 @@ mexcel <- cbind("RSID" = rsIDs, mdata[, c(1,2,4,5,6)], "TYPE" = types, "DOMAIN" 
 # Only SNPs that are found in the S1 and not in the S2
 mexcel <- mexcel[which((mexcel[, "BFMI861.S1"] == "1/1" & mexcel[, "BFMI861.S2"] == "0/0" )),]
 
-write.table(mexcel, file="annotationSNPsCandidateGenes_allTrig.txt", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
+write.table(mexcel, file="annotationSNPsCandidateGenes_allCLT.txt", sep = "\t", quote = FALSE, row.names=FALSE, na = "")
 
 # Filter the candidates, get only the important SNPs
 mexcel <- mexcel[which(!mexcel[, "TYPE"] == "\t"),]

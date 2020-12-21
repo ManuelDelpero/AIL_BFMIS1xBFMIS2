@@ -6,7 +6,8 @@
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
-pheno <- read.table("allPhenotypes_final.txt", sep = "\t", row.names=1)
+pheno <- read.table("PhenotypesComplete.txt", sep = "\t", row.names=1)
+pheno <- pheno[which(pheno[, "Sex"] == "m"),]
 genotypes <- read.csv("genotypesComplete.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 lodmatrixC <- read.table("lodscoresCTL.txt", sep = "\t", check.names = FALSE, header = TRUE)
 lodmatrixQ <- read.table("lodmatrixADDComplete.txt", sep = "\t", check.names = FALSE, header = TRUE)
@@ -40,11 +41,11 @@ sortWeight <- pheno[index,]
 sortWeight[,c("Gon", "Leber")] <- sortWeight[,c("Gon", "Leber")] * sortWeight[,"Gewicht"]
 sortWeight <- sortWeight[order(sortWeight[, "Gon"]),]
 # Calculate correlation
-data <- pheno[, c("Gon", "Leber", "Gluc172")]
+data <- pheno[, c("Gon", "Leber", "Gluc172", "D174", "Triglycerides")]
 cor(data, use = "pairwise.complete.obs")
 
 # Plot to represent the correlation between the tissues weight
-par(cex.lab=1.2, cex.main = 1.3, cex.axis = 1)
+par(cex.lab=1.5, cex.main = 1.5, cex.axis = 5)
 mat <- matrix(c(1,2,3), 1, ,byrow = TRUE)
 layout(mat, widths = rep.int(3, ncol(mat)))
 
@@ -113,28 +114,46 @@ plot(main="Correlation plot gonadal fat weight ~ liver weight", c(1,5), c(0,5), 
    cex = 1.5,)
    
 # Normal correlation plots
-par(cex.lab=1.5, cex.main = 1.5, cex.axis = 1.3)
+par(cex.lab=1.6, cex.main = 1.5, cex.axis = 1.5)
 mat <- matrix(c(1,2,3), 1, ,byrow = TRUE)
 layout(mat, widths = rep.int(3, ncol(mat)))
 
+data <- pheno[,c("Gluc172", "Gon", "Leber")]
+cor(data, use = "pairwise.complete.obs")
+
 # Liver and gonadal fat
 pheno[,c("Gon", "Leber")] <- pheno[,c("Gon", "Leber")] * pheno[,"Gewicht"]
-plot(main="Correlation plot gWAT weight ~ liver weight", c(1,5), c(0,6), t = "n", xlab="Liver weight [g]", ylab="gWAT weight [g]", las = 2, xaxt = "n")
+plot(main="Correlation plot GonAT weight ~ liver weight", c(0,6), c(0,6), t = "n", xlab="Liver weight [g]", ylab="GonAT weight [g]", las = 2, xaxt = "n")
   axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
   points(pheno[,"Leber"],pheno[,"Gon"], lwd=0.8 , pch=16 , type="p")
-  abline(lm(pheno[,"Leber"]~pheno[,"Gon"]), col="red")
+  abline(lm(pheno[,"Gon"]~pheno[,"Leber"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = -0.65, p < 2.2e-16",
+  )
 
 # Liver and glucose
-plot(main="Correlation plot liver weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="Liver weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+plot(main="Correlation plot liver weight ~ blood concentration", c(0,6), c(0,550), t = "n", xlab="Liver weight [g]", las = 2, xaxt = "n")
   axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
   points(pheno[,"Leber"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
   abline(lm(pheno[,"Gluc172"]~pheno[,"Leber"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.74, p < 2.2e-16",
+  )
 
 # Gonadal fat and glucose
-plot(main="Correlation plot gWAT weight ~ blood glucose", c(1,7), c(0,500), t = "n", xlab="gWAT weight [g]", ylab="blood glucose [mg/dl]", las = 2, xaxt = "n")
+plot(main="Correlation plot GonAT weight ~ blood glucose concentration", c(0,6), c(0,550), t = "n", xlab="GonAT weight [g]", ylab="", las = 2, xaxt = "n")
   axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
   points(pheno[,"Gon"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
   abline(lm(pheno[,"Gluc172"]~pheno[,"Gon"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = -0.62, p < 2.2e-16",
+  )
   
 # Split the two groups and see if there is a difference in correlation
 FirstGroup <- sortWeight[1:400,]
