@@ -50,24 +50,25 @@ for(x in 1:nrow(genotypes)){
   numgeno[x, which(genotypes[x, ] == h2)] <- 1
 }
 
-phenonames <- colnames(phenotypes[,c(3:57, 61:72)])
 
-
-#phenonames <- colnames(phenotypes[,c(3:57, 61, 62, 65:75)])
 #write.table(phenotypes, file = "PhenotypesComplete.txt", sep = "\t", quote = FALSE, row.names = TRUE)
-# Covariates we could/need to include in the model
-phenotypes <- phenotypes[colnames(genotypes),]
+
+# Take only the males
+phenotypes <- phenotypes[which(phenotypes[, "Sex"] == "m"),] 
+numgeno <- numgeno[,rownames(phenotypes)]
+#phenotypes <- phenotypes[colnames(genotypes),]
 wg <- phenotypes[, "WG"]
 grandmother <- phenotypes[, "Grandma"]
 Leber <- phenotypes[, "Leber"]
 Gon <- phenotypes[, "Gon"]
 phenonames <- c("Gon", "Leber", "Gluc172", "D174", "Triglycerides", "ITTauc")
 
+
 ## Choose the best model for each phenotype
 # map first using the raw models for each phenotype
-phenonames <- c("Gon", "Leber", "Gluc172", "D174", "Triglycerides", "ITTauc")
 
-# Dom dev + Add model (real dom)
+#phenonames <- c("Free_Fatty_Acids","Total_Glycerol","Free_Glycerol","Cholesterol","TriglyceridesPlasma","Insulin")
+# Dom dev + Add model
 pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
@@ -77,8 +78,8 @@ for (pname in phenonames){
     mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
     isNA <- which(apply(apply(mdata,1,is.na),2,any))
     if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-	lm0 <- lm(pheno ~ 1 + sex, data = mdata)
-    mmodel <- lm(pheno ~ D + A + sex, data = mdata)
+	lm0 <- lm(pheno ~ 1, data = mdata)
+    mmodel <- lm(pheno ~ D + A, data = mdata)
     return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
   })
   pmatrixADDDOM[names(pvalues), pname] <- pvalues
@@ -120,7 +121,7 @@ for (pname in phenonames){
 }
 lodmatrixADDrow <- -log10(pmatrixADD)
 
-## start defining the right models for each phenotype
+## Defining the full models for each phenotype (if any)
 ## model for Blood glucose 
 resLiver <- anova(lm(phenotypes[,"Gluc172"] ~ phenotypes[,"Leber"]))
 resGon <- anova(lm(phenotypes[,"Gluc172"] ~ phenotypes[,"Gon"]))
@@ -143,7 +144,6 @@ round(varExplainedGon * 100, digits=1)
 # Final decision: Map glucose including liver and gonadal fat as covariates to identify QTLs directly responsible for the glucose levels and not indirectly
 
 ## Models for gonadal fat weight and liver
-# See if the liver influences the gonadal fat and the other way round with causal modelling 
 anova(lm(phenotypes[, "Gon"] ~ phenotypes[,"Leber"]))
 anova(lm(phenotypes[, "Leber"] ~ phenotypes[,"Gon"]))
 hist(residuals(lm(phenotypes[, "Gon"] ~ 1)))
@@ -166,20 +166,8 @@ lm0 <- lm(liver ~ sex + gon, data = mdata)
 anova(lm1,lm0)
 # The same happen for liver, adding gonadal fat as a covariate the Lod score drops from 7.5 to 2.9
 
-# They both influence each other
-# Final decision: map gonadal fat and liver using the raw models since we are not able do define exactly which one is influecning the other one
-
-# Liver triglycerides
-numgenoDomm <- as.numeric(as.numeric(unlist(numgeno["JAX00632487",])) != 0)
-numgenoAddd <- as.numeric(unlist(numgeno["JAX00632487",]))
-mdata <- data.frame(cbind(sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], trig = phenotypes[, "Triglycerides"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
-isNA <- which(apply(apply(mdata,1,is.na),2,any))
-if (length(isNA) > 0) mdata <- mdata[-isNA, ]
-
-lm1 <- lm(trig ~ sex + liver + A , data = mdata)
-lm0 <- lm(trig ~ sex + liver, data = mdata)
-anova(lm1,lm0)
-# Final decision: correct liver triglycerides using liver weight
+# Final decision: map gonadal fat and liver using the raw models since we are not able do define exactly which one is influecning the other one, map liver correting for wg
+# do a scan for glucose adding liver weight and gonadal adipose tissue weight as covariates. As decide by causal modelling both liver weight and gonadal ad weight influence blood glucose.
 
 pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
@@ -193,9 +181,9 @@ for (pname in phenonames){
 	if (pname == "Gluc172"){ 
       lm0 <- lm(pheno ~ 1 + sex + liver + gon, data = mdata)
       mmodel <- lm(pheno ~ D + A + sex + gon + liver, data = mdata)	
-	} else if (pname == "Triglycerides"){
-	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
-      mmodel <- lm(pheno ~ D + A + sex + liver, data = mdata)	
+	} else if (pname == "Leber"){
+	  lm0 <- lm(pheno ~ 1 + sex + wg, data = mdata)
+      mmodel <- lm(pheno ~ D + A + sex + wg, data = mdata)	
     } else {
 	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
       mmodel <- lm(pheno ~ D + A + sex, data = mdata)
@@ -218,9 +206,9 @@ for (pname in phenonames){
     if (pname == "Gluc172"){ 
       lm0 <- lm(pheno ~ 1 + sex + liver + gon, data = mdata)
       mmodel <- lm(pheno ~ D + sex + liver + gon, data = mdata)	
-	} else if (pname == "Triglycerides"){
-	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
-      mmodel <- lm(pheno ~ D + sex + liver, data = mdata)	
+	} else if (pname == "Leber"){
+	  lm0 <- lm(pheno ~ 1 + sex + wg, data = mdata)
+      mmodel <- lm(pheno ~ D + sex + wg, data = mdata)	
     } else {
 	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
       mmodel <- lm(pheno ~ D + sex, data = mdata)
@@ -243,6 +231,83 @@ for (pname in phenonames){
 	if (pname == "Gluc172"){ 
       lm0 <- lm(pheno ~ 1 + sex + liver + gon, data = mdata)
       mmodel <- lm(pheno ~ A + sex + liver + gon, data = mdata)
+	} else if (pname == "Leber"){
+	  lm0 <- lm(pheno ~ 1 + sex + wg, data = mdata)
+      mmodel <- lm(pheno ~ A + sex + wg, data = mdata)		  
+    } else {
+	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ A + sex, data = mdata)
+    }	
+    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+  })
+  pmatrixADD[names(pvalues), pname] <- pvalues
+}
+lodmatrixADD <- -log10(pmatrixADD)
+
+## Spme additional models
+# Map for glucose only with one covariate, gonadal fat weight or liver weight
+pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
+for (pname in phenonames){
+  cat(pname, " ", "\n")
+  pvalues <- apply(numgeno, 1, function(numgeno) {
+    numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
+    numgenoAddd <- as.numeric(unlist(numgeno))
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
+    isNA <- which(apply(apply(mdata,1,is.na),2,any))
+    if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+	if (pname == "Gluc172"){ 
+      lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ D + A + sex + liver, data = mdata)	
+	} else if (pname == "Triglycerides"){
+	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ D + A + sex + liver, data = mdata)	
+    } else {
+	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ D + A + sex, data = mdata)
+    }
+    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+  })
+  pmatrixADDDOM[names(pvalues), pname] <- pvalues
+}
+lodmatrixADDDOMLiver <- -log10(pmatrixADDDOM)
+
+# Dominance dev model
+pmatrixDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
+for (pname in phenonames){
+  cat(pname, " ", "\n")
+  pvalues <- apply(numgeno, 1, function(numgeno) {
+    numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], liver = phenotypes[,"Leber"], gon = phenotypes[,"Gon"], sex = phenotypes[, "Sex"], D = numgenoDomm))
+    isNA <- which(apply(apply(mdata,1,is.na),2,any))
+    if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+    if (pname == "Gluc172"){ 
+      lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ D + sex + liver, data = mdata)	
+	} else if (pname == "Triglycerides"){
+	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ D + sex + liver, data = mdata)	
+    } else {
+	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ D + sex, data = mdata)
+    }
+    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+  })
+  pmatrixDOM[names(pvalues), pname] <- pvalues
+}
+lodmatrixDOMLiver <- -log10(pmatrixDOM)
+
+# Additive model
+pmatrixADD <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
+for (pname in phenonames){
+  cat(pname, " ", "\n")
+  pvalues <- apply(numgeno, 1, function(numgeno) {
+    numgenoAddd <- as.numeric(unlist(numgeno))
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd))
+    isNA <- which(apply(apply(mdata,1,is.na),2,any))
+    if (length(isNA) > 0) mdata <- mdata[-isNA,]
+	if (pname == "Gluc172"){ 
+      lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ A + sex + liver, data = mdata)
 	} else if (pname == "Triglycerides"){
 	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
       mmodel <- lm(pheno ~ A + sex + liver, data = mdata)		  
@@ -254,7 +319,165 @@ for (pname in phenonames){
   })
   pmatrixADD[names(pvalues), pname] <- pvalues
 }
-lodmatrixADD <- -log10(pmatrixADD)
+lodmatrixADDLiver <- -log10(pmatrixADD)
+
+# Map for glucose only with one covariate, gonadal fat weight or liver weight
+pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
+for (pname in phenonames){
+  cat(pname, " ", "\n")
+  pvalues <- apply(numgeno, 1, function(numgeno) {
+    numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
+    numgenoAddd <- as.numeric(unlist(numgeno))
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd, D = numgenoDomm))
+    isNA <- which(apply(apply(mdata,1,is.na),2,any))
+    if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+	if (pname == "Gluc172"){ 
+      lm0 <- lm(pheno ~ 1 + sex + gon, data = mdata)
+      mmodel <- lm(pheno ~ D + A + sex + gon, data = mdata)	
+	} else if (pname == "Triglycerides"){
+	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ D + A + sex + liver, data = mdata)	
+    } else {
+	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ D + A + sex, data = mdata)
+    }
+    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+  })
+  pmatrixADDDOM[names(pvalues), pname] <- pvalues
+}
+lodmatrixADDDOMGon <- -log10(pmatrixADDDOM)
+
+# Dominance dev model
+pmatrixDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
+for (pname in phenonames){
+  cat(pname, " ", "\n")
+  pvalues <- apply(numgeno, 1, function(numgeno) {
+    numgenoDomm <- as.numeric(as.numeric(unlist(numgeno)) != 0)
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], liver = phenotypes[,"Leber"], gon = phenotypes[,"Gon"], sex = phenotypes[, "Sex"], D = numgenoDomm))
+    isNA <- which(apply(apply(mdata,1,is.na),2,any))
+    if (length(isNA) > 0) mdata <- mdata[-isNA, ]
+    if (pname == "Gluc172"){ 
+      lm0 <- lm(pheno ~ 1 + sex + gon, data = mdata)
+      mmodel <- lm(pheno ~ D + sex + gon, data = mdata)	
+	} else if (pname == "Triglycerides"){
+	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ D + sex + liver, data = mdata)	
+    } else {
+	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ D + sex, data = mdata)
+    }
+    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+  })
+  pmatrixDOM[names(pvalues), pname] <- pvalues
+}
+lodmatrixDOMGon <- -log10(pmatrixDOM)
+
+# Additive model
+pmatrixADD <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
+for (pname in phenonames){
+  cat(pname, " ", "\n")
+  pvalues <- apply(numgeno, 1, function(numgeno) {
+    numgenoAddd <- as.numeric(unlist(numgeno))
+    mdata <- data.frame(cbind(pheno = phenotypes[, pname], sex = phenotypes[, "Sex"], liver = phenotypes[, "Leber"], gon = phenotypes[, "Gon"], wg = phenotypes[,"WG"], A = numgenoAddd))
+    isNA <- which(apply(apply(mdata,1,is.na),2,any))
+    if (length(isNA) > 0) mdata <- mdata[-isNA,]
+	if (pname == "Gluc172"){ 
+      lm0 <- lm(pheno ~ 1 + sex + gon, data = mdata)
+      mmodel <- lm(pheno ~ A + sex + gon, data = mdata)
+	} else if (pname == "Triglycerides"){
+	  lm0 <- lm(pheno ~ 1 + sex + liver, data = mdata)
+      mmodel <- lm(pheno ~ A + sex + liver, data = mdata)		  
+    } else {
+	  lm0 <- lm(pheno ~ 1 + sex, data = mdata)
+      mmodel <- lm(pheno ~ A + sex, data = mdata)
+    }	
+    return(anova(mmodel, lm0)[["Pr(>F)"]][2])	
+  })
+  pmatrixADD[names(pvalues), pname] <- pvalues
+}
+lodmatrixADDGon <- -log10(pmatrixADD)
+
+# Have a look at the regions with the 2 different models
+par(cex.lab=1.5, cex.main = 1.5, cex.axis = 1.5)
+mat <- matrix(c(1,2,3), 1, ,byrow = TRUE)
+layout(mat, widths = rep.int(3, ncol(mat)))
+
+lodannotmatrixLiver <- cbind(annotation[rownames(lodmatrixADDLiver), ], lodmatrixADDLiver)
+chr3Liver <- lodannotmatrixLiver[which(lodannotmatrixLiver[,"Chromosome"] == 3),]
+dataset <- chr3Liver[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+dataset <- dataset[which(dataset[,"Position"] > 75000000),]
+lodannotmatrixGon <- cbind(annotation[rownames(lodmatrixADDGon), ], lodmatrixADDGon)
+chr3Gon <- lodannotmatrixGon[which(lodannotmatrixGon[,"Chromosome"] == 3),]
+datasetRow <- chr3Gon[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+datasetRow <- datasetRow[which(datasetRow[,"Position"] > 75000000),]
+
+plot(main = "QTL profiles [Chr 3]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+  lines(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gluc172"], t = "l", lty = 2, col="red", lwd = 0.7)
+  lines(x = as.numeric(datasetRow[,"Position"]), y = datasetRow[,"Gluc172"], t = "l", lty = 1, col="red", lwd = 0.7)
+  abline(h=4.7, col="green")
+  abline(h=4.3, col="orange")
+  axis(1, at = c(0, 25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
+  legend("topright", bg="gray",
+  legend = c("Blood glucose liver correction", "Blood glucose gonadal fat correction"),
+    bty = "n",
+    col = c("red", "red"),
+    lty=c(1,2),
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1.5,
+    text.col = "black")
+
+# chr 15
+lodannotmatrixLiver <- cbind(annotation[rownames(lodmatrixADDLiver), ], lodmatrixADDLiver)
+chr3Liver <- lodannotmatrixLiver[which(lodannotmatrixLiver[,"Chromosome"] == 15),]
+dataset <- chr3Liver[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+dataset <- dataset[which((dataset[,"Position"] > 50000000) & (dataset[,"Position"] < 85000000)),]
+lodannotmatrixGon <- cbind(annotation[rownames(lodmatrixADDGon), ], lodmatrixADDGon)
+chr3Gon <- lodannotmatrixGon[which(lodannotmatrixGon[,"Chromosome"] == 15),]
+datasetRow <- chr3Gon[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+datasetRow <- datasetRow[which((datasetRow[,"Position"] > 50000000) & (datasetRow[,"Position"] < 85000000)),]
+
+plot(main = "QTL profiles [Chr 15]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+  lines(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gluc172"], t = "l", lty = 2, col="red", lwd = 0.7)
+  lines(x = as.numeric(datasetRow[,"Position"]), y = datasetRow[,"Gluc172"], t = "l", lty = 1, col="red", lwd = 0.7)
+  abline(h=4.7, col="green")
+  abline(h=4.3, col="orange")
+  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
+  legend("topright", bg="gray",
+  legend = c("Blood glucose liver correction", "Blood glucose gonadal fat correction"),
+    bty = "n",
+    col = c("red", "red"),
+    lty=c(1,2),
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1.5,
+    text.col = "black")
+	
+# chr 17
+lodannotmatrixLiver <- cbind(annotation[rownames(lodmatrixADDLiver), ], lodmatrixADDLiver)
+chr3Liver <- lodannotmatrixLiver[which(lodannotmatrixLiver[,"Chromosome"] == 17),]
+dataset <- chr3Liver[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+dataset <- dataset[which(dataset[,"Position"] < 55389801),]
+lodannotmatrixGon <- cbind(annotation[rownames(lodmatrixADDGon), ], lodmatrixADDGon)
+chr3Gon <- lodannotmatrixGon[which(lodannotmatrixGon[,"Chromosome"] == 17),]
+datasetRow <- chr3Gon[, c("Chromosome", "Position", "Gon", "Leber", "Gluc172")]
+datasetRow <- datasetRow[which(datasetRow[,"Position"] < 55389801),]
+
+plot(main = "QTL profiles [Chr 17]", c(min(as.numeric(dataset[, "Position"])), max(as.numeric(dataset[, "Position"]))), c(0,10), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+  lines(x = as.numeric(dataset[,"Position"]), y = dataset[,"Gluc172"], t = "l", lty = 2, col="red", lwd = 0.7)
+  lines(x = as.numeric(datasetRow[,"Position"]), y = datasetRow[,"Gluc172"], t = "l", lty = 1, col="red", lwd = 0.7)
+  abline(h=4.7, col="green")
+  abline(h=4.3, col="orange")
+  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000), c("0", "25", "50", "75", "100"))
+  legend("topright",
+  legend = c("Blood glucose liver correction", "Blood glucose gonadal fat correction"),
+    bty = "n",
+    col = c("red", "red"),
+    lty=c(1,2),
+    pt.cex = 1.7,
+    pt.bg = "lightsteelblue1",
+    cex = 1.5,
+    text.col = "black")
 
 ## make plots with row models and adjusted models
 
