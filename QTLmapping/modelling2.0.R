@@ -7,13 +7,21 @@
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
-phenotypes <- read.csv("PhenotypesComplete.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
+GlucSeries <- read.csv("GlucSeries.txt", header = TRUE, check.names = FALSE, sep="\t", row.names = 1)
+rownames(GlucSeries) <- gsub("V 888-", "", rownames(GlucSeries))
+Plasma <- read.csv("Plasma.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
+phenotypes <- read.csv("phenotypesCompleteAll.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
 annotation <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 annotation <- annotation[, c(1,2,3,6)]
 colnames(annotation) <- c("Chromosome", "Position", "GenTrain Score", "SNP")
 colnames(genotypes) <- gsub("AIL", "" , colnames(genotypes)) 
 dim(genotypes)
 dim(phenotypes)
+
+GlucSeries <- GlucSeries[rownames(phenotypes),]
+phenotypes <- cbind(phenotypes, GlucSeries)
+
+
 
 ## Adding genotypes by KASP assay to the genotypes matrix
 # Adjust KASP dataset and combine it with the gigaMUGA genotypes
@@ -55,18 +63,21 @@ for(x in 1:nrow(genotypes)){
 
 # Take only the males
 phenotypes <- phenotypes[which(phenotypes[, "Sex"] == "m"),] 
+Plasma <- Plasma[rownames(phenotypes),]
+phenotypes <- cbind(phenotypes, Plasma)
 numgeno <- numgeno[,rownames(phenotypes)]
 #phenotypes <- phenotypes[colnames(genotypes),]
 wg <- phenotypes[, "WG"]
 grandmother <- phenotypes[, "Grandma"]
 Leber <- phenotypes[, "Leber"]
 Gon <- phenotypes[, "Gon"]
-phenonames <- c("Gon", "Leber", "Gluc172", "D174", "Triglycerides", "ITTauc")
+#phenonames <- c("Gon", "Leber", "Gluc172", "D174", "Triglycerides", "ITTauc")
+phenonames <- c("Cholesterol", "Triglycerides", "Insulin" )
 
 
 ## Choose the best model for each phenotype
 # map first using the raw models for each phenotype
-
+phenotypes[,"Insulin"] <- log2(phenotypes[,"Insulin"])
 #phenonames <- c("Free_Fatty_Acids","Total_Glycerol","Free_Glycerol","Cholesterol","TriglyceridesPlasma","Insulin")
 # Dom dev + Add model
 pmatrixADDDOM <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
@@ -539,7 +550,7 @@ for (x in chrs){
 
 	
 plot(x = c(-gap, tail(chr.starts,1)), y = c(0,9), t = 'n', xlab="Chromosome", ylab="-log10[P]",xaxt='n', xaxs="i", yaxs="i", las=2, main=paste0("Manhattan plots - Raw models"))
-phenotype <- "Gon"
+phenotype <- "Gluc139"
 for(chr in chrs){
   onChr <- rownames(map.sorted[map.sorted[,"Chromosome"] == chr,])
   currentADDDOM <- lodmatrixADDDOMrow[onChr, phenotype]
