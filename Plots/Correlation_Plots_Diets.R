@@ -109,63 +109,168 @@ plot(main="GonAT weight ~ liver weight", c(0,6), c(0,6), t = "n", xlab="Liver we
   legend("topright", #bg="gray"
   bty = "n",
   cex = 1.5,
-  legend = "r = -0.47, p < 2.2e-16",
+  legend = "r = -0.47, p = 2.2e-16",
   )
-  
-# Liver and Body weight
-plot(main="Liver weight ~ body weight", c(0,6), c(0,70), t = "n", xlab="Liver weight [g]", ylab="Body weight [g]", las = 2, xaxt = "n")
+ 
+# triglycerides and gon
+plot(main="GonAT weight ~ Liver triglycerides", c(0,330), c(0,6), t = "n", xlab="Liver triglycerides/protein [µg/µg]", ylab="GonAT weight [g]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,310,20), as.character(seq(0,310,20)))
+  points(pheno[,"Triglycerides"],pheno[,"Gon"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Gon"]~pheno[,"Triglycerides"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = -0.33, p = 2.877e-11",
+  )
+
+# Gon and bodyweight
+plot(main="GonAT weight ~ body weight", c(0,70), c(0,6), t = "n", xlab="Body weight [g]", ylab="GonAT weight [g]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,60,10), as.character(seq(0,60,10)))
+  points(pheno[,"D174"],pheno[,"Gon"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Gon"]~pheno[,"D174"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.02, p = 0.65",
+  )
+
+# Gon and glucose
+plot(main="GonAT weight ~ blood glucose", c(0,550), c(0,6), t = "n", xlab="Blood glucose [mg/dl]", ylab="GonAT weight [g]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,559,50), as.character(seq(0,550,50)))
+  points(pheno[,"Gluc172"],pheno[,"Gon"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Gon"]~pheno[,"Gluc172"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = -0.59, p = 2.2e-16",
+  )
+
+
+# triglycerides and liver
+plot(main="Liver triglycerides ~ liver weight", c(0,6), c(0,330), t = "n", xlab="Liver weight [g]", ylab="Liver triglycerides/protein [µg/µg]", las = 2, xaxt = "n")
   axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
-  points(pheno[,"Leber"],pheno[,"D172"], lwd=0.8 , pch=16 , type="p")
-  abline(lm(pheno[,"D172"]~pheno[,"Leber"]), col="red")
+  points(pheno[,"Leber"],pheno[,"Triglycerides"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Triglycerides"]~pheno[,"Leber"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.55, p = 2.2e-16",
+  )
+
+# triglycerides and body weight
+plot(main="Liver triglycerides ~ body weight", c(0,70), c(0,330), t = "n", xlab="Body weight [g]", ylab="Liver triglycerides/protein [µg/µg]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,60,10), as.character(seq(0,60,10)))
+  points(pheno[,"D172"],pheno[,"Triglycerides"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Triglycerides"]~pheno[,"D172"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.39, p = 1.942e-15",
+  )
+
+# triglycerides and glucose
+plot(main="Liver triglycerides ~ blood glucose", c(0,550), c(0,330), t = "n", xlab="Blood glucose [mg/dl]", ylab="Liver triglycerides/protein [µg/µg]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,559,50), as.character(seq(0,550,50)))
+  points(pheno[,"Gluc172"],pheno[,"Triglycerides"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Triglycerides"]~pheno[,"Gluc172"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.45, p = 2.2e-16",
+  )
+
+# Liver and Body weight
+plot(main="Liver weight ~ body weight", c(0,70), c(0,6), t = "n", xlab="Body weight [g]", ylab="Liver weight [g]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,60,10), as.character(seq(0,60,10)))
+  points(pheno[,"D174"],pheno[,"Leber"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Leber"]~pheno[,"D174"]), col="red")
   legend("topright", #bg="gray"
   bty = "n",
   cex = 1.5,
   legend = "r = 0.65, p < 2.2e-16",
   )
 
-# Gon and bodyweight
-plot(main="GonAT weight ~ body weight", c(0,6), c(0,550), t = "n", xlab="GonAT weight [g]", ylab="Body weight [g]", las = 2, xaxt = "n")
-  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
-  points(pheno[,"Gon"],pheno[,"D172"], lwd=0.8 , pch=16 , type="p")
-  abline(lm(pheno[,"D172"]~pheno[,"Gon"]), col="red")
-  legend("topright", #bg="gray"
-  bty = "n",
-  cex = 1.5,
-  legend = "r = 0.02, p < 0.65",
-  )
-
 # Liver and glucose
-plot(main="Liver weight ~ blood glucose", c(0,6), c(0,550), t = "n", xlab="Liver weight [g]", ylab="Blood glucose [mg/dl]", las = 2, xaxt = "n")
-  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
-  points(pheno[,"Leber"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
-  abline(lm(pheno[,"Gluc172"]~pheno[,"Leber"]), col="red")
+plot(main="Liver weight ~ blood glucose", c(0,550), c(0,6), t = "n", xlab="Blood glucose [mg/dl]", ylab="Liver weight [g]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,559,50), as.character(seq(0,550,50)))
+  points(pheno[,"Gluc172"],pheno[,"Leber"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Leber"]~pheno[,"Gluc172"]), col="red")
   legend("topright", #bg="gray"
   bty = "n",
   cex = 1.5,
-  legend = "r = 0.71, p < 2.2e-16",
+  legend = "r = 0.71, p = 2.2e-16",
   )
  
-# Gon and glucose
-plot(main="GonAT weight ~ blood glucose", c(0,6), c(0,550), t = "n", xlab="GonAT weight [g]", ylab="Blood glucose [mg/dl]", las = 2, xaxt = "n")
-  axis(1, at = c(0, 1, 2, 3, 4, 5, 6, 7), c("0", "1", "2", "3", "4", "5", "6", "7"))
-  points(pheno[,"Gon"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
-  abline(lm(pheno[,"Gon"]~pheno[,"Gluc172"]), col="red")
-  legend("topright", #bg="gray"
-  bty = "n",
-  cex = 1.5,
-  legend = "r = -0.59, p < 2.2e-16",
-  )
   
 # Body weight and glucose
-plot(main="Body weight ~ blood glucose", c(0,60), c(0,550), t = "n", xlab="Body weight [g]", ylab="Blood glucose [mg/dl]", las = 2, xaxt = "n")
-  axis(1, at = seq(0,60,10), as.character(seq(0,60,10)))
-  points(pheno[,"D172"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
-  abline(lm(pheno[,"Gluc172"]~pheno[,"D172"]), col="red")
+plot(main="Body weight ~ blood glucose", c(0,550), c(0,60), t = "n", xlab="Blood glucose [mg/dl]", ylab="Body weight [g]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,559,50), as.character(seq(0,550,50)))
+  points(pheno[,"Gluc172"],pheno[,"D174"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"D174"]~pheno[,"Gluc172"]), col="red")
   legend("topright", #bg="gray"
   bty = "n",
   cex = 1.5,
-  legend = "r = 0.31, p < 2.55e-10",
+  legend = "r = 0.31, p = 2.55e-10",
   )
+  
+# ITT and glucose
+plot(main="ITT AUC ~ blood glucose", c(0,20000), c(0,550), t = "n", xlab="ITT AUC", ylab="Blood glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,20000,5000), as.character(seq(0,20000,5000)))
+  points(pheno[,"auc"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Gluc172"]~pheno[,"auc"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.28, p = 1.41e-08",
+  )
+
+# ITT and gonadal
+plot(main="GonAT weight ~ ITT AUC", c(0,20000), c(0,6), t = "n", xlab="ITT AUC", ylab="GonAT weight [g]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,20000,5000), as.character(seq(0,20000,5000)))
+  points(pheno[,"auc"],pheno[,"Gon"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Gon"]~pheno[,"auc"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = -0.41, p = 2.2e-16",
+  )
+  
+# ITT and liver
+plot(main="Liver weight ~ ITT AUC", c(0,20000), c(0,6), t = "n", xlab="ITT AUC", ylab="Liver weight [g]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,20000,5000), as.character(seq(0,20000,5000)))
+  points(pheno[,"auc"],pheno[,"Leber"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Leber"]~pheno[,"auc"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.27, p = 3.98e-08",
+  )
+  
+
+# ITT and Triglycerides
+plot(main="Liver triglycerides ~ ITT AUC", c(0,20000), c(0,330), t = "n", xlab="ITT AUC", ylab="Liver triglycerides/protein [µg/µg]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,20000,5000), as.character(seq(0,20000,5000)))
+  points(pheno[,"auc"],pheno[,"Triglycerides"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Triglycerides"]~pheno[,"auc"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.28, p = 1.41e-08",
+  )
+ 
+# ITT and Glucose
+plot(main="Blood glucose ~ ITT AUC", c(0,20000), c(0,550), t = "n", xlab="ITT AUC", ylab="Blood glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = seq(0,20000,5000), as.character(seq(0,20000,5000)))
+  points(pheno[,"auc"],pheno[,"Gluc172"], lwd=0.8 , pch=16 , type="p")
+  abline(lm(pheno[,"Gluc172"]~pheno[,"auc"]), col="red")
+  legend("topright", #bg="gray"
+  bty = "n",
+  cex = 1.5,
+  legend = "r = 0.34, p = 9.55e-13",
+  )
+
+
+
 
 
 # Plots for the diets
@@ -182,15 +287,15 @@ par(cex.lab=1.3, cex.main = 1.3, cex.axis = 1.3)
 glucose <- pheno[,75:87]
 weeks <- as.numeric(gsub("Gluc", "", colnames(glucose)))/7
 weeks <- round(weeks, digits = 1)
-plot(main = "Blood glucose concentration over 25 weeks in the AIL", c(5,26), c(0,300), t = "n", xlab = "week", ,ylab="Glucose [mg/dl]", las = 2, xaxt = "n")
-  axis(1, at = seq(5, 25, 1), as.character(seq(5, 25, 1)))
+plot(main = "AIL", c(5,26), c(0,300), t = "n", xlab = "week", ,ylab="Glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = seq(5, 25, 5), as.character(seq(5, 25, 5)))
   points(weeks[1:5], GlucMean[1:5], lwd=3 , pch=16 , type="l", col = "blue")
   points(weeks[5:9], GlucMean[5:9], lwd=3 , pch=16 , type="l", col = "orange")
   points(weeks[9:13], GlucMean[9:13], lwd=3 , pch=16 , type="l", col = "red")
-  segments(weeks, GlucMean - GlucSD ,weeks ,GlucMean + GlucSD, lty = 5)
-  epsilon <- 0.02
-  segments(weeks-epsilon,GlucMean-GlucSD,weeks+epsilon,GlucMean-GlucSD, lty = 5)
-  segments(weeks-epsilon,GlucMean+GlucSD,weeks+epsilon,GlucMean+GlucSD, lty = 5)
+  segments(weeks, GlucMean - GlucSD ,weeks ,GlucMean + GlucSD)
+  epsilon <- 0.1
+  segments(weeks-epsilon,GlucMean-GlucSD,weeks+epsilon,GlucMean-GlucSD)
+  segments(weeks-epsilon,GlucMean+GlucSD,weeks+epsilon,GlucMean+GlucSD)
   #abline(v=20, col="orange", lty = 5)
   #abline(v=23, col="orange", lty = 5)
   #abline(v=25, col="orange", lty = 5)
@@ -209,12 +314,12 @@ plot(main = "Blood glucose concentration over 25 weeks in the AIL", c(5,26), c(0
    cex = 1.4)
 
 #S1 and S2
-plot(main = "Blood glucose concentration over 25 weeks in the S1 line", c(5,26), c(0,300), t = "n", xlab = "week", ,ylab="Glucose [mg/dl]", las = 2, xaxt = "n")
-  axis(1, at = seq(5, 25, 1), as.character(seq(5, 25, 1)))
+plot(main = "S1 line", c(5,26), c(0,300), t = "n", xlab = "week", ,ylab="Glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = seq(5, 25, 5), as.character(seq(5, 25, 5)))
   points(as.numeric(rownames(Parental_Glucose[1:16,]))/7, Parental_Glucose[1:16,1]*10, lwd=3 , pch=16, type="l", col = "blue")
   points(as.numeric(rownames(Parental_Glucose[16:31,]))/7, Parental_Glucose[16:31,1]*10, lwd=3 , pch=16, type="l", col = "red")
   segments(as.numeric(rownames(Parental_Glucose))/7, Parental_Glucose[,1]*10 - Parental_Glucose[,2]*10 ,as.numeric(rownames(Parental_Glucose))/7 ,Parental_Glucose[,1]*10 + Parental_Glucose[,2]*10)
-  epsilon <- 0.02
+  epsilon <- 0.1
   segments(as.numeric(rownames(Parental_Glucose))/7-epsilon,Parental_Glucose[,1]*10-Parental_Glucose[,2]*10,as.numeric(rownames(Parental_Glucose))/7+epsilon,Parental_Glucose[,1]*10-Parental_Glucose[,2]*10)
   #segments(x-epsilon,y+sd,x+epsilon,y+sd)
   segments(as.numeric(rownames(Parental_Glucose))/7-epsilon,Parental_Glucose[,1]*10+Parental_Glucose[,2]*10,as.numeric(rownames(Parental_Glucose))/7+epsilon,Parental_Glucose[,1]*10+Parental_Glucose[,2]*10)
@@ -230,12 +335,12 @@ plot(main = "Blood glucose concentration over 25 weeks in the S1 line", c(5,26),
    pt.cex = 1.4,
    cex = 1.4)
    
-plot(main = "Blood glucose concentration over 25 weeks in the S2 line", c(5,26), c(0,300), t = "n", xlab = "week", ,ylab="Glucose [mg/dl]", las = 2, xaxt = "n")
-  axis(1, at = seq(5, 25, 1), as.character(seq(5, 25, 1)))
+plot(main = "S2 line", c(5,26), c(0,300), t = "n", xlab = "week", ,ylab="Glucose [mg/dl]", las = 2, xaxt = "n")
+  axis(1, at = seq(5, 25, 5), as.character(seq(5, 25, 5)))
   points(as.numeric(rownames(Parental_Glucose[1:16,]))/7, Parental_Glucose[1:16,3]*10, lwd=3 , pch=16, type="l", col = "blue")
   points(as.numeric(rownames(Parental_Glucose[16:31,]))/7, Parental_Glucose[16:31,3]*10, lwd=3 , pch=16, type="l", col = "red")
   segments(as.numeric(rownames(Parental_Glucose))/7, Parental_Glucose[,3]*10 - Parental_Glucose[,4]*10 ,as.numeric(rownames(Parental_Glucose))/7 ,Parental_Glucose[,3]*10 + Parental_Glucose[,4]*10)
-  epsilon <- 0.02
+  epsilon <- 0.1
   segments(as.numeric(rownames(Parental_Glucose))/7-epsilon,Parental_Glucose[,3]*10-Parental_Glucose[,4]*10,as.numeric(rownames(Parental_Glucose))/7+epsilon,Parental_Glucose[,3]*10-Parental_Glucose[,4]*10)
   #segments(x-epsilon,y+sd,x+epsilon,y+sd)
   segments(as.numeric(rownames(Parental_Glucose))/7-epsilon,Parental_Glucose[,3]*10+Parental_Glucose[,4]*10,as.numeric(rownames(Parental_Glucose))/7+epsilon,Parental_Glucose[,3]*10+Parental_Glucose[,4]*10)
