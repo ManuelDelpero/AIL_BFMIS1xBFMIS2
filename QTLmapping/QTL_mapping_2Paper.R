@@ -83,12 +83,13 @@ for(x in 1:nrow(genotypes)){
 }
 
 
-#phenotypes <- phenotypes[colnames(genotypes),]
+phenotypes <- phenotypes[colnames(genotypes),]
 phenotypes <- phenotypes[which(phenotypes[, "Sex"] == "m"),]
 numgeno <- numgeno[,rownames(phenotypes)]
 
 # map using an additive model
 phenonames <- colnames(phenotypes)[3:41]
+#phenonames <- c("Cholesterol", "Triglycerides")
 pmatrixADD <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
@@ -124,8 +125,8 @@ plot(main = "QTL profile body weight [Chr 15]", c(min(as.numeric(chr15[, "Positi
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D112"] , type = "l", col="gray45", lwd = 1)
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D126"] , type = "l", col="gray60", lwd = 1)
   points(x = as.numeric(chr15[,"Position"]), y = chr15[,"D172"] , type = "l", col="gray90", lwd = 1)
-  abline(h=5.2, col="green")
-  abline(h=4.4, col="red")
+  abline(h=4.7, col="orange")
+  abline(h=4.2, col="orange", lty = 2)
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000, 125000000, 150000000), c("0", "25", "50", "75", "100", "125", "150"))
   legend("topright",
   legend = c("Week 10", "Week 16","Week 18", "Week 25"),
@@ -145,8 +146,8 @@ plot(main = "QTL profile body weight [Chr 16]", c(min(as.numeric(chr16[, "Positi
   points(x = as.numeric(chr16[,"Position"]), y = chr16[,"D112"] , type = "l", col="gray45", lwd = 1)
   points(x = as.numeric(chr16[,"Position"]), y = chr16[,"D126"] , type = "l", col="gray60", lwd = 1)
   points(x = as.numeric(chr16[,"Position"]), y = chr16[,"D172"] , type = "l", col="gray90", lwd = 1)
-  abline(h=5.2, col="green")
-  abline(h=4.4, col="red")
+  abline(h=4.7, col="orange")
+  abline(h=4.2, col="orange", lty = 2)
   axis(1, at = c(0,25000000, 50000000, 75000000, 100000000, 125000000, 150000000), c("0", "25", "50", "75", "100", "125", "150"))
   legend("topright",
   legend = c("Week 10", "Week 16","Week 18", "Week 25"),
@@ -157,3 +158,33 @@ plot(main = "QTL profile body weight [Chr 16]", c(min(as.numeric(chr16[, "Positi
     text.col = "black",
 	lwd = c(1,1,1,1)
 	)
+
+# Lodcurve for QTl plasma triglycerides
+dataset <- lodmatrixADDannot
+dataset <- cbind(lodmatrixADDannot[,1:3], dataset)
+chr1 <- dataset[which(dataset[,"Chromosome"] == 1),]
+chr11 <- dataset[which(dataset[,"Chromosome"] == 11),]
+chr5 <- dataset[which(dataset[,"Chromosome"] == 5),]
+
+par(cex.lab=1.5, cex.main = 1.8, cex.axis = 1.6)
+par(mfrow = c(1,2))
+
+plot(main = "QTL profile plsma triglycerides [Chr 1]", c(min(as.numeric(chr1[, "Position"])), max(as.numeric(chr1[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+  points(x = as.numeric(chr1[,"Position"]), y = chr1[,"Triglycerides"] , type = "l", col="gray1", lwd = 1)
+  abline(h=4.7, col="orange")
+  abline(h=4.2, col="orange", lty = 2)
+  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000, 125000000, 150000000), c("0", "25", "50", "75", "100", "125", "150"))
+
+# Lodcurve for QTl plasma cholesterol chr 5
+plot(main = "QTL profile plasma cholesterol [Chr 5]", c(min(as.numeric(chr5[, "Position"])), max(as.numeric(chr5[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+  points(x = as.numeric(chr5[,"Position"]), y = chr5[,"Cholesterol"] , type = "l", col="gray1", lwd = 1)
+  abline(h=4.7, col="orange")
+  abline(h=4.2, col="orange", lty = 2)
+  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000, 125000000, 150000000), c("0", "25", "50", "75", "100", "125", "150"))
+
+# Lodcurve for QTl plasma cholesterol chr 5
+plot(main = "QTL profile plasma cholesterol [Chr 11]", c(min(as.numeric(chr11[, "Position"])), max(as.numeric(chr11[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
+  points(x = as.numeric(chr11[,"Position"]), y = chr11[,"Cholesterol"] , type = "l", col="gray1", lwd = 1)
+  abline(h=4.7, col="orange")
+  abline(h=4.2, col="orange", lty = 2)
+  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000, 125000000, 150000000), c("0", "25", "50", "75", "100", "125", "150"))
