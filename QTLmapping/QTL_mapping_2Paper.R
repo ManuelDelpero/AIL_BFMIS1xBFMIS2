@@ -1,12 +1,10 @@
 # QTL mapping for the second paper of the BFMIAIL861-S1x861-S2
-# Traits to use are: Bodyweight time series, plasma trig, plasma cholesterol, plasma FFA, plasma week 10 and week 20
+# Traits to use are: Bodyweight time series
 
 setwd("C:/Users/Manuel/Desktop/AIL_S1xS2/RAWDATA")
 
 genotypes <- read.csv("genotypes.cleaned.txt", header = TRUE, check.names = FALSE, sep="\t", colClasses="character")
 phenotypes <- read.csv("PhenotypesComplete.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
-Plasma <- read.csv("Plasma.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1, colClasses="numeric")
-Plasma10Weeks <- read.csv("Plasma10Weeks.txt", header = TRUE, check.names = FALSE, sep="\t", row.names=1)
 markerannot <- read.csv("map.cleaned.txt", header=TRUE, sep="\t", check.names=FALSE)
 markerannot <- markerannot[, c(1,2)]
 markerannot <- markerannot[order(markerannot[,"bp_mm10"]),]
@@ -27,11 +25,8 @@ dim(phenotypes)
 # Get only the pheno we need
 BW <- phenotypes[,grep("D", colnames(phenotypes))]
 BW <- BW[,-1]
-Plasma <- Plasma[,1:5]
-Plasma <- Plasma[rownames(BW),]
-Plasma10Weeks <- Plasma10Weeks[rownames(BW),]
 
-allPhenotypes <- cbind(BW, Plasma, Plasma10Weeks)
+allPhenotypes <- BW
 phenames <- colnames(allPhenotypes)
 
 # Getting rid of the outliers
@@ -89,7 +84,6 @@ numgeno <- numgeno[,rownames(phenotypes)]
 
 # map using an additive model
 phenonames <- colnames(phenotypes)[3:41]
-#phenonames <- c("Cholesterol", "Triglycerides")
 pmatrixADD <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
@@ -108,6 +102,8 @@ lodmatrixADDrow <- -log10(pmatrixADD)
 
 lodmatrixADD <- lodmatrixADDrow[rownames(annotation),]
 lodmatrixADDannot <- cbind(annotation, lodmatrixADD)
+
+#write.table(lodmatrixADDannot, file = "lodmatrixADD_BW_second.txt", sep = "\t", quote = FALSE)
 
 # some plots
 dataset <- lodmatrixADDannot[,grep("D", colnames(lodmatrixADDannot))]
@@ -158,33 +154,71 @@ plot(main = "QTL profile body weight [Chr 16]", c(min(as.numeric(chr16[, "Positi
     text.col = "black",
 	lwd = c(1,1,1,1)
 	)
+	
+# Effect plots for top marker chr 16
+topmarker <- t(genotypes["UNCHS041907",])
+genopheno <- cbind(topmarker, phenotypes[,phenonames])
+genopheno[,1] <- gsub("A" ,"S1", genopheno[,1])
+genopheno[,1] <- gsub("H" ,"HET", genopheno[,1])
+genopheno[,1] <- gsub("B", "S2", genopheno[,1])
+colnames(genopheno) <- c("Genotype", 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 91, 98, 105, 112, 119, 125, 126, 133, 139, 140, 142, 144, 147, 150, 154, 157, 160, 163, 166, 169, 172, 174)	 
+timepoints <- c(28, 42, 56, 70, 84, 98, 112, 126, 140, 160, 174)  
+ 
+plot(main="Body weight at Chr 16 top marker", c(25,180), c(10,60), ylab="[g]", xlab="Age [weeks]", yaxs = "i", las = 2, t = "n", xaxt="n")
+  axis(1, at = c(28, 42, 55, 70, 84, 98, 112, 126, 140, 160, 174), c("4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "25"), lwd = 1, cex.axis=1.6)
+  meansBFMI <- c()
+  meansHET <- c()
+  meansB6 <- c()
+  for (x in timepoints){
+   bptBFMI <- boxplot(at = x+1, as.numeric(as.character(genopheno[which(genopheno == "S1"), as.character(x)]))  ~ genopheno[which(genopheno == "S1"),"Genotype"], width=6, col = "gray20", axes = FALSE, add=TRUE, notch= TRUE, outcex=0.5, boxwex = 1.5) 
+   meanBFMI <- bptBFMI$stats[3,] 
+   meansBFMI <- c(meansBFMI, meanBFMI)
+   bptHET <- boxplot(at = x, as.numeric(as.character(genopheno[which(genopheno == "HET"), as.character(x)]))  ~ genopheno[which(genopheno == "HET"),"Genotype"], width=6, col = "gray50", axes = FALSE, add=TRUE, notch= TRUE, outcex=0.5, boxwex = 1.5) 
+   meanHET <- bptHET$stats[3,]
+   meansHET <- c(meansHET, meanHET)
+   bptB6 <- boxplot(at = x-1, as.numeric(as.character(genopheno[which(genopheno == "S2"), as.character(x)]))  ~ genopheno[which(genopheno == "S2"),"Genotype"], width=6, col = "gray88", axes = FALSE, add=TRUE, notch= TRUE, outcex=0.5, boxwex = 1.5) 
+   meanB6 <- bptB6$stats[3,]
+   meansB6 <- c(meansB6, meanB6)
+  }
+  lines(c(28, 42, 55, 70, 84, 98, 112, 126, 140, 160, 174), meansBFMI, col="gray0", lwd=1)
+  lines(c(28, 42, 55, 70, 84, 98, 112, 126, 140, 160, 174), meansHET, col="gray50", lwd=1)
+  lines(c(28, 42, 55, 70, 84, 98, 112, 126, 140, 160, 174), meansB6, col="gray88", lwd=1) 
+  legend("topleft",  
+  legend = c("BFMI861-S1", "HET", "BFMI861-S2"), 
+   col = c("gray20", "gray50", "gray88"),
+   pch = 15, pt.cex = 1.7, cex = 1, bty = "n"
+   )
 
-# Lodcurve for QTl plasma triglycerides
-dataset <- lodmatrixADDannot
-dataset <- cbind(lodmatrixADDannot[,1:3], dataset)
-chr1 <- dataset[which(dataset[,"Chromosome"] == 1),]
-chr11 <- dataset[which(dataset[,"Chromosome"] == 11),]
-chr5 <- dataset[which(dataset[,"Chromosome"] == 5),]
-
-par(cex.lab=1.5, cex.main = 1.8, cex.axis = 1.6)
-par(mfrow = c(1,2))
-
-plot(main = "QTL profile plsma triglycerides [Chr 1]", c(min(as.numeric(chr1[, "Position"])), max(as.numeric(chr1[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
-  points(x = as.numeric(chr1[,"Position"]), y = chr1[,"Triglycerides"] , type = "l", col="gray1", lwd = 1)
-  abline(h=4.7, col="orange")
-  abline(h=4.2, col="orange", lty = 2)
-  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000, 125000000, 150000000), c("0", "25", "50", "75", "100", "125", "150"))
-
-# Lodcurve for QTl plasma cholesterol chr 5
-plot(main = "QTL profile plasma cholesterol [Chr 5]", c(min(as.numeric(chr5[, "Position"])), max(as.numeric(chr5[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
-  points(x = as.numeric(chr5[,"Position"]), y = chr5[,"Cholesterol"] , type = "l", col="gray1", lwd = 1)
-  abline(h=4.7, col="orange")
-  abline(h=4.2, col="orange", lty = 2)
-  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000, 125000000, 150000000), c("0", "25", "50", "75", "100", "125", "150"))
-
-# Lodcurve for QTl plasma cholesterol chr 5
-plot(main = "QTL profile plasma cholesterol [Chr 11]", c(min(as.numeric(chr11[, "Position"])), max(as.numeric(chr11[, "Position"]))), c(0,5), ylab = "-log10 [pvalue]", xlab = "Position [mb]", las = 2, t = "n", xaxt = "n")
-  points(x = as.numeric(chr11[,"Position"]), y = chr11[,"Cholesterol"] , type = "l", col="gray1", lwd = 1)
-  abline(h=4.7, col="orange")
-  abline(h=4.2, col="orange", lty = 2)
-  axis(1, at = c(0,25000000, 50000000, 75000000, 100000000, 125000000, 150000000), c("0", "25", "50", "75", "100", "125", "150"))
+# Effect plots for top marker chr 15
+topmarker <- t(genotypes["UNCHS040893",])
+genopheno <- cbind(topmarker, phenotypes[,phenonames])
+genopheno[,1] <- gsub("B" ,"S1", genopheno[,1])
+genopheno[,1] <- gsub("H" ,"HET", genopheno[,1])
+genopheno[,1] <- gsub("A", "S2", genopheno[,1])
+colnames(genopheno) <- c("Genotype", 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 91, 98, 105, 112, 119, 125, 126, 133, 139, 140, 142, 144, 147, 150, 154, 157, 160, 163, 166, 169, 172, 174)	 
+timepoints <- c(28, 42, 56, 70, 84, 98, 112, 126, 140, 160, 174)  
+ 
+plot(main="Body weight at Chr 15 top marker", c(25,180), c(10,60), ylab="[g]", xlab="Age [weeks]", yaxs = "i", las = 2, t = "n", xaxt="n")
+  axis(1, at = c(28, 42, 55, 70, 84, 98, 112, 126, 140, 160, 174), c("4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "25"), lwd = 1, cex.axis=1.6)
+  meansBFMI <- c()
+  meansHET <- c()
+  meansB6 <- c()
+  for (x in timepoints){
+   bptBFMI <- boxplot(at = x+1, as.numeric(as.character(genopheno[which(genopheno == "S1"), as.character(x)]))  ~ genopheno[which(genopheno == "S1"),"Genotype"], width=6, col = "gray20", axes = FALSE, add=TRUE, notch= TRUE, outcex=0.5, boxwex = 1.5) 
+   meanBFMI <- bptBFMI$stats[3,] 
+   meansBFMI <- c(meansBFMI, meanBFMI)
+   bptHET <- boxplot(at = x, as.numeric(as.character(genopheno[which(genopheno == "HET"), as.character(x)]))  ~ genopheno[which(genopheno == "HET"),"Genotype"], width=6, col = "gray50", axes = FALSE, add=TRUE, notch= TRUE, outcex=0.5, boxwex = 1.5) 
+   meanHET <- bptHET$stats[3,]
+   meansHET <- c(meansHET, meanHET)
+   bptB6 <- boxplot(at = x-1, as.numeric(as.character(genopheno[which(genopheno == "S2"), as.character(x)]))  ~ genopheno[which(genopheno == "S2"),"Genotype"], width=6, col = "gray88", axes = FALSE, add=TRUE, notch= TRUE, outcex=0.5, boxwex = 1.5) 
+   meanB6 <- bptB6$stats[3,]
+   meansB6 <- c(meansB6, meanB6)
+  }
+  lines(c(28, 42, 55, 70, 84, 98, 112, 126, 140, 160, 174), meansBFMI, col="gray0", lwd=1)
+  lines(c(28, 42, 55, 70, 84, 98, 112, 126, 140, 160, 174), meansHET, col="gray50", lwd=1)
+  lines(c(28, 42, 55, 70, 84, 98, 112, 126, 140, 160, 174), meansB6, col="gray88", lwd=1) 
+  legend("topleft",  
+  legend = c("BFMI861-S1", "HET", "BFMI861-S2"), 
+   col = c("gray20", "gray50", "gray88"),
+   pch = 15, pt.cex = 1.7, cex = 1, bty = "n"
+   )
