@@ -83,7 +83,7 @@ phenotypes <- phenotypes[which(phenotypes[, "Sex"] == "m"),]
 numgeno <- numgeno[,rownames(phenotypes)]
 
 # map using an additive model
-phenonames <- colnames(phenotypes)[3:41]
+phenonames <- colnames(phenotypes)[3:34]
 pmatrixADD <- matrix(NA, nrow(numgeno), length(phenonames), dimnames= list(rownames(numgeno), phenonames))
 for (pname in phenonames){
   cat(pname, " ", "\n")
